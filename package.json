@@ -1,0 +1,23 @@
+{
+  "name": "@kst-hancock/sdk-client",
+  "version": "0.0.0",
+  "description": "Client sdk for integration with hancock components",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@bitbucket.kickstartteam.es:7999/bh/kst-hancock-sdk-client.git"
+  },
+  "keywords": [
+    "hancock",
+    "sdk",
+    "client"
+  ],
+  "author": "Angel Manzano Alcaraz <angel.manzano.contractor@bbva.com>",
+  "license": "ISC",
+  "publishConfig": {
+    "registry": "http://dev.npm.kickstartteam.es"
+  }
+}
