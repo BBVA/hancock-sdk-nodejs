@@ -1,0 +1,12 @@
+adapter:
+  host: http://mocked
+  port: 3000
+  base: '/mock'
+wallet:
+  host: http://mocked
+  port: 3000
+  base: '/mock'
+broker:
+  host: ws://mocked
+  port: 3000
+  base: '/mock'
