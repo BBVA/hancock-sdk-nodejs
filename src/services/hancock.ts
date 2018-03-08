@@ -1,7 +1,7 @@
 import config from 'config';
-import * as fetch from 'isomorphic-fetch';
-import * as EventEmitter from 'eventemitter3';
-import * as WebSocket from 'isomorphic-ws';
+import fetch from 'isomorphic-fetch';
+import EventEmitter from 'eventemitter3';
+import WebSocket from 'isomorphic-ws';
 import { HancockInvokeRequest, HancockConfig, HancockSignResponse, HancockSignRequest } from "./hancock.model";
 
 export default class Hancock {
@@ -63,7 +63,7 @@ export default class Hancock {
       bus.emit(data.kind, data);
     });
 
-    bus.closeSocket = () => ws.close();
+    (bus as any).closeSocket = () => ws.close();
 
     return bus;
 

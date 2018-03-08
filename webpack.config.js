@@ -1,23 +1,23 @@
 const path = require('path');
 const config = require('config')
 const fs = require('fs')
+const nodeExternals = require('webpack-node-externals');
 
-const configFileName = './config/config.json'
-const configPath = path.resolve(__dirname, configFileName);
-fs.writeFileSync(configPath, JSON.stringify(config))
+const packageconfigFileName = './config/config.json'
+const packageconfigPath = path.resolve(__dirname, packageconfigFileName);
+fs.writeFileSync(packageconfigPath, JSON.stringify(config))
 
-module.exports = {
+const commonWebpackConfig = {
   entry: './src/index.ts',
   output: {
+    library: '@kst-hancock/sdk-client',    
     path: path.resolve(__dirname, 'dist'),
-    filename: 'index.bundle.js',
-    filename: '[name].bundle.js',
-    libraryTarget: 'umd'
   },
   devtool: "source-map",
   resolve: {
+    extensions: [".ts", ".js", ".json"],
     alias: {
-      'config': configPath
+      'config': packageconfigPath
     }
   },
   module: {
@@ -26,3 +26,23 @@ module.exports = {
     ]
   }
 };
+
+var serverWebpackConfig = {
+  ...commonWebpackConfig,  
+  target: 'node',
+  externals: [nodeExternals()],
+  output: {
+    filename: 'index.node.js',
+  },
+};
+
+var clientWebpackConfig = {
+  ...commonWebpackConfig,  
+  target: 'web',
+  output: {
+    libraryTarget: 'umd',
+    filename: 'index.browser.js',
+  }
+};
+
+module.exports = [ serverWebpackConfig, clientWebpackConfig ];
