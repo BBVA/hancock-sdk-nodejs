@@ -52,18 +52,26 @@ export class HancockClient {
     const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`.replace(/__ADDRESS__/, contractAddress).replace(/__SENDER__/, sender);
     const bus: HancockEventEmitter = new EventEmitter();
 
-    const ws = new WebSocket(url);
+    try {
+      
+      const ws = new WebSocket(url);
 
-    ws.on('open', () => console.info('hancock socket connected'));
-    ws.on('close', () => console.log('disconnected'));
-    ws.on('error', (e: any) => bus.emit('error', e));
+      ws.on('open', () => console.info('hancock socket connected'));
+      ws.on('close', () => console.log('disconnected'));
+      ws.on('error', (e: any) => bus.emit('error', e));
 
-    ws.on('message', (msg: any) => {
-      const data: any = JSON.parse(msg.data);
-      bus.emit(data.kind, data);
-    });
+      ws.on('message', (msg: any) => {
+        const data: any = JSON.parse(msg.data);
+        bus.emit(data.kind, data);
+      });
 
-    (bus as any).closeSocket = () => ws.close();
+      (bus as any).closeSocket = () => ws.close();
+
+    } catch (e) {
+
+      Promise.resolve().then(() => { bus.emit('error', '' + e); });
+
+    }
 
     return bus;
 
