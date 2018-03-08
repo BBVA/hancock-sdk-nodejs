@@ -6,6 +6,7 @@
   "unpkg": "dist/index.node.js",
   "jsnext:main": "main.mjs",
   "browser": "dist/index.browser.js",
+  "typings": "dist/src/index.d.ts",  
   "scripts": {
     "test": "NODE_ENV=test && mocha",
     "clean": "rimraf dist",

@@ -2,11 +2,18 @@ adapter:
   host: http://localhost
   port: 3000
   base: ''
+  resources:
+    invoke: '/ethereum/smartcontracts/__ADDRESS__'
 wallet:
   host: http://localhost
   port: 3000
   base: ''
+  resources:
+    sign: '/ethereum/sign-tx'
 broker:
   host: ws://localhost
   port: 3000
   base: ''
+  resources:
+    events: '/ethereum/subscribe?address=__ADDRESS__&sender=__SENDER__'
+  

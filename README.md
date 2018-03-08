@@ -6,7 +6,7 @@ You have to configure your own .npmrc file in order to have access to it. Ask so
 
 ```bash
 # .npmrc
-registry=http://dev.npm.kickstartteam.es
+@kst-hancock:registry=http://dev.npm.kickstartteam.es/
 //dev.npm.kickstartteam.es/:_authToken="<SECRET_TOKEN>"
 ```
 

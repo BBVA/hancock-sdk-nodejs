@@ -1,3 +1,5 @@
+import EventEmitter from 'eventemitter3';
+
 export interface HancockInvokeRequest {
   method: string;
   from: string;
@@ -46,4 +48,7 @@ export interface HancockConfig {
   adapter: HancockAdapterConfig;
   wallet: HancockWalletHubConfig;
   broker: HancockBrokerConfig;
+}
+
+export interface HancockEventEmitter extends EventEmitter {
 }

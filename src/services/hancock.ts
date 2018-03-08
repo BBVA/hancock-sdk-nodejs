@@ -2,9 +2,9 @@ import config from 'config';
 import fetch from 'isomorphic-fetch';
 import EventEmitter from 'eventemitter3';
 import WebSocket from 'isomorphic-ws';
-import { HancockInvokeRequest, HancockConfig, HancockSignResponse, HancockSignRequest } from "./hancock.model";
+import { HancockInvokeRequest, HancockConfig, HancockSignResponse, HancockSignRequest, HancockEventEmitter } from "./hancock.model";
 
-export default class Hancock {
+export class HancockClient {
 
   private config: HancockConfig;
   private adapterApiBaseUrl: string;
@@ -47,10 +47,10 @@ export default class Hancock {
 
   }
 
-  public subscribeSmartContractEvents(contractAddress: string, sender: string = ''): EventEmitter {
+  public subscribeSmartContractEvents(contractAddress: string, sender: string = ''): HancockEventEmitter {
 
     const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`.replace(/__ADDRESS__/, contractAddress).replace(/__SENDER__/, sender);
-    const bus: EventEmitter = new EventEmitter();
+    const bus: HancockEventEmitter = new EventEmitter();
 
     const ws = new WebSocket(url);
 
