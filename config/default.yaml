@@ -9,11 +9,11 @@ wallet:
   port: 3000
   base: ''
   resources:
-    sign: '/ethereum/sign-tx'
+    signTx: '/ethereum/sign-tx'
+    sendSignedTx: '/ethereum/send-signed-tx'
 broker:
   host: ws://localhost
   port: 3000
   base: ''
   resources:
     events: '/ethereum/subscribe?address=__ADDRESS__&sender=__SENDER__'
-  
