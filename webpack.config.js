@@ -33,6 +33,7 @@ var serverWebpackConfig = merge(commonWebpackConfig, {
   target: 'node',
   externals: [nodeExternals()],
   output: {
+    libraryTarget: 'commonjs2',
     filename: 'index.node.js',
   },
   plugins: [
