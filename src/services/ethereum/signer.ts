@@ -1,8 +1,17 @@
 import * as etherTx from 'ethereumjs-tx';
 import * as etherWallet from 'ethereumjs-wallet';
-import { IWallet, ITransaction } from './ethereum-signer.model';
+import { DltWallet, DltRawTransaction } from '../hancock.model';
 
-export function generateWallet(): IWallet {
+export interface EthereumWallet extends DltWallet {
+  privateKey: string;
+  publicKey: string;
+  address: string;
+}
+
+export type EthereumRawTransaction = DltRawTransaction;
+
+
+export function generateWallet(): EthereumWallet {
 
   const wallet: any = etherWallet.Wallet.generate();
 
@@ -14,7 +23,7 @@ export function generateWallet(): IWallet {
 
 }
 
-export function signTx(rawTx: ITransaction, privateKey: string): string {
+export function signTx(rawTx: EthereumRawTransaction, privateKey: string): string {
 
   const key = Buffer.from(privateKey.substr(2), 'hex');
 

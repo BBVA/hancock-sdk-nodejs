@@ -2,11 +2,18 @@ import config from 'config';
 import fetch from 'isomorphic-fetch';
 import EventEmitter from 'eventemitter3';
 import WebSocket from 'isomorphic-ws';
-import { HancockInvokeRequest, HancockConfig, HancockSignResponse, HancockSignRequest, HancockEventEmitter } from "./hancock.model";
-import { HancockClient } from './hancock.model';
-import { HancockSendSignedTxRequest, HancockSendSignedTxResponse } from '.';
-import { signTx as ethereumSignTx } from './signer/ethereum-signer';
-import { IWallet, ITransaction } from './signer/ethereum-signer.model';
+import { 
+  HancockInvokeRequest,
+  HancockConfig,
+  HancockSignResponse,
+  HancockSignRequest,
+  HancockSendSignedTxRequest,
+  HancockSendSignedTxResponse
+} from "../hancock.model";
+import { HancockEthereumEventEmitter } from './model';
+import { HancockClient } from '../hancock.model';
+import { signTx, generateWallet } from './signer';
+import { EthereumWallet, EthereumRawTransaction } from './signer';
 
 
 export class HancockEthereumClient implements HancockClient {
@@ -18,6 +25,7 @@ export class HancockEthereumClient implements HancockClient {
 
   constructor(cfg: HancockConfig) {
     this.config = { ...config as HancockConfig, ...cfg };
+    debugger
 
     this.adapterApiBaseUrl = `${this.config.adapter.host}:${this.config.adapter.port}${this.config.adapter.base}`;
     this.walletApiBaseUrl = `${this.config.wallet.host}:${this.config.wallet.port}${this.config.wallet.base}`;
@@ -73,8 +81,12 @@ export class HancockEthereumClient implements HancockClient {
 
   }
 
-  public signTransaction(rawTx: ITransaction, privateKey: string): string {
-    return ethereumSignTx(rawTx, privateKey);
+  public generateWallet(): EthereumWallet {
+    return generateWallet();
+  }
+
+  public signTransaction(rawTx: EthereumRawTransaction, privateKey: string): string {
+    return signTx(rawTx, privateKey);
   }
 
   public async sendSignedTransaction(tx: any): Promise<HancockSendSignedTxResponse> {
@@ -110,10 +122,10 @@ export class HancockEthereumClient implements HancockClient {
 
   }
 
-  public subscribeSmartContractEvents(contractAddress: string, sender: string = ''): HancockEventEmitter {
+  public subscribeSmartContractEvents(contractAddress: string, sender: string = ''): HancockEthereumEventEmitter {
 
     const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`.replace(/__ADDRESS__/, contractAddress).replace(/__SENDER__/, sender);
-    const bus: HancockEventEmitter = new EventEmitter();
+    const bus: HancockEthereumEventEmitter = new EventEmitter();
 
     try {
 

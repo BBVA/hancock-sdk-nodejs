@@ -1,10 +1,14 @@
 import EventEmitter from 'eventemitter3';
-import { ITransaction } from './signer/ethereum-signer.model';
 
 export type DltAddress = string;
 export type DltRawTransaction = any;
 export type DltSignedTransaction = string;
 
+export interface DltWallet {
+  privateKey: string;
+  publicKey: string;
+  address: string;
+}
 
 // API
 
@@ -70,13 +74,23 @@ export interface HancockConfig {
 
 // INTERFACES
 
+export type HancockEventKind = 'error' | 'event' | 'logs' | 'tx';
+export type HancockEventBody = any;
+export interface HancockEvent {
+  kind: HancockEventKind;
+  body: HancockEventBody;
+}
+
 export interface HancockEventEmitter extends EventEmitter {
+  on(event: HancockEventKind, fn: (payload: HancockEvent) => void, context?: any): this;
 }
 
 export interface HancockClient {
   invokeSmartContract(contractAddress: string, method: string, params: string[], from: string, privateKey?: string, signProvider?: string): Promise<HancockSignResponse>;
   adaptInvokeSmartContract(contractAddress: string, method: string, params: string[], from: string): Promise<HancockSignResponse>;
-  sendSignedTransaction(tx: any, provider: string): Promise<HancockSignResponse>;
-  signTransaction(rawTx: ITransaction, provider: string): string;
-  subscribeSmartContractEvents(contractAddress: string, sender: string): HancockEventEmitter;
+  signTransaction(rawTx: DltRawTransaction, privateKey: string): string;
+  generateWallet(): DltWallet;
+  sendSignedTransaction(tx: any): Promise<HancockSendSignedTxResponse>;
+  sendTransactionToSign(rawTx: any, provider: string): Promise<HancockSignResponse>
+  subscribeSmartContractEvents(contractAddress: string, sender?: string): HancockEventEmitter;
 }
