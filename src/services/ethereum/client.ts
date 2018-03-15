@@ -24,9 +24,9 @@ export class HancockEthereumClient implements HancockClient {
   private walletApiBaseUrl: string;
   private brokerBaseUrl: string;
 
-  constructor(cfg: HancockConfig) {
+  constructor(cfg: HancockConfig = {} as HancockConfig) {
 
-    this.config = merge(config as HancockConfig, cfg);
+    this.config = merge(config, cfg);
 
     this.adapterApiBaseUrl = `${this.config.adapter.host}:${this.config.adapter.port}${this.config.adapter.base}`;
     this.walletApiBaseUrl = `${this.config.wallet.host}:${this.config.wallet.port}${this.config.wallet.base}`;

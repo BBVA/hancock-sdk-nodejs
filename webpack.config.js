@@ -31,7 +31,9 @@ const commonWebpackConfig = {
 
 var serverWebpackConfig = merge(commonWebpackConfig, {
   target: 'node',
-  externals: [nodeExternals()],
+  externals: [nodeExternals({
+    whitelist: ['config']
+  })],
   output: {
     libraryTarget: 'commonjs2',
     filename: 'index.node.js',
