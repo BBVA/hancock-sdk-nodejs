@@ -1,4 +1,4 @@
-import config from '../../utils/config';
+import config from 'config';
 import fetch from 'isomorphic-fetch';
 import EventEmitter from 'eventemitter3';
 import WebSocket from 'isomorphic-ws';
@@ -14,6 +14,7 @@ import { HancockEthereumEventEmitter } from './model';
 import { HancockClient } from '../hancock.model';
 import { signTx, generateWallet } from './signer';
 import { EthereumWallet, EthereumRawTransaction } from './signer';
+import merge from 'deepmerge';
 
 
 export class HancockEthereumClient implements HancockClient {
@@ -24,7 +25,8 @@ export class HancockEthereumClient implements HancockClient {
   private brokerBaseUrl: string;
 
   constructor(cfg: HancockConfig) {
-    this.config = { ...config as HancockConfig, ...cfg };
+
+    this.config = merge(config as HancockConfig, cfg);
 
     this.adapterApiBaseUrl = `${this.config.adapter.host}:${this.config.adapter.port}${this.config.adapter.base}`;
     this.walletApiBaseUrl = `${this.config.wallet.host}:${this.config.wallet.port}${this.config.wallet.base}`;
