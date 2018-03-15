@@ -2,7 +2,7 @@ import config from 'config';
 import fetch from 'isomorphic-fetch';
 import EventEmitter from 'eventemitter3';
 import WebSocket from 'isomorphic-ws';
-import { 
+import {
   HancockInvokeRequest,
   HancockConfig,
   HancockSignResponse,
@@ -47,8 +47,8 @@ export class HancockEthereumClient implements HancockClient {
 
           return this.sendTransactionToSign(resBody.data, signProvider);
 
-        } 
-        
+        }
+
         if (privateKey) {
 
           return Promise
@@ -77,7 +77,9 @@ export class HancockEthereumClient implements HancockClient {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     })
-      .then(this.checkStatus, this.errorHandler)
+      .then(
+        (res: any) => this.checkStatus(res),
+        (err: any) => this.errorHandler(err))
       .then((resBody: any) => resBody);
 
   }
@@ -102,7 +104,10 @@ export class HancockEthereumClient implements HancockClient {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     })
-      .then(this.checkStatus, this.errorHandler);
+      .then(
+        (res: any) => this.checkStatus(res),
+        (err: any) => this.errorHandler(err)
+      );
 
   }
 
@@ -119,7 +124,10 @@ export class HancockEthereumClient implements HancockClient {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     })
-      .then(this.checkStatus, this.errorHandler);
+      .then(
+        (res: any) => this.checkStatus(res),
+        (err: any) => this.errorHandler(err)
+      );
 
   }
 
