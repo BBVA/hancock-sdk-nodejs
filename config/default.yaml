@@ -4,12 +4,14 @@ adapter:
   base: ''
   resources:
     invoke: '/ethereum/smartcontracts/__ADDRESS__'
+    register: '/ethereum/smartcontracts/register'
 wallet:
   host: http://localhost
   port: 3000
   base: ''
   resources:
     signTx: '/ethereum/sign-tx'
+    sendTx: '/ethereum/send-tx'
     sendSignedTx: '/ethereum/send-signed-tx'
 broker:
   host: ws://localhost

@@ -8,68 +8,82 @@ import {
   HancockSignResponse,
   HancockSignRequest,
   HancockSendSignedTxRequest,
-  HancockSendSignedTxResponse
+  HancockSendSignedTxResponse,
+  InitialHancockConfig
 } from "../hancock.model";
-import { HancockEthereumEventEmitter } from './model';
+import { HancockEthereumEventEmitter, EthereumAbi } from './model';
 import { HancockClient } from '../hancock.model';
 import { signTx, generateWallet } from './signer';
 import { EthereumWallet, EthereumRawTransaction } from './signer';
 import merge from 'deepmerge';
+import {
+  HancockSendTxResponse,
+  HancockSendTxRequest,
+  HancockInvokeOptions,
+  HancockAdaptInvokeResponse,
+  HancockAdaptInvokeRequest,
+  HancockCallRequest,
+  HancockCallResponse,
+  HancockRegisterResponse,
+  HancockRegisterRequest,
+  DltAddress
+} from '../hancock.model';
 
 
 export class HancockEthereumClient implements HancockClient {
 
-  private config: HancockConfig;
+  private config: InitialHancockConfig;
   private adapterApiBaseUrl: string;
   private walletApiBaseUrl: string;
   private brokerBaseUrl: string;
 
-  constructor(cfg: HancockConfig = {} as HancockConfig) {
+  constructor(cfg: HancockConfig = {}) {
 
-    this.config = merge(config, cfg);
+    this.config = merge(config, cfg) as InitialHancockConfig;
 
     this.adapterApiBaseUrl = `${this.config.adapter.host}:${this.config.adapter.port}${this.config.adapter.base}`;
     this.walletApiBaseUrl = `${this.config.wallet.host}:${this.config.wallet.port}${this.config.wallet.base}`;
     this.brokerBaseUrl = `${this.config.broker.host}:${this.config.broker.port}${this.config.broker.base}`;
   }
 
-  public async invokeSmartContract(contractAddress: string, method: string, params: string[], from: string, privateKey?: string, signProvider?: string): Promise<HancockSignResponse> {
+  public async invokeSmartContract(contractAddress: string, method: string, params: string[], from: string, options: HancockInvokeOptions = {}): Promise<HancockSignResponse> {
 
-    if (!signProvider && !privateKey) {
+    if (!options.signProvider && !options.privateKey) {
       return Promise.reject('No key nor provider');
     }
 
     return this
       .adaptInvokeSmartContract(contractAddress, method, params, from)
-      .then((resBody: any) => {
+      .then((resBody: HancockAdaptInvokeResponse) => {
 
-        if (signProvider) {
+        if (options.signProvider) {
 
-          return this.sendTransactionToSign(resBody.data, signProvider);
+          return this.sendTransactionToSign(resBody.data, options.signProvider);
 
         }
 
-        if (privateKey) {
+        if (options.privateKey) {
 
           return Promise
-            .resolve(this.signTransaction(resBody.data, privateKey))
+            .resolve(this.signTransaction(resBody.data, options.privateKey))
             .then((tx: string) => this.sendSignedTransaction(tx));
 
         }
 
-        return resBody;
+        return this.sendTransaction(resBody.data);
 
       });
 
   }
 
-  public async adaptInvokeSmartContract(contractAddress: string, method: string, params: string[], from: string): Promise<HancockSignResponse> {
+  public async callSmartContract(contractAddress: string, method: string, params: string[], from: string): Promise<HancockCallResponse> {
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invoke}`.replace(/__ADDRESS__/, contractAddress);
-    const body: HancockInvokeRequest = {
+    const body: HancockCallRequest = {
       method,
       from,
       params,
+      action: 'call'
     };
 
     return fetch(url, {
@@ -84,12 +98,45 @@ export class HancockEthereumClient implements HancockClient {
 
   }
 
-  public generateWallet(): EthereumWallet {
-    return generateWallet();
+  public async adaptInvokeSmartContract(contractAddress: string, method: string, params: string[], from: string): Promise<HancockAdaptInvokeResponse> {
+
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invoke}`.replace(/__ADDRESS__/, contractAddress);
+    const body: HancockAdaptInvokeRequest = {
+      method,
+      from,
+      params,
+      action: 'send'
+    };
+
+    return fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    })
+      .then(
+        (res: any) => this.checkStatus(res),
+        (err: any) => this.errorHandler(err))
+      .then((resBody: any) => resBody);
+
   }
 
-  public signTransaction(rawTx: EthereumRawTransaction, privateKey: string): string {
-    return signTx(rawTx, privateKey);
+  public async sendTransaction(tx: any): Promise<HancockSendTxResponse> {
+
+    const url: string = `${this.walletApiBaseUrl + this.config.wallet.resources.sendTx}`;
+    const body: HancockSendTxRequest = {
+      tx,
+    };
+
+    return fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    })
+      .then(
+        (res: any) => this.checkStatus(res),
+        (err: any) => this.errorHandler(err)
+      );
+
   }
 
   public async sendSignedTransaction(tx: any): Promise<HancockSendSignedTxResponse> {
@@ -117,6 +164,27 @@ export class HancockEthereumClient implements HancockClient {
     const body: HancockSignRequest = {
       rawTx,
       provider,
+    };
+
+    return fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    })
+      .then(
+        (res: any) => this.checkStatus(res),
+        (err: any) => this.errorHandler(err)
+      );
+
+  }
+
+  public async registerSmartContract(alias: string, address: DltAddress, abi: EthereumAbi): Promise<HancockRegisterResponse> {
+
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.register}`;
+    const body: HancockRegisterRequest = {
+      address,
+      alias,
+      abi
     };
 
     return fetch(url, {
@@ -177,6 +245,14 @@ export class HancockEthereumClient implements HancockClient {
 
     return bus;
 
+  }
+
+  public generateWallet(): EthereumWallet {
+    return generateWallet();
+  }
+
+  public signTransaction(rawTx: EthereumRawTransaction, privateKey: string): string {
+    return signTx(rawTx, privateKey);
   }
 
   private async checkStatus(response: any): Promise<any> {

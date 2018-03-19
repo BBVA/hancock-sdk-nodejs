@@ -9,6 +9,8 @@ export type EthereumTopic = string;
 export type EthereumContractEventStatus = 'mined' | 'pending';
 export type EthereumContractLogId = string;
 
+export type EthereumAbi = any[];
+
 export type HancockEthereumEventBody = EthereumContractEventBody | EthereumContractLogBody;
 
 export interface HancockEthereumEvent {
