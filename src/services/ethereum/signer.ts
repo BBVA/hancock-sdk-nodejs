@@ -2,8 +2,9 @@ import * as etherTx from 'ethereumjs-tx';
 import * as etherWallet from 'ethereumjs-wallet';
 import { DltWallet, DltRawTransaction } from '../hancock.model';
 
-const _etherTx: any = process.browser ? etherTx.Tx : etherTx;
-const _etherWallet: any = process.browser ? etherWallet.Wallet : etherWallet;
+// TODO: Resolve this situation in webpack, not here
+const _etherTx: any = process.browser ? etherTx.Tx : (etherTx.default || etherTx);
+const _etherWallet: any = process.browser ? etherWallet.Wallet : (etherWallet.default || etherTx);
 
 export interface EthereumWallet extends DltWallet {
   privateKey: string;

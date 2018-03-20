@@ -17,6 +17,7 @@ declare module "ethereumjs-wallet" {
   export class Wallet {
     static generate(): any;
   }
+  export default Wallet;
 }
 
 declare module "ethereumjs-tx" {
@@ -25,4 +26,5 @@ declare module "ethereumjs-tx" {
     sign(privateKey: any): any;
     serialize(): any;
   }
+  export default Tx;
 }

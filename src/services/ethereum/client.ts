@@ -251,7 +251,12 @@ export class HancockEthereumClient implements HancockClient {
     return generateWallet();
   }
 
-  public signTransaction(rawTx: EthereumRawTransaction, privateKey: string): string {
+  public signTransaction(rawTx: EthereumRawTransaction | string, privateKey: string): string {
+
+    if (typeof rawTx === 'string') {
+      rawTx = JSON.parse(rawTx) as EthereumRawTransaction;
+    }
+
     return signTx(rawTx, privateKey);
   }
 
