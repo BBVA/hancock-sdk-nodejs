@@ -213,8 +213,17 @@ export class HancockEthereumClient implements HancockClient {
       }
 
       function onWebSocketMessage(msg: any) {
-        const data: any = JSON.parse(msg.data);
-        bus.emit(data.kind, data);
+        // console.info('hancock socket msg');
+
+        try {
+
+          const rawData: string = msg.data ? msg.data: msg          
+          const data: any = JSON.parse(rawData);
+
+          bus.emit(data.kind, data);
+
+        } catch(e) {}
+
       }
 
       function onWebSocketError(e: any) {
@@ -229,7 +238,7 @@ export class HancockEthereumClient implements HancockClient {
 
       } else {
 
-        ws.on('open', onWebSocketError);
+        ws.on('open', onWebSocketOpen);
         ws.on('error', onWebSocketError);
         ws.on('message', onWebSocketMessage);
 

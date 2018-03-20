@@ -18,30 +18,41 @@ signTx();
 
 function signTx() {
 
-  const rawTx = {
-    "from": "0xde8e772f0350e992ddef81bf8f51d94a8ea9216d",
-    "data": "0xdc00615d000000000000000000000000965cf4d51ddbb5505588a0de66c34baa8eb9e10d",
-    "gasPrice": "0x4A817C800",
-    "gas": "0x5858",
-    "to": "0x965cf4d51ddbb5505588a0de66c34baa8eb9e10d",
-    "nonce": "0x1"
-  };
 
-  const privateKey = '0x4dc34569751ddb28166ff21eb5b8ad2f070d9cb205a28d142da13c8996368c75';
+  const ws = cli.subscribeSmartContractEvents(
+    '0x965cf4d51ddbb5505588a0de66c34baa8eb9e10d',
+    '0x6c0a14F7561898B9ddc0C57652A53B2C6665443E'
+  )
+    .on('tx', function(event){
+      console.log(' ====> ', event);
+    })
+    .on('error', function(error){ console.log('error? ', arguments)});
 
-  const signedTx = cli.signTransaction(
-    JSON.stringify(rawTx),
-    privateKey
-  );
 
-  console.log('SIGNED TX string = ', signedTx);
+  // const rawTx = {
+  //   "from": "0xde8e772f0350e992ddef81bf8f51d94a8ea9216d",
+  //   "data": "0xdc00615d000000000000000000000000965cf4d51ddbb5505588a0de66c34baa8eb9e10d",
+  //   "gasPrice": "0x4A817C800",
+  //   "gas": "0x5858",
+  //   "to": "0x965cf4d51ddbb5505588a0de66c34baa8eb9e10d",
+  //   "nonce": "0x1"
+  // };
 
-  const signedTx2 = cli.signTransaction(
-    rawTx,
-    privateKey
-  );
+  // const privateKey = '0x4dc34569751ddb28166ff21eb5b8ad2f070d9cb205a28d142da13c8996368c75';
 
-  console.log('SIGNED TX object = ', signedTx2);
+  // const signedTx = cli.signTransaction(
+  //   JSON.stringify(rawTx),
+  //   privateKey
+  // );
+
+  // console.log('SIGNED TX string = ', signedTx);
+
+  // const signedTx2 = cli.signTransaction(
+  //   rawTx,
+  //   privateKey
+  // );
+
+  // console.log('SIGNED TX object = ', signedTx2);
   
 
 }
