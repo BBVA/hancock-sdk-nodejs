@@ -28,6 +28,7 @@ import {
   HancockRegisterRequest,
   DltAddress
 } from '../hancock.model';
+import { normalizeAddressOrAlias, normalizeAlias, normalizeAddress } from './utils';
 
 
 export class HancockEthereumClient implements HancockClient {
@@ -46,14 +47,17 @@ export class HancockEthereumClient implements HancockClient {
     this.brokerBaseUrl = `${this.config.broker.host}:${this.config.broker.port}${this.config.broker.base}`;
   }
 
-  public async invokeSmartContract(contractAddress: string, method: string, params: string[], from: string, options: HancockInvokeOptions = {}): Promise<HancockSignResponse> {
+  public async invokeSmartContract(contractAddressOrAlias: string, method: string, params: string[], from: string, options: HancockInvokeOptions = {}): Promise<HancockSignResponse> {
+
+    // Done in adaptInvokeSmartContract
+    // const normalizedContractAddressOrAlias: string = normalizeAddressOrAlias(contractAddressOrAlias);
 
     if (!options.signProvider && !options.privateKey) {
       return Promise.reject('No key nor provider');
     }
 
     return this
-      .adaptInvokeSmartContract(contractAddress, method, params, from)
+      .adaptInvokeSmartContract(contractAddressOrAlias, method, params, from)
       .then((resBody: HancockAdaptInvokeResponse) => {
 
         if (options.signProvider) {
@@ -76,9 +80,11 @@ export class HancockEthereumClient implements HancockClient {
 
   }
 
-  public async callSmartContract(contractAddress: string, method: string, params: string[], from: string): Promise<HancockCallResponse> {
+  public async callSmartContract(contractAddressOrAlias: string, method: string, params: string[], from: string): Promise<HancockCallResponse> {
 
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invoke}`.replace(/__ADDRESS__/, contractAddress);
+    const normalizedContractAddressOrAlias: string = normalizeAddressOrAlias(contractAddressOrAlias);    
+
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invoke}`.replace(/__ADDRESS__/, normalizedContractAddressOrAlias);
     const body: HancockCallRequest = {
       method,
       from,
@@ -98,9 +104,11 @@ export class HancockEthereumClient implements HancockClient {
 
   }
 
-  public async adaptInvokeSmartContract(contractAddress: string, method: string, params: string[], from: string): Promise<HancockAdaptInvokeResponse> {
+  public async adaptInvokeSmartContract(contractAddressOrAlias: string, method: string, params: string[], from: string): Promise<HancockAdaptInvokeResponse> {
 
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invoke}`.replace(/__ADDRESS__/, contractAddress);
+    const normalizedContractAddressOrAlias: string = normalizeAddressOrAlias(contractAddressOrAlias);
+
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invoke}`.replace(/__ADDRESS__/, normalizedContractAddressOrAlias);
     const body: HancockAdaptInvokeRequest = {
       method,
       from,
@@ -180,6 +188,9 @@ export class HancockEthereumClient implements HancockClient {
 
   public async registerSmartContract(alias: string, address: DltAddress, abi: EthereumAbi): Promise<HancockRegisterResponse> {
 
+    alias = normalizeAlias(alias);
+    address = normalizeAddress(address);
+
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.register}`;
     const body: HancockRegisterRequest = {
       address,
@@ -199,9 +210,11 @@ export class HancockEthereumClient implements HancockClient {
 
   }
 
-  public subscribeSmartContractEvents(contractAddress: string, sender: string = ''): HancockEthereumEventEmitter {
+  public subscribeSmartContractEvents(contractAddressOrAlias: string, sender: string = ''): HancockEthereumEventEmitter {
 
-    const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`.replace(/__ADDRESS__/, contractAddress).replace(/__SENDER__/, sender);
+    const normalizedContractAddressOrAlias: string = normalizeAddressOrAlias(contractAddressOrAlias);
+    
+    const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`.replace(/__ADDRESS__/, normalizedContractAddressOrAlias).replace(/__SENDER__/, sender);
     const bus: HancockEthereumEventEmitter = new EventEmitter();
 
     try {
