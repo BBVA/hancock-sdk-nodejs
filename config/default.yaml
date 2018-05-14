@@ -5,6 +5,7 @@ adapter:
   resources:
     invoke: '/ethereum/smartcontracts/__ADDRESS__'
     register: '/ethereum/smartcontracts/register'
+    balance: '/ethereum/balance/__ADDRESS__'
 wallet:
   host: http://localhost
   port: 3000
