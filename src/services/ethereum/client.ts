@@ -26,6 +26,7 @@ import {
   HancockCallResponse,
   HancockRegisterResponse,
   HancockRegisterRequest,
+  HancockBalanceResponse,
   DltAddress
 } from '../hancock.model';
 import { normalizeAddressOrAlias, normalizeAlias, normalizeAddress } from './utils';
@@ -208,6 +209,18 @@ export class HancockEthereumClient implements HancockClient {
         (err: any) => this.errorHandler(err)
       );
 
+  }
+
+  public async getBalance(address:string): Promise<HancockBalanceResponse>{
+
+    address = normalizeAddress(address);
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.balance}`.replace(/__ADDRESS__/, address);
+
+    return fetch(url)
+      .then(
+        (res: any) => this.checkStatus(res),
+        (err: any) => this.errorHandler(err)
+      );
   }
 
   public subscribeSmartContractEvents(contractAddressOrAlias: string, sender: string = ''): HancockEthereumEventEmitter {

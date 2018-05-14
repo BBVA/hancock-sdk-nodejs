@@ -89,6 +89,17 @@ export interface HancockRegisterResponse {
   };
 }
 
+// Balance
+
+export interface HancockBalanceResponse {
+  result: {
+    code: number;
+    description: string;
+  };
+  data: {
+    balanace: string;
+  }
+}
 
 // CONFIG
 
@@ -171,6 +182,7 @@ export interface HancockClient {
   signTransaction(rawTx: DltRawTransaction, privateKey: string): string;
   generateWallet(): DltWallet;
   subscribeSmartContractEvents(contractAddress: string, sender?: string): HancockEventEmitter;
+  getBalance(address:string): Promise<HancockBalanceResponse>;
 
 }
 
