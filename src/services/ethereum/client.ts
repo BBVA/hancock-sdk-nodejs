@@ -30,7 +30,7 @@ import {
   DltAddress
 } from '../hancock.model';
 import { normalizeAddressOrAlias, normalizeAlias, normalizeAddress } from './utils';
-
+import { BigNumber } from 'bignumber.js';
 
 export class HancockEthereumClient implements HancockClient {
 
@@ -220,7 +220,8 @@ export class HancockEthereumClient implements HancockClient {
       .then(
         (res: any) => this.checkStatus(res),
         (err: any) => this.errorHandler(err)
-      );
+      )
+      .then((resBody: any) => new BigNumber(resBody.data.balance));
   }
 
   public subscribeSmartContractEvents(contractAddressOrAlias: string, sender: string = ''): HancockEthereumEventEmitter {
