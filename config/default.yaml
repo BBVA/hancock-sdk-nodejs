@@ -1,14 +1,15 @@
 adapter:
   host: http://localhost
-  port: 3000
+  port: 3004
   base: ''
   resources:
     invoke: '/ethereum/smartcontracts/__ADDRESS__'
     register: '/ethereum/smartcontracts/register'
     balance: '/ethereum/balance/__ADDRESS__'
+    transfer: '/ethereum/transfers'
 wallet:
   host: http://localhost
-  port: 3000
+  port: 3002
   base: ''
   resources:
     signTx: '/ethereum/sign-tx'

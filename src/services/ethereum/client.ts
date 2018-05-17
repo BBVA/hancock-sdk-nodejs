@@ -26,7 +26,7 @@ import {
   HancockCallResponse,
   HancockRegisterResponse,
   HancockRegisterRequest,
-  HancockBalanceResponse,
+  HancockTransferRequest,
   DltAddress
 } from '../hancock.model';
 import { normalizeAddressOrAlias, normalizeAlias, normalizeAddress } from './utils';
@@ -61,21 +61,7 @@ export class HancockEthereumClient implements HancockClient {
       .adaptInvokeSmartContract(contractAddressOrAlias, method, params, from)
       .then((resBody: HancockAdaptInvokeResponse) => {
 
-        if (options.signProvider) {
-
-          return this.sendTransactionToSign(resBody.data, options.signProvider);
-
-        }
-
-        if (options.privateKey) {
-
-          return Promise
-            .resolve(this.signTransaction(resBody.data, options.privateKey))
-            .then((tx: string) => this.sendSignedTransaction(tx));
-
-        }
-
-        return this.sendTransaction(resBody.data);
+        return this.signAndSend(resBody, options);
 
       });
 
@@ -211,7 +197,7 @@ export class HancockEthereumClient implements HancockClient {
 
   }
 
-  public async getBalance(address:string): Promise<HancockBalanceResponse>{
+  public async getBalance(address:string): Promise<BigNumber>{
 
     address = normalizeAddress(address);
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.balance}`.replace(/__ADDRESS__/, address);
@@ -310,5 +296,62 @@ export class HancockEthereumClient implements HancockClient {
     console.error(err);
     throw err instanceof Error ? err : new Error(err.body.message);
 
+  }
+
+  public async transfer(from: string, to: string, value: string, options: HancockInvokeOptions = {}, data: string = ''): Promise<HancockSignResponse> {
+
+    if (!options.signProvider && !options.privateKey) {
+      return Promise.reject('No key nor provider');
+    }
+
+    return this
+      .adaptTransfer(from, to, value, data)
+      .then((resBody: HancockAdaptInvokeResponse) => {
+
+        return this.signAndSend(resBody, options);
+
+      });
+
+  }
+
+  private async adaptTransfer(from: string, to: string, value: string, data:string): Promise<HancockAdaptInvokeResponse>{
+    from = normalizeAddress(from);
+    to = normalizeAddress(to);
+
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.transfer}`;
+    const body: HancockTransferRequest = {
+      from,
+      to,
+      value,
+      data
+    };
+
+    return fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    })
+      .then(
+        (res: any) => this.checkStatus(res),
+        (err: any) => this.errorHandler(err)
+      );
+  }
+
+  private async signAndSend(resBody: HancockAdaptInvokeResponse, options: HancockInvokeOptions): Promise<HancockSignResponse>{
+    if (options.signProvider) {
+
+      return this.sendTransactionToSign(resBody.data, options.signProvider);
+
+    }
+
+    if (options.privateKey) {
+
+      return Promise
+        .resolve(this.signTransaction(resBody.data, options.privateKey))
+        .then((tx: string) => this.sendSignedTransaction(tx));
+
+    }
+
+    return this.sendTransaction(resBody.data);
   }
 }

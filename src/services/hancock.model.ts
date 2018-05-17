@@ -1,4 +1,5 @@
 import EventEmitter from 'eventemitter3';
+import { BigNumber } from 'bignumber.js';
 
 export type DltAddress = string;
 export type DltRawTransaction = any;
@@ -89,16 +90,13 @@ export interface HancockRegisterResponse {
   };
 }
 
-// Balance
+// Transfer
 
-export interface HancockBalanceResponse {
-  result: {
-    code: number;
-    description: string;
-  };
-  data: {
-    balanace: string;
-  }
+export interface HancockTransferRequest {
+  from: string,
+  to: string,
+  value: string,
+  data?: string
 }
 
 // CONFIG
@@ -182,7 +180,8 @@ export interface HancockClient {
   signTransaction(rawTx: DltRawTransaction, privateKey: string): string;
   generateWallet(): DltWallet;
   subscribeSmartContractEvents(contractAddress: string, sender?: string): HancockEventEmitter;
-  getBalance(address:string): Promise<HancockBalanceResponse>;
+  getBalance(address:string): Promise<BigNumber>;
+  transfer(from: string, to: string, value: string, options?: HancockInvokeOptions, data?:string): Promise<HancockSignResponse>;
 
 }
 
