@@ -61,21 +61,7 @@ export class HancockEthereumClient implements HancockClient {
       .adaptInvokeSmartContract(contractAddressOrAlias, method, params, from)
       .then((resBody: HancockAdaptInvokeResponse) => {
 
-        if (options.signProvider) {
-
-          return this.sendTransactionToSign(resBody.data, options.signProvider);
-
-        }
-
-        if (options.privateKey) {
-
-          return Promise
-            .resolve(this.signTransaction(resBody.data, options.privateKey))
-            .then((tx: string) => this.sendSignedTransaction(tx));
-
-        }
-
-        return this.sendTransaction(resBody.data);
+        return this.signAndSend(resBody, options);
 
       });
 
@@ -322,21 +308,7 @@ export class HancockEthereumClient implements HancockClient {
       .adaptTransfer(from, to, value, data)
       .then((resBody: HancockAdaptInvokeResponse) => {
 
-        if (options.signProvider) {
-
-          return this.sendTransactionToSign(resBody.data, options.signProvider);
-
-        }
-
-        if (options.privateKey) {
-
-          return Promise
-            .resolve(this.signTransaction(resBody.data, options.privateKey))
-            .then((tx: string) => this.sendSignedTransaction(tx));
-
-        }
-
-        return this.sendTransaction(resBody.data);
+        return this.signAndSend(resBody, options);
 
       });
 
@@ -363,5 +335,23 @@ export class HancockEthereumClient implements HancockClient {
         (res: any) => this.checkStatus(res),
         (err: any) => this.errorHandler(err)
       );
+  }
+
+  private async signAndSend(resBody: HancockAdaptInvokeResponse, options: HancockInvokeOptions): Promise<HancockSignResponse>{
+    if (options.signProvider) {
+
+      return this.sendTransactionToSign(resBody.data, options.signProvider);
+
+    }
+
+    if (options.privateKey) {
+
+      return Promise
+        .resolve(this.signTransaction(resBody.data, options.privateKey))
+        .then((tx: string) => this.sendSignedTransaction(tx));
+
+    }
+
+    return this.sendTransaction(resBody.data);
   }
 }
