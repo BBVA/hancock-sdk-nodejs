@@ -17,7 +17,7 @@ wallet:
     sendSignedTx: '/ethereum/send-signed-tx'
 broker:
   host: ws://localhost
-  port: 3000
+  port: 3001
   base: ''
   resources:
     events: '/ethereum/subscribe?address=__ADDRESS__&sender=__SENDER__'

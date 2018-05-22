@@ -31,6 +31,7 @@ import {
 } from '../hancock.model';
 import { normalizeAddressOrAlias, normalizeAlias, normalizeAddress } from './utils';
 import { BigNumber } from 'bignumber.js';
+import { HancockEthereumSocket } from './socket';
 
 export class HancockEthereumClient implements HancockClient {
 
@@ -210,62 +211,38 @@ export class HancockEthereumClient implements HancockClient {
       .then((resBody: any) => new BigNumber(resBody.data.balance));
   }
 
-  public subscribeSmartContractEvents(contractAddressOrAlias: string, sender: string = ''): HancockEthereumEventEmitter {
+  public subscribeToContract(contracts: string[]): HancockEthereumSocket {
 
-    const normalizedContractAddressOrAlias: string = normalizeAddressOrAlias(contractAddressOrAlias);
+    const normalizedAddress: string = normalizeAddressOrAlias(contracts[0]);
     
-    const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`.replace(/__ADDRESS__/, normalizedContractAddressOrAlias).replace(/__SENDER__/, sender);
+    const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`.replace(/__ADDRESS__/, normalizedAddress).replace(/__SENDER__/, '');
     const bus: HancockEthereumEventEmitter = new EventEmitter();
 
-    try {
-
-      const ws = new WebSocket(url);
-
-      function onWebSocketOpen() {
-        console.info('hancock socket connected')
-      }
-
-      function onWebSocketMessage(msg: any) {
-        // console.info('hancock socket msg');
-
-        try {
-
-          const rawData: string = msg.data ? msg.data: msg          
-          const data: any = JSON.parse(rawData);
-
-          bus.emit(data.kind, data);
-
-        } catch(e) {}
-
-      }
-
-      function onWebSocketError(e: any) {
-        bus.emit('error', e);
-      }
-
-      if (process.browser) {
-
-        ws.addEventListener('open', onWebSocketOpen);
-        ws.addEventListener('error', onWebSocketError);
-        ws.addEventListener('message', onWebSocketMessage);
-
-      } else {
-
-        ws.on('open', onWebSocketOpen);
-        ws.on('error', onWebSocketError);
-        ws.on('message', onWebSocketMessage);
-
-      }
-
-      (bus as any).closeSocket = () => ws.close();
-
-    } catch (e) {
-
-      Promise.resolve().then(() => { bus.emit('error', '' + e); });
-
+    const ws = new WebSocket(url);
+    const onOpen = function(){
+      hancockSocket.addContract(contracts.slice(1,contracts.length+1))
     }
 
-    return bus;
+    const hancockSocket = new HancockEthereumSocket(ws, bus, onOpen);
+
+    return hancockSocket;
+
+  }
+
+  public subscribeToTransfer(addresses: string[]): HancockEthereumSocket {
+
+    const normalizedAddress: string = normalizeAddress(addresses[0]);
+    
+    const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`.replace(/__ADDRESS__/, '').replace(/__SENDER__/, normalizedAddress);
+    const bus: HancockEthereumEventEmitter = new EventEmitter();
+
+    const ws = new WebSocket(url);
+    const onOpen = () => {
+      hancockSocket.addTransfer(addresses.slice(1,addresses.length+1))
+    }
+    const hancockSocket = new HancockEthereumSocket(ws, bus, onOpen);
+    
+    return hancockSocket;
 
   }
 
