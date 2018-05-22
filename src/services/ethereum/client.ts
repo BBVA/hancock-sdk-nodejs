@@ -223,7 +223,7 @@ export class HancockEthereumClient implements HancockClient {
       hancockSocket.addContract(contracts.slice(1,contracts.length+1))
     }
 
-    const hancockSocket = new HancockEthereumSocket(ws, bus, onOpen);
+    const hancockSocket = new HancockEthereumSocket(ws, onOpen);
 
     return hancockSocket;
 
@@ -240,7 +240,7 @@ export class HancockEthereumClient implements HancockClient {
     const onOpen = () => {
       hancockSocket.addTransfer(addresses.slice(1,addresses.length+1))
     }
-    const hancockSocket = new HancockEthereumSocket(ws, bus, onOpen);
+    const hancockSocket = new HancockEthereumSocket(ws, onOpen);
     
     return hancockSocket;
 

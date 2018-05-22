@@ -1,16 +1,17 @@
 import { HancockEthereumEventEmitter, HancockEthereumEvent } from "./model";
 import WebSocket from 'isomorphic-ws';
 import { HancockEventKind, HancockEventEmitter } from "..";
+import { EventEmitter } from "events";
 
-export class HancockEthereumSocket{
+export class HancockEthereumSocket extends EventEmitter{
 
-    private eventEmitter: HancockEthereumEventEmitter;
     private ws: WebSocket;
     private onOpen: any;
 
-    constructor(ws:WebSocket, eventEmitter: HancockEthereumEventEmitter, onOpen?: any) {
+    constructor(ws:WebSocket, onOpen?: any) {
+        super();
         this.ws = ws;
-        this.eventEmitter = eventEmitter;
+
         this.onOpen = onOpen;
         
         this.init();
@@ -22,8 +23,8 @@ export class HancockEthereumSocket{
 
             const rawData: string = msg.data ? msg.data: msg          
             const data: any = JSON.parse(rawData);
-            console.log(data)
-            this.eventEmitter.emit(data.kind, data);
+
+            this.emit(data.kind, data);
 
         } catch(e) {
             
@@ -32,7 +33,7 @@ export class HancockEthereumSocket{
     }
 
     private onWebSocketError(e: any) {
-        this.eventEmitter.emit('error', e);
+        this.emit('error', e);
     }
 
     private init(){
@@ -42,27 +43,23 @@ export class HancockEthereumSocket{
       
               this.ws.addEventListener('open', this.onOpen);
               this.ws.addEventListener('error', this.onWebSocketError);
-              this.ws.addEventListener('message', this.onWebSocketMessage);
+              this.ws.addEventListener('message', this.onWebSocketMessage.bind(this));
       
             } else {
       
                 this.ws.on('open', this.onOpen);
                 this.ws.on('error', this.onWebSocketError);
-                this.ws.on('message', this.onWebSocketMessage);
+                this.ws.on('message', this.onWebSocketMessage.bind(this));
       
             }
       
-            (this.eventEmitter as any).closeSocket = () => this.ws.close();
+            //(this.eventEmitter as any).closeSocket = () => this.ws.close();
       
         } catch (e) {
       
-            Promise.resolve().then(() => { this.eventEmitter.emit('error', '' + e); });
+            Promise.resolve().then(() => { this.emit('error', '' + e); });
       
         }
-    }
-
-    public on(event: HancockEventKind, fn: (payload: HancockEthereumEvent) => void, context?: any): HancockEventEmitter{
-        return this.eventEmitter.on(event, fn, context);
     }
 
     public send(data: any){
