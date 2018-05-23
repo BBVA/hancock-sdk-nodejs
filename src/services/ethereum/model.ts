@@ -20,6 +20,7 @@ export interface HancockEthereumEvent {
 
 export interface HancockEthereumEventEmitter extends HancockEventEmitter {
   on(event: HancockEventKind, fn: (payload: HancockEthereumEvent) => void, context?: any): this;
+  
 }
 
 export interface EthereumContractEventBody {

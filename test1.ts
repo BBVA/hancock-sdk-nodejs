@@ -19,14 +19,14 @@ signTx();
 function signTx() {
 
 
-  const ws = cli.subscribeSmartContractEvents(
-    '0x965cf4d51ddbb5505588a0de66c34baa8eb9e10d',
-    '0x6c0a14F7561898B9ddc0C57652A53B2C6665443E'
-  )
-    .on('tx', function(event){
-      console.log(' ====> ', event);
-    })
-    .on('error', function(error){ console.log('error? ', arguments)});
+  // const ws = cli.subscribeSmartContractEvents(
+  //   '0x965cf4d51ddbb5505588a0de66c34baa8eb9e10d',
+  //   '0x6c0a14F7561898B9ddc0C57652A53B2C6665443E'
+  // )
+  //   .on('tx', function(event){
+  //     console.log(' ====> ', event);
+  //   })
+  //   .on('error', function(error){ console.log('error? ', arguments)});
 
 
   // const rawTx = {

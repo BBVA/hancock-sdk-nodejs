@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import { BigNumber } from 'bignumber.js';
+import { HancockEthereumSocket } from './ethereum/socket';
 
 export type DltAddress = string;
 export type DltRawTransaction = any;
@@ -179,7 +180,8 @@ export interface HancockClient {
   sendTransactionToSign(rawTx: any, provider: string): Promise<HancockSignResponse>;
   signTransaction(rawTx: DltRawTransaction, privateKey: string): string;
   generateWallet(): DltWallet;
-  subscribeSmartContractEvents(contractAddress: string, sender?: string): HancockEventEmitter;
+  subscribeToContract(contracts: string[]): HancockEthereumSocket;
+  subscribeToTransfer(addresses: string[]): HancockEthereumSocket;
   getBalance(address:string): Promise<BigNumber>;
   transfer(from: string, to: string, value: string, options?: HancockInvokeOptions, data?:string): Promise<HancockSignResponse>;
 
