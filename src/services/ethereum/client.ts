@@ -216,7 +216,6 @@ export class HancockEthereumClient implements HancockClient {
     const normalizedAddress: string = normalizeAddressOrAlias(contracts[0]);
     
     const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`.replace(/__ADDRESS__/, normalizedAddress).replace(/__SENDER__/, '');
-    const bus: HancockEthereumEventEmitter = new EventEmitter();
 
     const ws = new WebSocket(url);
     const onOpen = function(){
@@ -234,7 +233,6 @@ export class HancockEthereumClient implements HancockClient {
     const normalizedAddress: string = normalizeAddress(addresses[0]);
     
     const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`.replace(/__ADDRESS__/, '').replace(/__SENDER__/, normalizedAddress);
-    const bus: HancockEthereumEventEmitter = new EventEmitter();
 
     const ws = new WebSocket(url);
     const onOpen = () => {

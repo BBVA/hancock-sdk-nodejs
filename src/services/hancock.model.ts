@@ -193,3 +193,8 @@ export interface HancockInvokeOptions {
   privateKey?: string;
   signProvider?: string;
 }
+
+export interface HancockSocketMessage {
+  type: string;
+  data: string[];
+}

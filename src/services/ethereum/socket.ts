@@ -1,6 +1,6 @@
 import { HancockEthereumEventEmitter, HancockEthereumEvent } from "./model";
 import WebSocket from 'isomorphic-ws';
-import { HancockEventKind, HancockEventEmitter } from "..";
+import { HancockEventKind, HancockEventEmitter, HancockSocketMessage } from "..";
 import { EventEmitter } from "events";
 
 export class HancockEthereumSocket extends EventEmitter{
@@ -15,6 +15,12 @@ export class HancockEthereumSocket extends EventEmitter{
         this.onOpen = onOpen;
         
         this.init();
+    }
+
+    private onWebSocketOpen() {
+        console.log("Hancock socket open");
+        if(this.onOpen)
+            this.onOpen();
     }
 
     private onWebSocketMessage(msg: any) {
@@ -41,20 +47,18 @@ export class HancockEthereumSocket extends EventEmitter{
       
             if (process.browser) {
       
-              this.ws.addEventListener('open', this.onOpen);
+              this.ws.addEventListener('open', this.onWebSocketOpen.bind(this));
               this.ws.addEventListener('error', this.onWebSocketError);
               this.ws.addEventListener('message', this.onWebSocketMessage.bind(this));
       
             } else {
       
-                this.ws.on('open', this.onOpen);
+                this.ws.on('open', this.onWebSocketOpen.bind(this));
                 this.ws.on('error', this.onWebSocketError);
                 this.ws.on('message', this.onWebSocketMessage.bind(this));
       
             }
-      
-            //(this.eventEmitter as any).closeSocket = () => this.ws.close();
-      
+            
         } catch (e) {
       
             Promise.resolve().then(() => { this.emit('error', '' + e); });
@@ -62,24 +66,33 @@ export class HancockEthereumSocket extends EventEmitter{
         }
     }
 
+    public closeSocket(){
+        this.ws.close();
+    }
+
     public send(data: any){
         this.ws.send(data);
     }
 
-    public addContract(contracts: string[]){
-        const data = {
-            type: "contracts",
-            contracts: contracts
-        };
-        this.ws.send(JSON.stringify(data));
+    public addTransfer(addresses: string[]){
+        this.sendMessage('transfer', addresses);
     }
 
-    public addTransfer(addresses: string[]){
-        const data = {
-            type: "transfer",
-            addresses: addresses
-        };
-        this.ws.send(JSON.stringify(data));
+    public addContract(contracts: string[]){
+        this.sendMessage('contract', contracts);
+    }
+
+    private sendMessage(type:string, data: string[]){
+        const dataFormated = this.getMessageFormat(type, data);
+        if(this.ws.readyState === WebSocket.OPEN)
+            this.ws.send(JSON.stringify(dataFormated));
+    }
+
+    private getMessageFormat(type:string, data: string[]){
+        return {
+            type: type,
+            data: data
+        }
     }
 
 }
