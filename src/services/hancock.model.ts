@@ -193,3 +193,10 @@ export interface HancockInvokeOptions {
   privateKey?: string;
   signProvider?: string;
 }
+
+export type HancockSocketKind = 'watch-addresses' | 'watch-contracts';
+export type HancockSocketBody = any;
+export interface HancockSocketMessage {
+  kind: HancockSocketKind;
+  body: HancockSocketBody;
+}
