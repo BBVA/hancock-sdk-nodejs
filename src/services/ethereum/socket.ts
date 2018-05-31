@@ -45,15 +45,15 @@ export class HancockEthereumSocket extends EventEmitter {
       
             if (process.browser) {
       
-              this.ws.addEventListener('open', this.onWebSocketOpen);
-              this.ws.addEventListener('error', this.onWebSocketError);
-              this.ws.addEventListener('message', this.onWebSocketMessage.bind(this));
+              this.ws.addEventListener('open', () => this.onWebSocketOpen());
+              this.ws.addEventListener('error', (e: any) => this.onWebSocketError(e));
+              this.ws.addEventListener('message', (msg: any) => this.onWebSocketMessage(msg));
       
             } else {
       
-                this.ws.on('open', this.onWebSocketOpen);
-                this.ws.on('error', this.onWebSocketError);
-                this.ws.on('message', this.onWebSocketMessage.bind(this));
+                this.ws.on('open', () => this.onWebSocketOpen());
+                this.ws.on('error', (e: any) => this.onWebSocketError(e));
+                this.ws.on('message', (msg: any) => this.onWebSocketMessage(msg));
       
             }
             
