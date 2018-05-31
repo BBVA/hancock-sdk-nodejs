@@ -199,4 +199,5 @@ export type HancockSocketBody = any;
 export interface HancockSocketMessage {
   kind: HancockSocketKind;
   body: HancockSocketBody;
+  consumer?: string;
 }
