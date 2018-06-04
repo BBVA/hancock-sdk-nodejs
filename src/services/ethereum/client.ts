@@ -211,30 +211,26 @@ export class HancockEthereumClient implements HancockClient {
       .then((resBody: any) => new BigNumber(resBody.data.balance));
   }
 
-  public subscribeToContract(contracts: string[]): HancockEthereumSocket {
-
-    const normalizedAddress: string = normalizeAddressOrAlias(contracts[0]);
+  public subscribeToContract(contracts: string[] = [], consumer: string = ''): HancockEthereumSocket {
     
-    const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`.replace(/__ADDRESS__/, normalizedAddress).replace(/__SENDER__/, '');
+    const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`.replace(/__ADDRESS__/, '').replace(/__SENDER__/, '').replace(/__CONSUMER__/, consumer);
 
-    const hancockSocket = new HancockEthereumSocket(url);
+    const hancockSocket = new HancockEthereumSocket(url, consumer);
     hancockSocket.on('opened', () => {
-      hancockSocket.addContract(contracts.slice(1,contracts.length+1))
+      hancockSocket.addContract(contracts)
     })
 
     return hancockSocket;
 
   }
 
-  public subscribeToTransfer(addresses: string[]): HancockEthereumSocket {
-
-    const normalizedAddress: string = normalizeAddress(addresses[0]);
+  public subscribeToTransfer(addresses: string[] = [], consumer: string = ''): HancockEthereumSocket {
     
-    const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`.replace(/__ADDRESS__/, '').replace(/__SENDER__/, normalizedAddress);
+    const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`.replace(/__ADDRESS__/, '').replace(/__SENDER__/, '').replace(/__CONSUMER__/, consumer);
 
-    const hancockSocket = new HancockEthereumSocket(url);
+    const hancockSocket = new HancockEthereumSocket(url, consumer);
     hancockSocket.on('opened', () => {
-      hancockSocket.addTransfer(addresses.slice(1,addresses.length+1));
+      hancockSocket.addTransfer(addresses);
     })
 
     return hancockSocket;

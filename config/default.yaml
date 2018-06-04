@@ -20,4 +20,4 @@ broker:
   port: 3001
   base: ''
   resources:
-    events: '/ethereum/subscribe?address=__ADDRESS__&sender=__SENDER__'
+    events: '/ethereum/subscribe?address=__ADDRESS__&sender=__SENDER__&consumer=__CONSUMER__'
