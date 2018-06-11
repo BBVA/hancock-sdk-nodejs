@@ -156,6 +156,23 @@ export interface InitialHancockConfig {
   broker: InitialHancockBrokerConfig;
 }
 
+// PROTOCOL
+
+export type HancockProtocolAction = 'transfer';
+export type HancockProtocolDlt = 'ethereum';
+
+export interface HancockProtocolEncodeBody {
+  value: string;
+  to: string;
+  data: string;
+}
+
+export interface HancockProtocolEncodeRequest {
+  action: HancockProtocolAction;
+  body: HancockProtocolEncodeBody;
+  dlt: HancockProtocolDlt;
+}
+
 
 // INTERFACES
 
@@ -184,7 +201,7 @@ export interface HancockClient {
   subscribeToTransfer(addresses: string[]): HancockEthereumSocket;
   getBalance(address:string): Promise<BigNumber>;
   transfer(from: string, to: string, value: string, options?: HancockInvokeOptions, data?:string): Promise<HancockSignResponse>;
-
+  encodeProtocol(action:HancockProtocolAction, dlt:HancockProtocolDlt, value: string, to:string, data:string): Promise<string>;
 }
 
 export type HancockInvokeAction = 'send' | 'call';
