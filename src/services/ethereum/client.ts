@@ -9,7 +9,9 @@ import {
   HancockSignRequest,
   HancockSendSignedTxRequest,
   HancockSendSignedTxResponse,
-  InitialHancockConfig
+  InitialHancockConfig,
+  HancockProtocolAction,
+  HancockProtocolDecodeResponse
 } from "../hancock.model";
 import { HancockEthereumEventEmitter, EthereumAbi } from './model';
 import { HancockClient } from '../hancock.model';
@@ -32,6 +34,7 @@ import {
 import { normalizeAddressOrAlias, normalizeAlias, normalizeAddress } from './utils';
 import { BigNumber } from 'bignumber.js';
 import { HancockEthereumSocket } from './socket';
+import { HancockProtocolDlt, HancockProtocolEncode, HancockProtocolDecodeRequest } from '..';
 
 export class HancockEthereumClient implements HancockClient {
 
@@ -321,5 +324,48 @@ export class HancockEthereumClient implements HancockClient {
     }
 
     return this.sendTransaction(resBody.data);
+  }
+
+  public async encodeProtocol(action:HancockProtocolAction, value: string, to:string, data:string, dlt:HancockProtocolDlt): Promise<string>{
+    to = normalizeAddress(to);
+
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.encode}`;
+    const body: HancockProtocolEncode = {
+      action,
+      body: {
+        value,
+        to,
+        data
+      },
+      dlt
+    };
+
+    return fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    })
+      .then(
+        (res: any) => this.checkStatus(res),
+        (err: any) => this.errorHandler(err)
+      );
+  }
+
+  public async decodeProtocol(code:string): Promise<HancockProtocolDecodeResponse>{
+
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.decode}`;
+    const body: HancockProtocolDecodeRequest = {
+      code
+    };
+
+    return fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    })
+      .then(
+        (res: any) => this.checkStatus(res),
+        (err: any) => this.errorHandler(err)
+      );
   }
 }
