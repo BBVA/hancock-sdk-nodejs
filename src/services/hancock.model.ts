@@ -167,12 +167,23 @@ export interface HancockProtocolEncodeBody {
   data: string;
 }
 
-export interface HancockProtocolEncodeRequest {
+export interface HancockProtocolEncode {
   action: HancockProtocolAction;
   body: HancockProtocolEncodeBody;
   dlt: HancockProtocolDlt;
 }
 
+export interface HancockProtocolDecodeRequest {
+  code: string;
+}
+
+export interface HancockProtocolDecodeResponse {
+  result: {
+    code: number;
+    description: string;
+  },
+  data: HancockProtocolEncode
+}
 
 // INTERFACES
 
@@ -202,6 +213,7 @@ export interface HancockClient {
   getBalance(address:string): Promise<BigNumber>;
   transfer(from: string, to: string, value: string, options?: HancockInvokeOptions, data?:string): Promise<HancockSignResponse>;
   encodeProtocol(action:HancockProtocolAction, dlt:HancockProtocolDlt, value: string, to:string, data:string): Promise<string>;
+  decodeProtocol(code: string): Promise<HancockProtocolDecodeResponse>;
 }
 
 export type HancockInvokeAction = 'send' | 'call';

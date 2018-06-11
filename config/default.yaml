@@ -8,6 +8,7 @@ adapter:
     balance: '/ethereum/balance/__ADDRESS__'
     transfer: '/ethereum/transfers'
     encode: '/protocol/encode'
+    decode: '/protocol/decode'
 wallet:
   host: http://localhost
   port: 3002

@@ -10,8 +10,8 @@ import {
   HancockSendSignedTxRequest,
   HancockSendSignedTxResponse,
   InitialHancockConfig,
-  HancockProtocolEncodeRequest,
-  HancockProtocolAction
+  HancockProtocolAction,
+  HancockProtocolDecodeResponse
 } from "../hancock.model";
 import { HancockEthereumEventEmitter, EthereumAbi } from './model';
 import { HancockClient } from '../hancock.model';
@@ -34,7 +34,7 @@ import {
 import { normalizeAddressOrAlias, normalizeAlias, normalizeAddress } from './utils';
 import { BigNumber } from 'bignumber.js';
 import { HancockEthereumSocket } from './socket';
-import { HancockProtocolDlt } from '..';
+import { HancockProtocolDlt, HancockProtocolEncode, HancockProtocolDecodeRequest } from '..';
 
 export class HancockEthereumClient implements HancockClient {
 
@@ -330,7 +330,7 @@ export class HancockEthereumClient implements HancockClient {
     to = normalizeAddress(to);
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.encode}`;
-    const body: HancockProtocolEncodeRequest = {
+    const body: HancockProtocolEncode = {
       action,
       body: {
         value,
@@ -338,6 +338,24 @@ export class HancockEthereumClient implements HancockClient {
         data
       },
       dlt
+    };
+
+    return fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    })
+      .then(
+        (res: any) => this.checkStatus(res),
+        (err: any) => this.errorHandler(err)
+      );
+  }
+
+  public async decodeProtocol(code:string): Promise<HancockProtocolDecodeResponse>{
+
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.decode}`;
+    const body: HancockProtocolDecodeRequest = {
+      code
     };
 
     return fetch(url, {
