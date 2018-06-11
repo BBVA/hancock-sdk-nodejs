@@ -173,6 +173,10 @@ export interface HancockProtocolEncode {
   dlt: HancockProtocolDlt;
 }
 
+export interface HancockProtocolEncodeResponse {
+  qrEncode: HancockProtocolAction;
+}
+
 export interface HancockProtocolDecodeRequest {
   code: string;
 }
@@ -212,7 +216,7 @@ export interface HancockClient {
   subscribeToTransfer(addresses: string[]): HancockEthereumSocket;
   getBalance(address:string): Promise<BigNumber>;
   transfer(from: string, to: string, value: string, options?: HancockInvokeOptions, data?:string): Promise<HancockSignResponse>;
-  encodeProtocol(action:HancockProtocolAction, dlt:HancockProtocolDlt, value: string, to:string, data:string): Promise<string>;
+  encodeProtocol(action:HancockProtocolAction, dlt:HancockProtocolDlt, value: string, to:string, data:string): Promise<HancockProtocolEncodeResponse>;
   decodeProtocol(code: string): Promise<HancockProtocolDecodeResponse>;
 }
 

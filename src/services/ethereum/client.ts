@@ -34,7 +34,7 @@ import {
 import { normalizeAddressOrAlias, normalizeAlias, normalizeAddress } from './utils';
 import { BigNumber } from 'bignumber.js';
 import { HancockEthereumSocket } from './socket';
-import { HancockProtocolDlt, HancockProtocolEncode, HancockProtocolDecodeRequest } from '..';
+import { HancockProtocolDlt, HancockProtocolEncode, HancockProtocolDecodeRequest, HancockProtocolEncodeResponse } from '..';
 
 export class HancockEthereumClient implements HancockClient {
 
@@ -326,7 +326,7 @@ export class HancockEthereumClient implements HancockClient {
     return this.sendTransaction(resBody.data);
   }
 
-  public async encodeProtocol(action:HancockProtocolAction, value: string, to:string, data:string, dlt:HancockProtocolDlt): Promise<string>{
+  public async encodeProtocol(action:HancockProtocolAction, value: string, to:string, data:string, dlt:HancockProtocolDlt): Promise<HancockProtocolEncodeResponse>{
     to = normalizeAddress(to);
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.encode}`;
