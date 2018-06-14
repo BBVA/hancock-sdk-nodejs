@@ -219,7 +219,7 @@ export class HancockEthereumClient implements HancockClient {
     const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`.replace(/__ADDRESS__/, '').replace(/__SENDER__/, '').replace(/__CONSUMER__/, consumer);
 
     const hancockSocket = new HancockEthereumSocket(url, consumer);
-    hancockSocket.on('opened', () => {
+    hancockSocket.on('ready', () => {
       hancockSocket.addContract(contracts)
     })
 
@@ -232,7 +232,8 @@ export class HancockEthereumClient implements HancockClient {
     const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`.replace(/__ADDRESS__/, '').replace(/__SENDER__/, '').replace(/__CONSUMER__/, consumer);
 
     const hancockSocket = new HancockEthereumSocket(url, consumer);
-    hancockSocket.on('opened', () => {
+    hancockSocket.on('ready', () => {
+      console.log('ready');
       hancockSocket.addTransfer(addresses);
     })
 
