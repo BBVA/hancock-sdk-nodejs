@@ -233,7 +233,6 @@ export class HancockEthereumClient implements HancockClient {
 
     const hancockSocket = new HancockEthereumSocket(url, consumer);
     hancockSocket.on('ready', () => {
-      console.log('ready');
       hancockSocket.addTransfer(addresses);
     })
 

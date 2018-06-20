@@ -18,6 +18,7 @@ export class HancockEthereumSocket extends EventEmitter {
 
     private onWebSocketOpen() {
         console.log("Hancock socket open");
+        this.emit('opened');
     }
 
     private onWebSocketMessage(msg: any) {
