@@ -16,4 +16,4 @@ yarn-error.log*
 *.sln
 
 config/config.json
-coverage/
+tests/reports
