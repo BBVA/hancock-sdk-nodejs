@@ -1,17 +1,17 @@
 nodePipeline{
 
-  stage("Unit Tests"){
-    container("node"){
-      sh "node --version"
-    }
-  }
-
   stage("Build Package"){
     container("node"){
       sh """
         npm install
         npm run build:prod
       """
+    }
+  }
+
+  stage("Unit Tests"){
+    container("node"){
+      sh "npm run coverage"
     }
   }
   

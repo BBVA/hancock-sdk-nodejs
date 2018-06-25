@@ -10,10 +10,9 @@ module.exports = {
         "!**/node_modules/**",
         "!**/*.d.ts"
     ],
-    // coverageReporters: [
-    //     "json",
-    //     "lcov",
-    //     "text",
-    //     "cobertura"
-    //   ]
+    reporters: [ "default", [ "jest-junit", { output: "tests/reports/unit/junit.xml" } ] ],
+    coverageDirectory: 'tests/reports/coverage',
+    coverageReporters: [
+        "cobertura"
+    ]
 };
