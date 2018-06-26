@@ -13,6 +13,16 @@ module.exports = {
     reporters: [ "default", [ "jest-junit", { output: "tests/reports/unit/junit.xml" } ] ],
     coverageDirectory: 'tests/reports/coverage',
     coverageReporters: [
-        "cobertura"
-    ]
+        "cobertura",
+        "lcov"
+    ],
+    bail: true,
+    coverageThreshold: {
+      global: {
+        branches: 60,
+        functions: 60,
+        lines: 60,
+        statements: 60
+      }
+    }
 };
