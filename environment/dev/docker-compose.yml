@@ -1,0 +1,10 @@
+version: '3'
+services:
+  hancock_sdk_client:
+    build:
+      context: ../..
+      dockerfile: ./environment/dev/Dockerfile
+    image: dev/hancock_sdk_client
+    container_name: dev/hancock_sdk_client
+    volumes:
+      - ../..:/code
