@@ -16,14 +16,37 @@ export class HancockEthereumSocket extends EventEmitter {
     this.init();
   }
 
+  public closeSocket() {
+    this.ws.close();
+  }
+
+  public send(data: any) {
+    this.ws.send(data);
+  }
+
+  public addTransfer(addresses: string[]) {
+    if (addresses.length > 0) {
+      const normalizedAddresses: string[] = addresses.map((addr: string) => normalizeAddress(addr));
+      this.sendMessage('watch-addresses', normalizedAddresses);
+    }
+  }
+
+  public addContract(contracts: string[]) {
+    if (contracts.length > 0) {
+      const normalizedAddressesOrAliases: string[] = contracts.map((addrOrAlias: string) => normalizeAddressOrAlias(addrOrAlias));
+      this.sendMessage('watch-contracts', normalizedAddressesOrAliases);
+    }
+  }
+
   private onWebSocketOpen() {
+    
     console.log('Hancock socket open');
     this.emit('opened');
+
   }
 
   private onWebSocketMessage(msg: any) {
 
-    console.log('Hancock socket message', msg)
     try {
 
       const rawData: string = msg.data ? msg.data : msg
@@ -38,7 +61,9 @@ export class HancockEthereumSocket extends EventEmitter {
   }
 
   private onWebSocketError(e: any) {
+    
     this.emit('error', e);
+
   }
 
   private init() {
@@ -63,28 +88,6 @@ export class HancockEthereumSocket extends EventEmitter {
 
       Promise.resolve().then(() => { this.emit('error', '' + e); });
 
-    }
-  }
-
-  public closeSocket() {
-    this.ws.close();
-  }
-
-  public send(data: any) {
-    this.ws.send(data);
-  }
-
-  public addTransfer(addresses: string[]) {
-    if (addresses.length > 0) {
-      const normalizedAddresses: string[] = addresses.map((addr: string) => normalizeAddress(addr));
-      this.sendMessage('watch-addresses', normalizedAddresses);
-    }
-  }
-
-  public addContract(contracts: string[]) {
-    if (contracts.length > 0) {
-      const normalizedAddressesOrAliases: string[] = contracts.map((addrOrAlias: string) => normalizeAddressOrAlias(addrOrAlias));
-      this.sendMessage('watch-contracts', normalizedAddressesOrAliases);
     }
   }
 

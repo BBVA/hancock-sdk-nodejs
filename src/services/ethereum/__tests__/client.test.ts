@@ -1,7 +1,7 @@
 import 'jest';
 import fetch from 'isomorphic-fetch';
 import * as ws from 'isomorphic-ws';
-import { HancockEthereumClient } from '../client';
+import { HancockEthereumClient } from '../../..';
 import * as responses from '../__mocks__/responses';
 import { HancockInvokeOptions, HancockCallResponse, HancockSendTxResponse, HancockSendSignedTxResponse, HancockSignResponse, HancockRegisterResponse, HancockSocketMessage, EthereumWallet, HancockProtocolEncodeResponse, HancockProtocolDlt, HancockProtocolAction, HancockProtocolEncode, HancockProtocolDecodeResponse } from '../..';
 import BigNumber from 'bignumber.js';
@@ -11,7 +11,7 @@ jest.mock('isomorphic-fetch');
 jest.mock('isomorphic-ws');
 
 
-describe('EthereumClient integration tests', () => {
+describe('HancockEthereumClient integration tests', () => {
 
   let clientInstance: HancockEthereumClient;
   const alias: string = 'mockedAlias';
