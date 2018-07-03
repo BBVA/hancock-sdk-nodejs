@@ -1,9 +1,6 @@
 import config from 'config';
 import fetch from 'isomorphic-fetch';
-import EventEmitter from 'eventemitter3';
-import WebSocket from 'isomorphic-ws';
 import {
-  HancockInvokeRequest,
   HancockConfig,
   HancockSignResponse,
   HancockSignRequest,
@@ -13,7 +10,7 @@ import {
   HancockProtocolAction,
   HancockProtocolDecodeResponse
 } from "../hancock.model";
-import { HancockEthereumEventEmitter, EthereumAbi } from './model';
+import { EthereumAbi } from './model';
 import { HancockClient } from '../hancock.model';
 import { signTx, generateWallet } from './signer';
 import { EthereumWallet, EthereumRawTransaction } from './signer';
@@ -73,7 +70,7 @@ export class HancockEthereumClient implements HancockClient {
 
   public async callSmartContract(contractAddressOrAlias: string, method: string, params: string[], from: string): Promise<HancockCallResponse> {
 
-    const normalizedContractAddressOrAlias: string = normalizeAddressOrAlias(contractAddressOrAlias);    
+    const normalizedContractAddressOrAlias: string = normalizeAddressOrAlias(contractAddressOrAlias);
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invoke}`.replace(/__ADDRESS__/, normalizedContractAddressOrAlias);
     const body: HancockCallRequest = {
@@ -90,8 +87,8 @@ export class HancockEthereumClient implements HancockClient {
     })
       .then(
         (res: any) => this.checkStatus(res),
-        (err: any) => this.errorHandler(err))
-      .then((resBody: any) => resBody);
+        (err: any) => this.errorHandler(err)
+      );
 
   }
 
@@ -114,8 +111,8 @@ export class HancockEthereumClient implements HancockClient {
     })
       .then(
         (res: any) => this.checkStatus(res),
-        (err: any) => this.errorHandler(err))
-      .then((resBody: any) => resBody);
+        (err: any) => this.errorHandler(err)
+      );
 
   }
 
@@ -159,7 +156,7 @@ export class HancockEthereumClient implements HancockClient {
 
   public async sendTransactionToSign(rawTx: any, provider: string): Promise<HancockSignResponse> {
 
-    const url: string = `${this.walletApiBaseUrl + this.config.wallet.resources.sign}`;
+    const url: string = `${this.walletApiBaseUrl + this.config.wallet.resources.signTx}`;
     const body: HancockSignRequest = {
       rawTx,
       provider,
@@ -201,7 +198,7 @@ export class HancockEthereumClient implements HancockClient {
 
   }
 
-  public async getBalance(address:string): Promise<BigNumber>{
+  public async getBalance(address: string): Promise<BigNumber> {
 
     address = normalizeAddress(address);
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.balance}`.replace(/__ADDRESS__/, address);
@@ -215,7 +212,7 @@ export class HancockEthereumClient implements HancockClient {
   }
 
   public subscribeToContract(contracts: string[] = [], consumer: string = ''): HancockEthereumSocket {
-    
+
     const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`.replace(/__ADDRESS__/, '').replace(/__SENDER__/, '').replace(/__CONSUMER__/, consumer);
 
     const hancockSocket = new HancockEthereumSocket(url, consumer);
@@ -228,7 +225,7 @@ export class HancockEthereumClient implements HancockClient {
   }
 
   public subscribeToTransfer(addresses: string[] = [], consumer: string = ''): HancockEthereumSocket {
-    
+
     const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`.replace(/__ADDRESS__/, '').replace(/__SENDER__/, '').replace(/__CONSUMER__/, consumer);
 
     const hancockSocket = new HancockEthereumSocket(url, consumer);
@@ -253,22 +250,6 @@ export class HancockEthereumClient implements HancockClient {
     return signTx(rawTx, privateKey);
   }
 
-  private async checkStatus(response: any): Promise<any> {
-    // HTTP status code between 200 and 299
-    if (!response.ok) {
-      this.errorHandler(response);
-    }
-
-    return response.json();
-  }
-
-  private errorHandler(err: any) {
-
-    console.error(err);
-    throw err instanceof Error ? err : new Error(err.body.message);
-
-  }
-
   public async transfer(from: string, to: string, value: string, options: HancockInvokeOptions = {}, data: string = ''): Promise<HancockSignResponse> {
 
     if (!options.signProvider && !options.privateKey) {
@@ -285,48 +266,8 @@ export class HancockEthereumClient implements HancockClient {
 
   }
 
-  private async adaptTransfer(from: string, to: string, value: string, data:string): Promise<HancockAdaptInvokeResponse>{
-    from = normalizeAddress(from);
-    to = normalizeAddress(to);
+  public async encodeProtocol(action: HancockProtocolAction, value: string, to: string, data: string, dlt: HancockProtocolDlt): Promise<HancockProtocolEncodeResponse> {
 
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.transfer}`;
-    const body: HancockTransferRequest = {
-      from,
-      to,
-      value,
-      data
-    };
-
-    return fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    })
-      .then(
-        (res: any) => this.checkStatus(res),
-        (err: any) => this.errorHandler(err)
-      );
-  }
-
-  private async signAndSend(resBody: HancockAdaptInvokeResponse, options: HancockInvokeOptions): Promise<HancockSignResponse>{
-    if (options.signProvider) {
-
-      return this.sendTransactionToSign(resBody.data, options.signProvider);
-
-    }
-
-    if (options.privateKey) {
-
-      return Promise
-        .resolve(this.signTransaction(resBody.data, options.privateKey))
-        .then((tx: string) => this.sendSignedTransaction(tx));
-
-    }
-
-    return this.sendTransaction(resBody.data);
-  }
-
-  public async encodeProtocol(action:HancockProtocolAction, value: string, to:string, data:string, dlt:HancockProtocolDlt): Promise<HancockProtocolEncodeResponse>{
     to = normalizeAddress(to);
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.encode}`;
@@ -351,7 +292,7 @@ export class HancockEthereumClient implements HancockClient {
       );
   }
 
-  public async decodeProtocol(code:string): Promise<HancockProtocolDecodeResponse>{
+  public async decodeProtocol(code: string): Promise<HancockProtocolDecodeResponse> {
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.decode}`;
     const body: HancockProtocolDecodeRequest = {
@@ -368,4 +309,68 @@ export class HancockEthereumClient implements HancockClient {
         (err: any) => this.errorHandler(err)
       );
   }
+
+  private async checkStatus(response: any): Promise<any> {
+    // HTTP status code between 200 and 299
+    if (!response.ok) {
+      this.errorHandler(response);
+    }
+
+    return response.json();
+  }
+
+  private errorHandler(err: any) {
+
+    console.error(err);
+    throw err instanceof Error
+      ? err
+      : err.body
+        ? new Error(err.body.message)
+        : new Error(err.message);
+
+  }
+
+  private async adaptTransfer(from: string, to: string, value: string, data: string): Promise<HancockAdaptInvokeResponse> {
+
+    from = normalizeAddress(from);
+    to = normalizeAddress(to);
+
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.transfer}`;
+    const body: HancockTransferRequest = {
+      from,
+      to,
+      value,
+      data
+    };
+
+    return fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    })
+      .then(
+        (res: any) => this.checkStatus(res),
+        (err: any) => this.errorHandler(err)
+      );
+  }
+
+  private async signAndSend(resBody: HancockAdaptInvokeResponse, options: HancockInvokeOptions): Promise<HancockSignResponse> {
+
+    if (options.signProvider) {
+
+      return this.sendTransactionToSign(resBody.data, options.signProvider);
+
+    }
+
+    if (options.privateKey) {
+
+      const tx: string = this.signTransaction(resBody.data, options.privateKey);
+      return this.sendSignedTransaction(tx);
+
+    }
+
+    return this.sendTransaction(resBody.data);
+
+  }
+
 }
