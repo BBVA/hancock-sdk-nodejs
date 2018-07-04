@@ -421,18 +421,20 @@ describe('ethereum client', async () => {
 
   it('should call getBalance and throw error', async () => {
 
-    (fetch as any).mockRejectOnce(JSON.stringify(response.ERROR));
+    (fetch as any).mockRejectOnce(JSON.stringify(response.GET_BALANCE_ERROR_RESPONSE), { status: 400 });
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-    .mockImplementation((res) => Promise.resolve(res));
+    .mockImplementation((res) => {throw new Error(res.description)});
 
-    const result = await client.getBalance('0xde8e772f0350e992ddef81bf8f51d94a8ea9216d');
-
-    expect(fetch).toHaveBeenCalledWith(
-      'genericHost:1genericBase/mockBalance/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d'
-    );
-    expect(checkStatusSpy).toHaveBeenCalledTimes(1);
-    expect(result).toEqual(JSON.stringify(response.ERROR));
+    try {
+      const result = await client.getBalance('0xde8e772f0350e992ddef81bf8f51d94a8ea9216d');
+      fail('it should fail');
+    } catch (error) {
+      expect(fetch).toHaveBeenCalledWith(
+        'genericHost:1genericBase/mockBalance/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d'
+      );
+      expect(checkStatusSpy).toHaveBeenCalledTimes(1);
+    }
 
   });
 
