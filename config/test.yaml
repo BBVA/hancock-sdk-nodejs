@@ -1,7 +1,7 @@
 adapter:
   host: http://mockAdapter
   port: 6666
-  base: 'mockBase'
+  base: '/mockBase'
   resources:
     invoke: '/mockInvoke/__ADDRESS__'
     register: '/mockRegister'
@@ -12,14 +12,14 @@ adapter:
 wallet:
   host: http://mockWallet
   port: 6666
-  base: 'mockBase'
+  base: '/mockBase'
   resources:
-    signTx: 'mockSignTx'
-    sendTx: 'mockSendTx'
-    sendSignedTx: 'mockSendSignedTx'
+    signTx: '/mockSignTx'
+    sendTx: '/mockSendTx'
+    sendSignedTx: '/mockSendSignedTx'
 broker:
   host: ws://mockBroker
   port: 6666
-  base: 'mockBase'
+  base: '/mockBase'
   resources:
     events: '/mockEvents?address=__ADDRESS__&sender=__SENDER__&consumer=__CONSUMER__'

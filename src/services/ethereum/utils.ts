@@ -1,4 +1,4 @@
-const addressPattern = new RegExp(/^0x[a-fA-F0-9]{40}$/i);
+const addressPattern = new RegExp(/^(0x)?([a-fA-F0-9]{40})$/i);
 
 export const isAddress = (addressOrAlias: string): boolean => {
   return addressPattern.test(addressOrAlias);

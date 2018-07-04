@@ -7,13 +7,13 @@ build:
 	${COMPOSE_DEV} build
 
 publish: build down
-	${COMPOSE_DEV} run --rm --service-ports hancock_sdk_client publish
+	${COMPOSE_DEV} run --rm --no-deps --service-ports hancock_sdk_client publish
 
 test: build down
-	${COMPOSE_DEV} run --rm --service-ports hancock_sdk_client test
+	${COMPOSE_DEV} run --rm --no-deps --service-ports hancock_sdk_client test
 
 coverage: build down
-	${COMPOSE_DEV} run --rm --service-ports hancock_sdk_client coverage
+	${COMPOSE_DEV} run --rm --no-deps --service-ports hancock_sdk_client coverage
 
 shell: build down
 	${COMPOSE_DEV} run --rm --no-deps hancock_sdk_client /bin/bash

@@ -34,8 +34,10 @@ describe('ethereum client constructor', async () => {
       wallet: configWallet,
       broker: configBroker,
     };
-    
-    
+  });
+
+  afterAll(() => {
+    jest.clearAllMocks();
   });
 
   it('should call constructor correctly', async () => {
@@ -124,6 +126,10 @@ describe('ethereum client', async () => {
     };
 
     jest.restoreAllMocks();
+    jest.clearAllMocks();
+  });
+
+  afterAll(() => {
     jest.clearAllMocks();
   });
 
@@ -247,7 +253,7 @@ describe('ethereum client', async () => {
     const result = await client.sendTransaction({'whatever':'whatevervalue'});
 
     expect(fetch).toHaveBeenCalledWith(
-      'genericHost:1genericBasemockSendTx',
+      'genericHost:1genericBase/mockSendTx',
       callParamFetch
     );
     expect(checkStatusSpy).toHaveBeenCalledTimes(1);
@@ -266,7 +272,7 @@ describe('ethereum client', async () => {
     const result = await client.sendTransaction({'whatever':'whatevervalue'});
 
     expect(fetch).toHaveBeenCalledWith(
-      'genericHost:1genericBasemockSendTx',
+      'genericHost:1genericBase/mockSendTx',
       callParamFetch
     );
     expect(checkStatusSpy).toHaveBeenCalledTimes(1);
@@ -285,7 +291,7 @@ describe('ethereum client', async () => {
     const result = await client.sendSignedTransaction({'whatever':'whatevervalue'});
 
     expect(fetch).toHaveBeenCalledWith(
-      'genericHost:1genericBasemockSendSignedTx',
+      'genericHost:1genericBase/mockSendSignedTx',
       callParamFetch
     );
     expect(checkStatusSpy).toHaveBeenCalledTimes(1);
@@ -304,7 +310,7 @@ describe('ethereum client', async () => {
     const result = await client.sendSignedTransaction({'whatever':'whatevervalue'});
 
     expect(fetch).toHaveBeenCalledWith(
-      'genericHost:1genericBasemockSendSignedTx',
+      'genericHost:1genericBase/mockSendSignedTx',
       callParamFetch
     );
     expect(checkStatusSpy).toHaveBeenCalledTimes(1);
@@ -323,7 +329,7 @@ describe('ethereum client', async () => {
     const result = await client.sendTransactionToSign({'whatever':'whatevervalue'}, 'provider');
 
     expect(fetch).toHaveBeenCalledWith(
-      'genericHost:1genericBasemockSignTx',
+      'genericHost:1genericBase/mockSignTx',
       callParamFetch
     );
     expect(checkStatusSpy).toHaveBeenCalledTimes(1);
@@ -342,7 +348,7 @@ describe('ethereum client', async () => {
     const result = await client.sendTransactionToSign({'whatever':'whatevervalue'}, 'provider');
 
     expect(fetch).toHaveBeenCalledWith(
-      'genericHost:1genericBasemockSignTx',
+      'genericHost:1genericBase/mockSignTx',
       callParamFetch
     );
     expect(checkStatusSpy).toHaveBeenCalledTimes(1);
@@ -398,7 +404,7 @@ describe('ethereum client', async () => {
 
   it('should call getBalance correctly', async () => {
 
-    (fetch as any).once(JSON.stringify(response.SC_GET_BALANCE_RESPONSE));
+    (fetch as any).once(JSON.stringify(response.GET_BALANCE_RESPONSE));
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'checkStatus')
     .mockImplementation((res) => Promise.resolve(res.json()));
@@ -409,7 +415,7 @@ describe('ethereum client', async () => {
       'genericHost:1genericBase/mockBalance/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d'
     );
     expect(checkStatusSpy).toHaveBeenCalledTimes(1);
-    expect(result).toEqual(new BigNumber(response.SC_GET_BALANCE_RESPONSE.data.balance));
+    expect(result).toEqual(new BigNumber(response.GET_BALANCE_RESPONSE.data.balance));
 
   });
 
@@ -614,7 +620,7 @@ describe('ethereum client', async () => {
   it('should call signAndSend and signTransaction and sendSignedTransaction with privateKey correctly', async () => {
 
     const signTransactionSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'signTransaction')
-    .mockImplementation(() => Promise.resolve('responseSignTransaction'));
+    .mockImplementation(() => 'responseSignTransaction');
     const sendSignedTransactionSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'sendSignedTransaction')
     .mockImplementation(() => Promise.resolve('response'));
 
