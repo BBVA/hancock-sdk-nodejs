@@ -1,5 +1,7 @@
 import 'jest';
 
+process.env.NODE_ENV = 'test';
+
 global.console = {
   debug: jest.fn(),
   error: jest.fn(),
