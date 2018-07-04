@@ -4,7 +4,7 @@ import { DltWallet, DltRawTransaction } from '../hancock.model';
 
 // TODO: Resolve this situation in webpack, not here
 const _etherTx: any = process.browser ? etherTx.Tx : (etherTx.default || etherTx);
-const _etherWallet: any = process.browser ? etherWallet.Wallet : (etherWallet.default || etherTx);
+const _etherWallet: any = process.browser ? etherWallet.Wallet : (etherWallet.default || etherWallet);
 
 export interface EthereumWallet extends DltWallet {
   privateKey: string;

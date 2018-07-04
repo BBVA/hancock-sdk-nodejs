@@ -9,7 +9,7 @@ import { HancockEthereumSocket } from '../socket';
 
 jest.mock('isomorphic-fetch');
 jest.mock('isomorphic-ws');
-
+jest.unmock('ethereumjs-wallet');
 
 describe('HancockEthereumClient integration tests', () => {
 
