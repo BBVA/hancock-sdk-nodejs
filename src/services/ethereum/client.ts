@@ -211,7 +211,7 @@ export class HancockEthereumClient implements HancockClient {
       )
       .then((resBody: any) => {
         return new BigNumber(resBody.data.balance);
-      })
+      });
   }
 
   public subscribeToContract(contracts: string[] = [], consumer: string = ''): HancockEthereumSocket {
