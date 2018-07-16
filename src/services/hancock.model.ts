@@ -100,6 +100,15 @@ export interface HancockTransferRequest {
   data?: string
 }
 
+// TokenTransfer
+
+export interface HancockTokenTransferRequest {
+  from: string,
+  to: string,
+  value: string,
+  smartContractAddress: string
+}
+
 // CONFIG
 
 export interface HancockAdapterConfig {
