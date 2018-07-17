@@ -8,6 +8,7 @@ adapter:
     balance: '/mockBalance/__ADDRESS__'
     transfer: '/mockTransfer'
     tokenTransfer: '/mockToken/__ADDRESS_OR_ALIAS__/mockTransfer'
+    tokenBalance: '/mockToken/__ADDRESS_OR_ALIAS__/mockBalance/__ADDRESS__'
     encode: '/mockEncode'
     decode: '/mockDecode'
 wallet:
