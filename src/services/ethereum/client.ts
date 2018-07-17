@@ -31,7 +31,7 @@ import {
 import { normalizeAddressOrAlias, normalizeAlias, normalizeAddress } from './utils';
 import { BigNumber } from 'bignumber.js';
 import { HancockEthereumSocket } from './socket';
-import { HancockProtocolDlt, HancockProtocolEncode, HancockProtocolDecodeRequest, HancockProtocolEncodeResponse } from '..';
+import { HancockProtocolDlt, HancockProtocolEncode, HancockProtocolDecodeRequest, HancockProtocolEncodeResponse, HancockTokenTransferRequest } from '..';
 
 export class HancockEthereumClient implements HancockClient {
 
@@ -269,6 +269,22 @@ export class HancockEthereumClient implements HancockClient {
 
   }
 
+  public async tokenTransfer(from: string, to: string, value: string, smartContractAddress: string, options: HancockInvokeOptions = {}): Promise<HancockSignResponse> {
+
+    if (!options.signProvider && !options.privateKey) {
+      return Promise.reject('No key nor provider');
+    }
+
+    return this
+      .adaptTokenTransfer(from, to, value, smartContractAddress)
+      .then((resBody: HancockAdaptInvokeResponse) => {
+
+        return this.signAndSend(resBody, options);
+
+      });
+
+  }
+
   public async encodeProtocol(action: HancockProtocolAction, value: string, to: string, data: string, dlt: HancockProtocolDlt): Promise<HancockProtocolEncodeResponse> {
 
     to = normalizeAddress(to);
@@ -344,6 +360,30 @@ export class HancockEthereumClient implements HancockClient {
       to,
       value,
       data
+    };
+
+    return fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    })
+      .then(
+        (res: any) => this.checkStatus(res),
+        (err: any) => this.errorHandler(err)
+      );
+  }
+
+  private async adaptTokenTransfer(from: string, to: string, value: string, smartContractAddress: string): Promise<HancockAdaptInvokeResponse> {
+
+    from = normalizeAddress(from);
+    to = normalizeAddress(to);
+
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.tokenTransfer}`;
+    const body: HancockTokenTransferRequest = {
+      from,
+      to,
+      value,
+      smartContractAddress
     };
 
     return fetch(url, {
