@@ -109,6 +109,20 @@ export interface HancockTokenTransferRequest {
   smartContractAddress: string
 }
 
+// Token Register
+
+export interface HancockTokenRegisterRequest {
+  alias: string;
+  address: DltAddress;
+}
+
+export interface HancockTokenRegisterResponse {
+  result: {
+    code: number;
+    description: string;
+  };
+}
+
 // CONFIG
 
 export interface HancockAdapterConfig {
