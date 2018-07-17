@@ -7,7 +7,7 @@ adapter:
     register: '/ethereum/smartcontracts/register'
     balance: '/ethereum/balance/__ADDRESS__'
     transfer: '/ethereum/transfers'
-    tokenTransfer: '/ethereum/token/__ADDRESSALIAS__/transfer'
+    tokenTransfer: '/ethereum/token/__ADDRESS_OR_ALIAS__/transfer'
     encode: '/protocol/encode'
     decode: '/protocol/decode'
 wallet:
