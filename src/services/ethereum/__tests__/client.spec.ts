@@ -625,7 +625,8 @@ describe('ethereum client', async () => {
     const signAndSendSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'signAndSend')
     .mockImplementation(() => Promise.resolve("ok!"));
 
-    const result = await client.tokenTransfer('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', "100", '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c', options);
+    const result = await client.tokenTransfer('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', 
+    "100", '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c', options);
 
     expect(adaptTokenTransferSpy).toHaveBeenCalledWith('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', "100", '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c');
     expect(signAndSendSpy).toHaveBeenCalledWith({"test":"test"}, options);
@@ -651,9 +652,9 @@ describe('ethereum client', async () => {
       'from': '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
       'to': '0xde8e772f0350e992ddef81bf8f51d94a8ea92123',
       'value':'100000',
-      'smartContractAddress':'0xde8e772f0350e992ddef81bf8f51d94a8ea9216c',
     };
     callParamFetch.body = JSON.stringify(bodyFetch);
+    const smartContractAddress = '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c';
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'checkStatus')
     .mockImplementation((res) => Promise.resolve(res.json()));
@@ -662,11 +663,11 @@ describe('ethereum client', async () => {
       bodyFetch.from,
       bodyFetch.to,
       bodyFetch.value,
-      bodyFetch.smartContractAddress
+      smartContractAddress
     );
 
     expect(fetch).toHaveBeenCalledWith(
-      'genericHost:1genericBase/mockToken/mockTransfer',
+      'genericHost:1genericBase/mockToken/' + smartContractAddress + '/mockTransfer',
       callParamFetch
     );
     expect(checkStatusSpy).toHaveBeenCalledTimes(1);
@@ -680,9 +681,9 @@ describe('ethereum client', async () => {
     const bodyFetch = {
       'from': '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
       'to': '0xde8e772f0350e992ddef81bf8f51d94a8ea92123',
-      'value':'100000',
-      'smartContractAddress':'0xde8e772f0350e992ddef81bf8f51d94a8ea9216c',
+      'value':'100000'
     };
+    const smartContractAddress = '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c';
     callParamFetch.body = JSON.stringify(bodyFetch);
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
@@ -693,12 +694,12 @@ describe('ethereum client', async () => {
         bodyFetch.from,
         bodyFetch.to,
         bodyFetch.value,
-        bodyFetch.smartContractAddress
+        smartContractAddress
       );
       fail('it should fail');
     } catch (error) {
       expect(fetch).toHaveBeenCalledWith(
-       'genericHost:1genericBase/mockToken/mockTransfer',
+        'genericHost:1genericBase/mockToken/' + smartContractAddress + '/mockTransfer',
         callParamFetch
       );
       expect(error).toEqual(new Error('testError'));

@@ -7,7 +7,7 @@ adapter:
     register: '/mockRegister'
     balance: '/mockBalance/__ADDRESS__'
     transfer: '/mockTransfer'
-    tokenTransfer: '/mockToken/mockTransfer'
+    tokenTransfer: '/mockToken/__ADDRESS_OR_ALIAS__/mockTransfer'
     encode: '/mockEncode'
     decode: '/mockDecode'
 wallet:
