@@ -1,3 +1,4 @@
+import { tokenRegister } from './../../../../../kst-hancock-docker-compose/kst-hancock-ms-dlt-adapter/src/domain/ethereum/token/__mocks__/register';
 import 'jest';
 import fetch from 'isomorphic-fetch';
 import * as ws from 'isomorphic-ws';
@@ -370,6 +371,48 @@ describe('HancockEthereumClient integration tests', () => {
         expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockRegister`);
         expect(firstApiCall[1].method).toEqual('POST');
         expect(firstApiCall[1].body).toEqual(JSON.stringify({ address: normalizedAddress, alias: normalizedAlias, abi }));
+
+        expect(e).toEqual(new Error());
+
+      }
+
+    });
+
+  });
+
+  describe('::tokenRegister', () => {
+
+    it('should regiter the token in hancock (normalizing address and alias)', async () => {
+
+      fetch
+        .once(JSON.stringify(responses.SEND_SIGNED_TX_RESPONSE));
+
+      const result: HancockRegisterResponse = await clientInstance.tokenRegister(alias, address);
+
+      const firstApiCall: any = fetch.mock.calls[0];
+      expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockToken/mockRegister`);
+      expect(firstApiCall[1].method).toEqual('POST');
+      expect(firstApiCall[1].body).toEqual(JSON.stringify({ address: normalizedAddress, alias: normalizedAlias }));
+
+      expect(result).toEqual(responses.SEND_SIGNED_TX_RESPONSE);
+
+    });
+
+    it('should try to regiter the token in hancock and fail if there is an error', async () => {
+
+      fetch
+        .mockRejectOnce(JSON.stringify(responses.COMMON_RESPONSE_ERROR), { status: 400 });
+
+      try {
+
+        await clientInstance.tokenRegister(alias, address);
+
+      } catch (e) {
+
+        const firstApiCall: any = fetch.mock.calls[0];
+        expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockToken/mockRegister`);
+        expect(firstApiCall[1].method).toEqual('POST');
+        expect(firstApiCall[1].body).toEqual(JSON.stringify({ address: normalizedAddress, alias: normalizedAlias }));
 
         expect(e).toEqual(new Error());
 
