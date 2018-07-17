@@ -269,14 +269,14 @@ export class HancockEthereumClient implements HancockClient {
 
   }
 
-  public async tokenTransfer(from: string, to: string, value: string, smartContractAddress: string, options: HancockInvokeOptions = {}): Promise<HancockSignResponse> {
+  public async tokenTransfer(from: string, to: string, value: string, addressOrAlias: string, options: HancockInvokeOptions = {}): Promise<HancockSignResponse> {
 
     if (!options.signProvider && !options.privateKey) {
       return Promise.reject('No key nor provider');
     }
 
     return this
-      .adaptTokenTransfer(from, to, value, smartContractAddress)
+      .adaptTokenTransfer(from, to, value, addressOrAlias)
       .then((resBody: HancockAdaptInvokeResponse) => {
 
         return this.signAndSend(resBody, options);
@@ -373,17 +373,17 @@ export class HancockEthereumClient implements HancockClient {
       );
   }
 
-  private async adaptTokenTransfer(from: string, to: string, value: string, smartContractAddress: string): Promise<HancockAdaptInvokeResponse> {
+  private async adaptTokenTransfer(from: string, to: string, value: string, addressOrAlias: string): Promise<HancockAdaptInvokeResponse> {
 
-    from = normalizeAddress(from);
+    from = normalizeAddressOrAlias(from);
     to = normalizeAddress(to);
+    addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
 
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.tokenTransfer}`;
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.tokenTransfer}`.replace(/__ADDRESSALIAS__/, addressOrAlias);
     const body: HancockTokenTransferRequest = {
       from,
       to,
-      value,
-      smartContractAddress
+      value
     };
 
     return fetch(url, {
