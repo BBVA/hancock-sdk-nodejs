@@ -105,8 +105,7 @@ export interface HancockTransferRequest {
 export interface HancockTokenTransferRequest {
   from: string,
   to: string,
-  value: string,
-  smartContractAddress: string
+  value: string
 }
 
 // Token Register
