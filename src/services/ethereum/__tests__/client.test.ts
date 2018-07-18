@@ -1,4 +1,3 @@
-import { tokenRegister } from './../../../../../kst-hancock-docker-compose/kst-hancock-ms-dlt-adapter/src/domain/ethereum/token/__mocks__/register';
 import 'jest';
 import fetch from 'isomorphic-fetch';
 import * as ws from 'isomorphic-ws';
