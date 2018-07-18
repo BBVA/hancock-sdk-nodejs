@@ -66,6 +66,24 @@ export const GET_BALANCE_ERROR_RESPONSE = {
   }
 };
 
+export const GET_TOKEN_BALANCE_RESPONSE = {
+  result: {
+    code: 202,
+    description: "Ethereum Token - Operation successfully requested"
+  },
+  data: {
+    balance: 10000,
+    accuracy: 18
+  }
+};
+
+export const GET_TOKEN_BALANCE_ERROR_RESPONSE = {
+  result: {
+    code: 500,
+    description: "Ethereum Token - Blockchain request error"
+  }
+};
+
 export const COMMON_RESPONSE_ERROR = {
   code_internal: "DC4000",
   code_http: 400,

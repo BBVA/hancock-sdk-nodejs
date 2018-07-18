@@ -189,6 +189,11 @@ export interface HancockProtocolDecodeRequest {
   code: string;
 }
 
+export interface HancockTokenBalanceResponse {
+  balance: number;
+  accuracy: number;
+}
+
 export interface HancockProtocolDecodeResponse {
   result: {
     code: number;
@@ -226,7 +231,7 @@ export interface HancockClient {
   transfer(from: string, to: string, value: string, options?: HancockInvokeOptions, data?:string): Promise<HancockSignResponse>;
   encodeProtocol(action:HancockProtocolAction, dlt:HancockProtocolDlt, value: string, to:string, data:string): Promise<HancockProtocolEncodeResponse>;
   decodeProtocol(code: string): Promise<HancockProtocolDecodeResponse>;
-  getTokenBalance(scAddress:string, address:string): Promise<BigNumber>;
+  getTokenBalance(query:string, address:string): Promise<HancockTokenBalanceResponse>;
 }
 
 export type HancockInvokeAction = 'send' | 'call';

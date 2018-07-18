@@ -450,6 +450,43 @@ describe('ethereum client', async () => {
 
   });
 
+
+  it('should call getTokenBalance correctly', async () => {
+
+    (fetch as any).once(JSON.stringify(response.GET_TOKEN_BALANCE_RESPONSE));
+
+    const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'checkStatus')
+    .mockImplementation((res) => Promise.resolve(res.json()));
+
+    const result = await client.getTokenBalance('0xde8e772f0350e992ddef81bf8f51d94a8ea9216d','0xde8e772f0350e992ddef81bf8f51d94a8ea9216d');
+
+    expect(fetch).toHaveBeenCalledWith(
+      'genericHost:1genericBase/mockToken/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d/mockBalance/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d'
+    );
+    expect(checkStatusSpy).toHaveBeenCalledTimes(1);
+    expect(result.balance).toEqual(response.GET_TOKEN_BALANCE_RESPONSE.data.balance);
+
+  });
+
+  it('should call getTokenBalance and throw error', async () => {
+
+    (fetch as any).mockRejectOnce(JSON.stringify(response.GET_TOKEN_BALANCE_ERROR_RESPONSE), { status: 400 });
+
+    const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
+    .mockImplementation((res) => {throw new Error(res.description)});
+
+    try {
+      await client.getTokenBalance('0xde8e772f0350e992ddef81bf8f51d94a8ea9216d','0xde8e772f0350e992ddef81bf8f51d94a8ea9216d');
+      fail('it should fail');
+    } catch (error) {
+      expect(fetch).toHaveBeenCalledWith(
+        'genericHost:1genericBase/mockToken/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d/mockBalance/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d'
+      );
+      expect(checkStatusSpy).toHaveBeenCalledTimes(1);
+    }
+
+  });
+
   it('should call generateWallet correctly', async () => {
 
     const response = client.generateWallet();
