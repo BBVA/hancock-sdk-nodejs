@@ -245,7 +245,7 @@ export interface HancockClient {
   transfer(from: string, to: string, value: string, options?: HancockInvokeOptions, data?:string): Promise<HancockSignResponse>;
   encodeProtocol(action:HancockProtocolAction, dlt:HancockProtocolDlt, value: string, to:string, data:string): Promise<HancockProtocolEncodeResponse>;
   decodeProtocol(code: string): Promise<HancockProtocolDecodeResponse>;
-  getTokenBalance(query:string, address:string): Promise<HancockTokenBalanceResponse>;
+  getTokenBalance(addressOrAlias:string, address:string): Promise<HancockTokenBalanceResponse>;
 }
 
 export type HancockInvokeAction = 'send' | 'call';

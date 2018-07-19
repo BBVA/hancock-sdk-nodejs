@@ -442,11 +442,11 @@ export class HancockEthereumClient implements HancockClient {
 
   }
 
-  public async getTokenBalance(query:string, address:string): Promise<HancockTokenBalanceResponse> {
+  public async getTokenBalance(addresOrAlias:string, address:string): Promise<HancockTokenBalanceResponse> {
 
     address = normalizeAddress(address);
-    query = normalizeAddress(query);
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.tokenBalance}`.replace(/__ADDRESS_OR_ALIAS__/, query).replace(/__ADDRESS__/, address);
+    addresOrAlias = normalizeAddressOrAlias(addresOrAlias);
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.tokenBalance}`.replace(/__ADDRESS_OR_ALIAS__/, addresOrAlias).replace(/__ADDRESS__/, address);
 
     return fetch(url)
       .then(
