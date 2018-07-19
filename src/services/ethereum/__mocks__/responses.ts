@@ -73,7 +73,7 @@ export const GET_TOKEN_BALANCE_RESPONSE = {
   },
   data: {
     balance: 10000,
-    accuracy: 18
+    decimals: 18
   }
 };
 

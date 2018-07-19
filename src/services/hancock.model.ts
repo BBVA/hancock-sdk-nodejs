@@ -204,8 +204,8 @@ export interface HancockProtocolDecodeRequest {
 }
 
 export interface HancockTokenBalanceResponse {
-  balance: number;
-  accuracy: number;
+  balance: BigNumber;
+  decimals: number;
 }
 
 export interface HancockProtocolDecodeResponse {
