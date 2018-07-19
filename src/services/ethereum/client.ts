@@ -9,7 +9,9 @@ import {
   InitialHancockConfig,
   HancockProtocolAction,
   HancockProtocolDecodeResponse,
-  HancockTokenBalanceResponse
+  HancockTokenBalanceResponse,
+  HancockTokenRegisterRequest,
+  HancockTokenRegisterResponse
 } from "../hancock.model";
 import { EthereumAbi } from './model';
 import { HancockClient } from '../hancock.model';
@@ -186,6 +188,29 @@ export class HancockEthereumClient implements HancockClient {
       address,
       alias,
       abi
+    };
+
+    return fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    })
+      .then(
+        (res: any) => this.checkStatus(res),
+        (err: any) => this.errorHandler(err)
+      );
+
+  }
+
+  public async tokenRegister(alias: string, address: DltAddress): Promise<HancockTokenRegisterResponse> {
+
+    alias = normalizeAlias(alias);
+    address = normalizeAddress(address);
+
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.tokenRegister}`;
+    const body: HancockTokenRegisterRequest = {
+      address,
+      alias,
     };
 
     return fetch(url, {

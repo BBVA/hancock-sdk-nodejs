@@ -8,3 +8,4 @@ services:
     container_name: dev/hancock_sdk_client
     volumes:
       - ../..:/code
+      - ~/.npmrc:/code/.npmrc
