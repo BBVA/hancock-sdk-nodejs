@@ -9,6 +9,7 @@ import {
   InitialHancockConfig,
   HancockProtocolAction,
   HancockProtocolDecodeResponse,
+  HancockTokenBalanceResponse,
   HancockTokenRegisterRequest,
   HancockTokenRegisterResponse
 } from "../hancock.model";
@@ -439,6 +440,22 @@ export class HancockEthereumClient implements HancockClient {
 
     return this.sendTransaction(resBody.data);
 
+  }
+
+  public async getTokenBalance(addresOrAlias:string, address:string): Promise<HancockTokenBalanceResponse> {
+
+    address = normalizeAddress(address);
+    addresOrAlias = normalizeAddressOrAlias(addresOrAlias);
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.tokenBalance}`.replace(/__ADDRESS_OR_ALIAS__/, addresOrAlias).replace(/__ADDRESS__/, address);
+
+    return fetch(url)
+      .then(
+        (res: any) => this.checkStatus(res),
+        (err: any) => this.errorHandler(err)
+      )
+      .then((resBody: any) => {
+        return resBody.data;
+      });
   }
 
 }
