@@ -34,7 +34,7 @@ import {
 import { normalizeAddressOrAlias, normalizeAlias, normalizeAddress } from './utils';
 import { BigNumber } from 'bignumber.js';
 import { HancockEthereumSocket } from './socket';
-import { HancockProtocolDlt, HancockProtocolEncode, HancockProtocolDecodeRequest, HancockProtocolEncodeResponse, HancockTokenTransferRequest } from '..';
+import { HancockProtocolDlt, HancockProtocolEncode, HancockProtocolDecodeRequest, HancockProtocolEncodeResponse, HancockTokenTransferRequest, HancockTokenMetadataResponse } from '..';
 
 export class HancockEthereumClient implements HancockClient {
 
@@ -325,34 +325,65 @@ export class HancockEthereumClient implements HancockClient {
       },
       dlt
     };
-
+    
     return fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     })
-      .then(
-        (res: any) => this.checkStatus(res),
-        (err: any) => this.errorHandler(err)
-      );
+    .then(
+      (res: any) => this.checkStatus(res),
+      (err: any) => this.errorHandler(err)
+    );
   }
-
+  
   public async decodeProtocol(code: string): Promise<HancockProtocolDecodeResponse> {
-
+    
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.decode}`;
     const body: HancockProtocolDecodeRequest = {
       code
     };
-
+    
     return fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     })
+    .then(
+      (res: any) => this.checkStatus(res),
+      (err: any) => this.errorHandler(err)
+    );
+  }
+  
+  public async getTokenBalance(addresOrAlias:string, address:string): Promise<HancockTokenBalanceResponse> {
+
+    address = normalizeAddress(address);
+    addresOrAlias = normalizeAddressOrAlias(addresOrAlias);
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.tokenBalance}`.replace(/__ADDRESS_OR_ALIAS__/, addresOrAlias).replace(/__ADDRESS__/, address);
+
+    return fetch(url)
       .then(
         (res: any) => this.checkStatus(res),
         (err: any) => this.errorHandler(err)
-      );
+      )
+      .then((resBody: any) => {
+        return resBody.data;
+      });
+  }
+
+  public async getTokenMetadata(addressOrAlias: string): Promise<HancockTokenMetadataResponse> {
+
+    addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.tokenMetadata}`.replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
+
+    return fetch(url)
+      .then(
+        (res: any) => this.checkStatus(res),
+        (err: any) => this.errorHandler(err)
+      )
+      .then((resBody: any) => {
+        return resBody.data;
+      });
   }
 
   private async checkStatus(response: any): Promise<any> {
@@ -360,7 +391,7 @@ export class HancockEthereumClient implements HancockClient {
     if (!response.ok) {
       this.errorHandler(response);
     }
-
+    
     return response.json();
   }
 
@@ -442,20 +473,5 @@ export class HancockEthereumClient implements HancockClient {
 
   }
 
-  public async getTokenBalance(addresOrAlias:string, address:string): Promise<HancockTokenBalanceResponse> {
-
-    address = normalizeAddress(address);
-    addresOrAlias = normalizeAddressOrAlias(addresOrAlias);
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.tokenBalance}`.replace(/__ADDRESS_OR_ALIAS__/, addresOrAlias).replace(/__ADDRESS__/, address);
-
-    return fetch(url)
-      .then(
-        (res: any) => this.checkStatus(res),
-        (err: any) => this.errorHandler(err)
-      )
-      .then((resBody: any) => {
-        return resBody.data;
-      });
-  }
 
 }

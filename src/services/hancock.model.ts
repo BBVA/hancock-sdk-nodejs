@@ -122,6 +122,15 @@ export interface HancockTokenRegisterResponse {
   };
 }
 
+// Token metadata
+
+export interface HancockTokenMetadataResponse{
+  name: string;
+  symbol: string;
+  decimals: number;
+  totalSupply: number;
+}
+
 // CONFIG
 
 export interface HancockAdapterConfig {
@@ -247,6 +256,7 @@ export interface HancockClient {
   encodeProtocol(action:HancockProtocolAction, dlt:HancockProtocolDlt, value: string, to:string, data:string): Promise<HancockProtocolEncodeResponse>;
   decodeProtocol(code: string): Promise<HancockProtocolDecodeResponse>;
   getTokenBalance(addressOrAlias:string, address:string): Promise<HancockTokenBalanceResponse>;
+  getTokenMetadata(addressOrAlias:string): Promise<HancockTokenMetadataResponse>;
   tokenRegister(alias: string, address: DltAddress): Promise<HancockTokenRegisterResponse>;
 }
 
