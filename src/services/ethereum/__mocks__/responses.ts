@@ -84,6 +84,26 @@ export const GET_TOKEN_BALANCE_ERROR_RESPONSE = {
   }
 };
 
+export const GET_TOKEN_METADATA_RESPONSE = {
+  result: {
+    code: 200,
+    description: "Ethereum Token - Operation successfully requested"
+  },
+  data: {
+    name: "mockedName",
+    symbol: "mockedSymbol",
+    decimals: 18,
+    totalSupply: 100000
+  }
+};
+
+export const GET_TOKEN_METADATA_ERROR_RESPONSE = {
+  result: {
+    code: 500,
+    description: "Ethereum Metadata Token - Blockchain request error"
+  }
+};
+
 export const COMMON_RESPONSE_ERROR = {
   code_internal: "DC4000",
   code_http: 400,

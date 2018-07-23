@@ -3,7 +3,7 @@ import fetch from 'isomorphic-fetch';
 import * as ws from 'isomorphic-ws';
 import { HancockEthereumClient } from '../../..';
 import * as responses from '../__mocks__/responses';
-import { HancockInvokeOptions, HancockCallResponse, HancockSendTxResponse, HancockSendSignedTxResponse, HancockSignResponse, HancockRegisterResponse, HancockSocketMessage, EthereumWallet, HancockProtocolEncodeResponse, HancockProtocolDlt, HancockProtocolAction, HancockProtocolEncode, HancockProtocolDecodeResponse } from '../..';
+import { HancockInvokeOptions, HancockCallResponse, HancockSendTxResponse, HancockSendSignedTxResponse, HancockSignResponse, HancockRegisterResponse, HancockSocketMessage, EthereumWallet, HancockProtocolEncodeResponse, HancockProtocolDlt, HancockProtocolAction, HancockProtocolEncode, HancockProtocolDecodeResponse, HancockTokenMetadataResponse } from '../..';
 import BigNumber from 'bignumber.js';
 import { HancockEthereumSocket } from '../socket';
 
@@ -819,6 +819,46 @@ describe('HancockEthereumClient integration tests', () => {
         expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockDecode`);
         expect(firstApiCall[1].method).toEqual('POST');
         expect(firstApiCall[1].body).toEqual(JSON.stringify({ code }));
+
+        expect(e).toEqual(new Error());
+
+      }
+
+    });
+
+  });
+
+  describe('::tokenMetadata', () => {
+
+    const addressOrAlias: string = '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d';
+
+    it('should get TokenMetadata', async () => {
+
+      fetch
+        .once(JSON.stringify({ data: 'whatever' }));
+
+      const result: HancockTokenMetadataResponse = await clientInstance.getTokenMetadata(addressOrAlias);
+
+      const firstApiCall: any = fetch.mock.calls[0];
+      expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockToken/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d/mockMetadata/`);
+
+      expect(result).toEqual('whatever' );
+
+    });
+
+    it('should try to get TokenMetadata and fail if there is an error', async () => {
+
+      fetch
+        .mockRejectOnce(JSON.stringify(responses.GET_TOKEN_METADATA_ERROR_RESPONSE), { status: 500 });
+
+      try {
+
+        await clientInstance.getTokenMetadata(addressOrAlias);
+
+      } catch (e) {
+
+        const firstApiCall: any = fetch.mock.calls[0];
+        expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockToken/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d/mockMetadata/`);
 
         expect(e).toEqual(new Error());
 
