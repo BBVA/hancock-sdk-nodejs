@@ -929,7 +929,7 @@ describe('ethereum client', async () => {
     const result = await client.getTokenMetadata('0xde8e772f0350e992ddef81bf8f51d94a8ea9216d');
 
     expect(fetch).toHaveBeenCalledWith(
-      'genericHost:1genericBase/mockToken/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d/mockMetadata/'
+      'genericHost:1genericBase/mockToken/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d/mockMetadata'
     );
     expect(checkStatusSpy).toHaveBeenCalledTimes(1);
     expect(result).toEqual(response.GET_TOKEN_METADATA_RESPONSE.data);
@@ -948,7 +948,7 @@ describe('ethereum client', async () => {
       fail('it should fail');
     } catch (error) {
       expect(fetch).toHaveBeenCalledWith(
-        'genericHost:1genericBase/mockToken/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d/mockMetadata/'
+        'genericHost:1genericBase/mockToken/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d/mockMetadata'
       );
       expect(error).toEqual(new Error(response.GET_TOKEN_METADATA_ERROR_RESPONSE.result.description));
     }

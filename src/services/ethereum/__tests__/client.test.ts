@@ -840,7 +840,7 @@ describe('HancockEthereumClient integration tests', () => {
       const result: HancockTokenMetadataResponse = await clientInstance.getTokenMetadata(addressOrAlias);
 
       const firstApiCall: any = fetch.mock.calls[0];
-      expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockToken/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d/mockMetadata/`);
+      expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockToken/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d/mockMetadata`);
 
       expect(result).toEqual('whatever' );
 
@@ -858,7 +858,7 @@ describe('HancockEthereumClient integration tests', () => {
       } catch (e) {
 
         const firstApiCall: any = fetch.mock.calls[0];
-        expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockToken/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d/mockMetadata/`);
+        expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockToken/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d/mockMetadata`);
 
         expect(e).toEqual(new Error());
 
