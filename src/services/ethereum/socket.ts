@@ -1,7 +1,7 @@
-import WebSocket from 'isomorphic-ws';
-import { HancockSocketMessage, HancockSocketKind, HancockSocketBody } from '..';
 import { EventEmitter } from 'events';
-import { normalizeAddressOrAlias, normalizeAddress } from './utils';
+import WebSocket from 'isomorphic-ws';
+import { HancockSocketBody, HancockSocketKind, HancockSocketMessage } from '..';
+import { normalizeAddress, normalizeAddressOrAlias } from './utils';
 
 export class HancockEthereumSocket extends EventEmitter {
 
@@ -39,7 +39,7 @@ export class HancockEthereumSocket extends EventEmitter {
   }
 
   private onWebSocketOpen() {
-    
+
     console.log('Hancock socket open');
     this.emit('opened');
 
@@ -49,25 +49,27 @@ export class HancockEthereumSocket extends EventEmitter {
 
     try {
 
-      const rawData: string = msg.data ? msg.data : msg
+      const rawData: string = msg.data ? msg.data : msg;
       const data: any = JSON.parse(rawData);
 
       this.emit(data.kind, data);
 
     } catch (e) {
 
+      console.log('Hancock socket message error', e);
+
     }
 
   }
 
   private onWebSocketError(e: any) {
-    
+
     this.emit('error', e);
 
   }
 
   private init() {
-    
+
     try {
 
       if (process.browser) {
@@ -93,18 +95,19 @@ export class HancockEthereumSocket extends EventEmitter {
 
   private sendMessage(kind: HancockSocketKind, body: HancockSocketBody[]) {
     const dataFormated = this.getMessageFormat(kind, body);
-    if (this.ws.readyState === WebSocket.OPEN)
+    if (this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(dataFormated));
+    }
   }
 
   private getMessageFormat(kind: HancockSocketKind, body: HancockSocketBody): HancockSocketMessage {
     const message: HancockSocketMessage = {
-      kind: kind,
-      body: body,
+      kind,
+      body,
     };
 
     if (this.consumer) {
-      message['consumer'] = this.consumer;
+      message.consumer = this.consumer;
     }
 
     return message;

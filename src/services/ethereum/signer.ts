@@ -1,6 +1,6 @@
 import * as etherTx from 'ethereumjs-tx';
 import * as etherWallet from 'ethereumjs-wallet';
-import { DltWallet, DltRawTransaction } from '../hancock.model';
+import { DltRawTransaction, DltWallet } from '../hancock.model';
 
 // TODO: Resolve this situation in webpack, not here
 const _etherTx: any = process.browser ? etherTx.Tx : (etherTx.default || etherTx);
@@ -13,7 +13,6 @@ export interface EthereumWallet extends DltWallet {
 }
 
 export type EthereumRawTransaction = DltRawTransaction;
-
 
 export function generateWallet(): EthereumWallet {
 
