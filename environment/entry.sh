@@ -20,6 +20,12 @@ then
     yarn install
     yarn run coverage
 
+elif [ "$1" = 'lint' ]
+then
+
+    yarn install
+    yarn run lint:fix
+
 else
 
     exec "$@"

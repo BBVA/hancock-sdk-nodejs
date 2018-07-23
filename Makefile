@@ -1,4 +1,4 @@
-.PHONY: build test coverage shell down
+.PHONY: build test coverage shell down lint
 
 YML_DEV=environment/dev/docker-compose.yml
 COMPOSE_DEV=docker-compose -f ${YML_DEV}
@@ -14,6 +14,9 @@ test: build down
 
 coverage: build down
 	${COMPOSE_DEV} run --rm --no-deps --service-ports hancock_sdk_client coverage
+
+lint: build down
+	${COMPOSE_DEV} run --rm --no-deps --service-ports hancock_sdk_client lint
 
 shell: build down
 	${COMPOSE_DEV} run --rm --no-deps hancock_sdk_client /bin/bash

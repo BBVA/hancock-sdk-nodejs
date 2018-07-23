@@ -1,40 +1,50 @@
+import { BigNumber } from 'bignumber.js';
 import config from 'config';
+import merge from 'deepmerge';
 import fetch from 'isomorphic-fetch';
 import {
-  HancockConfig,
-  HancockSignResponse,
-  HancockSignRequest,
-  HancockSendSignedTxRequest,
-  HancockSendSignedTxResponse,
-  InitialHancockConfig,
-  HancockProtocolAction,
-  HancockProtocolDecodeResponse,
-  HancockTokenBalanceResponse,
-  HancockTokenRegisterRequest,
-  HancockTokenRegisterResponse
-} from "../hancock.model";
-import { EthereumAbi } from './model';
+  HancockProtocolDecodeRequest,
+  HancockProtocolDlt,
+  HancockProtocolEncode,
+  HancockProtocolEncodeResponse,
+  HancockTokenMetadataResponse,
+  HancockTokenTransferRequest,
+} from '..';
 import { HancockClient } from '../hancock.model';
-import { signTx, generateWallet } from './signer';
-import { EthereumWallet, EthereumRawTransaction } from './signer';
-import merge from 'deepmerge';
 import {
-  HancockSendTxResponse,
-  HancockSendTxRequest,
-  HancockInvokeOptions,
-  HancockAdaptInvokeResponse,
+  DltAddress,
   HancockAdaptInvokeRequest,
+  HancockAdaptInvokeResponse,
   HancockCallRequest,
   HancockCallResponse,
-  HancockRegisterResponse,
+  HancockInvokeOptions,
   HancockRegisterRequest,
+  HancockRegisterResponse,
+  HancockSendTxRequest,
+  HancockSendTxResponse,
   HancockTransferRequest,
-  DltAddress
 } from '../hancock.model';
-import { normalizeAddressOrAlias, normalizeAlias, normalizeAddress } from './utils';
-import { BigNumber } from 'bignumber.js';
+import {
+  HancockConfig,
+  HancockProtocolAction,
+  HancockProtocolDecodeResponse,
+  HancockSendSignedTxRequest,
+  HancockSendSignedTxResponse,
+  HancockSignRequest,
+  HancockSignResponse,
+  HancockTokenBalanceResponse,
+  HancockTokenRegisterRequest,
+  HancockTokenRegisterResponse,
+  InitialHancockConfig,
+} from '../hancock.model';
+import { EthereumAbi } from './model';
+import {
+  generateWallet,
+  signTx,
+} from './signer';
+import { EthereumRawTransaction, EthereumWallet } from './signer';
 import { HancockEthereumSocket } from './socket';
-import { HancockProtocolDlt, HancockProtocolEncode, HancockProtocolDecodeRequest, HancockProtocolEncodeResponse, HancockTokenTransferRequest, HancockTokenMetadataResponse } from '..';
+import { normalizeAddress, normalizeAddressOrAlias, normalizeAlias } from './utils';
 
 export class HancockEthereumClient implements HancockClient {
 
@@ -52,7 +62,9 @@ export class HancockEthereumClient implements HancockClient {
     this.brokerBaseUrl = `${this.config.broker.host}:${this.config.broker.port}${this.config.broker.base}`;
   }
 
-  public async invokeSmartContract(contractAddressOrAlias: string, method: string, params: string[], from: string, options: HancockInvokeOptions = {}): Promise<HancockSignResponse> {
+  public async invokeSmartContract(
+    contractAddressOrAlias: string, method: string, params: string[], from: string, options: HancockInvokeOptions = {},
+  ): Promise<HancockSignResponse> {
 
     // Done in adaptInvokeSmartContract
     // const normalizedContractAddressOrAlias: string = normalizeAddressOrAlias(contractAddressOrAlias);
@@ -81,18 +93,18 @@ export class HancockEthereumClient implements HancockClient {
       method,
       from,
       params,
-      action: 'call'
+      action: 'call',
     };
 
     return fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
     })
       .then(
         (res: any) => this.checkStatus(res),
-        (err: any) => this.errorHandler(err)
-      );
+        (err: any) => this.errorHandler(err),
+    );
 
   }
 
@@ -105,18 +117,18 @@ export class HancockEthereumClient implements HancockClient {
       method,
       from,
       params,
-      action: 'send'
+      action: 'send',
     };
 
     return fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
     })
       .then(
         (res: any) => this.checkStatus(res),
-        (err: any) => this.errorHandler(err)
-      );
+        (err: any) => this.errorHandler(err),
+    );
 
   }
 
@@ -130,12 +142,12 @@ export class HancockEthereumClient implements HancockClient {
     return fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
     })
       .then(
         (res: any) => this.checkStatus(res),
-        (err: any) => this.errorHandler(err)
-      );
+        (err: any) => this.errorHandler(err),
+    );
 
   }
 
@@ -149,12 +161,12 @@ export class HancockEthereumClient implements HancockClient {
     return fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
     })
       .then(
         (res: any) => this.checkStatus(res),
-        (err: any) => this.errorHandler(err)
-      );
+        (err: any) => this.errorHandler(err),
+    );
 
   }
 
@@ -169,12 +181,12 @@ export class HancockEthereumClient implements HancockClient {
     return fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
     })
       .then(
         (res: any) => this.checkStatus(res),
-        (err: any) => this.errorHandler(err)
-      );
+        (err: any) => this.errorHandler(err),
+    );
 
   }
 
@@ -187,18 +199,18 @@ export class HancockEthereumClient implements HancockClient {
     const body: HancockRegisterRequest = {
       address,
       alias,
-      abi
+      abi,
     };
 
     return fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
     })
       .then(
         (res: any) => this.checkStatus(res),
-        (err: any) => this.errorHandler(err)
-      );
+        (err: any) => this.errorHandler(err),
+    );
 
   }
 
@@ -216,12 +228,12 @@ export class HancockEthereumClient implements HancockClient {
     return fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
     })
       .then(
         (res: any) => this.checkStatus(res),
-        (err: any) => this.errorHandler(err)
-      );
+        (err: any) => this.errorHandler(err),
+    );
 
   }
 
@@ -233,8 +245,8 @@ export class HancockEthereumClient implements HancockClient {
     return fetch(url)
       .then(
         (res: any) => this.checkStatus(res),
-        (err: any) => this.errorHandler(err)
-      )
+        (err: any) => this.errorHandler(err),
+    )
       .then((resBody: any) => {
         return new BigNumber(resBody.data.balance);
       });
@@ -242,12 +254,15 @@ export class HancockEthereumClient implements HancockClient {
 
   public subscribeToContract(contracts: string[] = [], consumer: string = ''): HancockEthereumSocket {
 
-    const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`.replace(/__ADDRESS__/, '').replace(/__SENDER__/, '').replace(/__CONSUMER__/, consumer);
+    const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`
+      .replace(/__ADDRESS__/, '')
+      .replace(/__SENDER__/, '')
+      .replace(/__CONSUMER__/, consumer);
 
     const hancockSocket = new HancockEthereumSocket(url, consumer);
     hancockSocket.on('ready', () => {
-      hancockSocket.addContract(contracts)
-    })
+      hancockSocket.addContract(contracts);
+    });
 
     return hancockSocket;
 
@@ -255,12 +270,15 @@ export class HancockEthereumClient implements HancockClient {
 
   public subscribeToTransfer(addresses: string[] = [], consumer: string = ''): HancockEthereumSocket {
 
-    const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`.replace(/__ADDRESS__/, '').replace(/__SENDER__/, '').replace(/__CONSUMER__/, consumer);
+    const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`
+      .replace(/__ADDRESS__/, '')
+      .replace(/__SENDER__/, '')
+      .replace(/__CONSUMER__/, consumer);
 
     const hancockSocket = new HancockEthereumSocket(url, consumer);
     hancockSocket.on('ready', () => {
       hancockSocket.addTransfer(addresses);
-    })
+    });
 
     return hancockSocket;
 
@@ -295,7 +313,9 @@ export class HancockEthereumClient implements HancockClient {
 
   }
 
-  public async tokenTransfer(from: string, to: string, value: string, addressOrAlias: string, options: HancockInvokeOptions = {}): Promise<HancockSignResponse> {
+  public async tokenTransfer(
+    from: string, to: string, value: string, addressOrAlias: string, options: HancockInvokeOptions = {},
+  ): Promise<HancockSignResponse> {
 
     if (!options.signProvider && !options.privateKey) {
       return Promise.reject('No key nor provider');
@@ -311,7 +331,9 @@ export class HancockEthereumClient implements HancockClient {
 
   }
 
-  public async encodeProtocol(action: HancockProtocolAction, value: string, to: string, data: string, dlt: HancockProtocolDlt): Promise<HancockProtocolEncodeResponse> {
+  public async encodeProtocol(
+    action: HancockProtocolAction, value: string, to: string, data: string, dlt: HancockProtocolDlt,
+  ): Promise<HancockProtocolEncodeResponse> {
 
     to = normalizeAddress(to);
 
@@ -321,51 +343,53 @@ export class HancockEthereumClient implements HancockClient {
       body: {
         value,
         to,
-        data
+        data,
       },
-      dlt
+      dlt,
     };
-    
+
     return fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
     })
-    .then(
-      (res: any) => this.checkStatus(res),
-      (err: any) => this.errorHandler(err)
+      .then(
+        (res: any) => this.checkStatus(res),
+        (err: any) => this.errorHandler(err),
     );
   }
-  
+
   public async decodeProtocol(code: string): Promise<HancockProtocolDecodeResponse> {
-    
+
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.decode}`;
     const body: HancockProtocolDecodeRequest = {
-      code
+      code,
     };
-    
+
     return fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
     })
-    .then(
-      (res: any) => this.checkStatus(res),
-      (err: any) => this.errorHandler(err)
+      .then(
+        (res: any) => this.checkStatus(res),
+        (err: any) => this.errorHandler(err),
     );
   }
-  
-  public async getTokenBalance(addresOrAlias:string, address:string): Promise<HancockTokenBalanceResponse> {
+
+  public async getTokenBalance(addresOrAlias: string, address: string): Promise<HancockTokenBalanceResponse> {
 
     address = normalizeAddress(address);
     addresOrAlias = normalizeAddressOrAlias(addresOrAlias);
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.tokenBalance}`.replace(/__ADDRESS_OR_ALIAS__/, addresOrAlias).replace(/__ADDRESS__/, address);
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.tokenBalance}`
+      .replace(/__ADDRESS_OR_ALIAS__/, addresOrAlias)
+      .replace(/__ADDRESS__/, address);
 
     return fetch(url)
       .then(
         (res: any) => this.checkStatus(res),
-        (err: any) => this.errorHandler(err)
-      )
+        (err: any) => this.errorHandler(err),
+    )
       .then((resBody: any) => {
         return resBody.data;
       });
@@ -379,8 +403,8 @@ export class HancockEthereumClient implements HancockClient {
     return fetch(url)
       .then(
         (res: any) => this.checkStatus(res),
-        (err: any) => this.errorHandler(err)
-      )
+        (err: any) => this.errorHandler(err),
+    )
       .then((resBody: any) => {
         return resBody.data;
       });
@@ -391,7 +415,7 @@ export class HancockEthereumClient implements HancockClient {
     if (!response.ok) {
       this.errorHandler(response);
     }
-    
+
     return response.json();
   }
 
@@ -416,18 +440,18 @@ export class HancockEthereumClient implements HancockClient {
       from,
       to,
       value,
-      data
+      data,
     };
 
     return fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
     })
       .then(
         (res: any) => this.checkStatus(res),
-        (err: any) => this.errorHandler(err)
-      );
+        (err: any) => this.errorHandler(err),
+    );
   }
 
   private async adaptTokenTransfer(from: string, to: string, value: string, addressOrAlias: string): Promise<HancockAdaptInvokeResponse> {
@@ -440,18 +464,18 @@ export class HancockEthereumClient implements HancockClient {
     const body: HancockTokenTransferRequest = {
       from,
       to,
-      value
+      value,
     };
 
     return fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
     })
       .then(
         (res: any) => this.checkStatus(res),
-        (err: any) => this.errorHandler(err)
-      );
+        (err: any) => this.errorHandler(err),
+    );
   }
 
   private async signAndSend(resBody: HancockAdaptInvokeResponse, options: HancockInvokeOptions): Promise<HancockSignResponse> {
@@ -472,6 +496,5 @@ export class HancockEthereumClient implements HancockClient {
     return this.sendTransaction(resBody.data);
 
   }
-
 
 }

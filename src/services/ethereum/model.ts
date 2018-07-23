@@ -1,4 +1,4 @@
-import { HancockEventEmitter, HancockEvent, HancockEventKind, HancockEventBody } from "..";
+import { HancockEventEmitter, HancockEventKind } from '..';
 
 export type EthereumAddress = string;
 export type EthereumContractAddress = string;
@@ -20,7 +20,7 @@ export interface HancockEthereumEvent {
 
 export interface HancockEthereumEventEmitter extends HancockEventEmitter {
   on(event: HancockEventKind, fn: (payload: HancockEthereumEvent) => void, context?: any): this;
-  
+
 }
 
 export interface EthereumContractEventBody {

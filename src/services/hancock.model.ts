@@ -1,5 +1,5 @@
-import EventEmitter from 'eventemitter3';
 import { BigNumber } from 'bignumber.js';
+import EventEmitter from 'eventemitter3';
 import { HancockEthereumSocket } from './ethereum/socket';
 
 export type DltAddress = string;
@@ -22,11 +22,11 @@ export interface HancockInvokeRequest {
 }
 
 export interface HancockAdaptInvokeRequest extends HancockInvokeRequest {
-  action: 'send'
+  action: 'send';
 }
 
 export interface HancockCallRequest extends HancockInvokeRequest {
-  action: 'call'
+  action: 'call';
 }
 
 export interface HancockAdaptInvokeResponse {
@@ -94,18 +94,18 @@ export interface HancockRegisterResponse {
 // Transfer
 
 export interface HancockTransferRequest {
-  from: string,
-  to: string,
-  value: string,
-  data?: string
+  from: string;
+  to: string;
+  value: string;
+  data?: string;
 }
 
 // TokenTransfer
 
 export interface HancockTokenTransferRequest {
-  from: string,
-  to: string,
-  value: string
+  from: string;
+  to: string;
+  value: string;
 }
 
 // Token Register
@@ -124,7 +124,7 @@ export interface HancockTokenRegisterResponse {
 
 // Token metadata
 
-export interface HancockTokenMetadataResponse{
+export interface HancockTokenMetadataResponse {
   name: string;
   symbol: string;
   decimals: number;
@@ -221,8 +221,8 @@ export interface HancockProtocolDecodeResponse {
   result: {
     code: number;
     description: string;
-  },
-  data: HancockProtocolEncode
+  };
+  data: HancockProtocolEncode;
 }
 
 // INTERFACES
@@ -250,13 +250,13 @@ export interface HancockClient {
   generateWallet(): DltWallet;
   subscribeToContract(contracts: string[]): HancockEthereumSocket;
   subscribeToTransfer(addresses: string[]): HancockEthereumSocket;
-  getBalance(address:string): Promise<BigNumber>;
-  transfer(from: string, to: string, value: string, options?: HancockInvokeOptions, data?:string): Promise<HancockSignResponse>;
+  getBalance(address: string): Promise<BigNumber>;
+  transfer(from: string, to: string, value: string, options?: HancockInvokeOptions, data?: string): Promise<HancockSignResponse>;
   tokenTransfer(from: string, to: string, value: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
-  encodeProtocol(action:HancockProtocolAction, dlt:HancockProtocolDlt, value: string, to:string, data:string): Promise<HancockProtocolEncodeResponse>;
+  encodeProtocol(action: HancockProtocolAction, dlt: HancockProtocolDlt, value: string, to: string, data: string): Promise<HancockProtocolEncodeResponse>;
   decodeProtocol(code: string): Promise<HancockProtocolDecodeResponse>;
-  getTokenBalance(addressOrAlias:string, address:string): Promise<HancockTokenBalanceResponse>;
-  getTokenMetadata(addressOrAlias:string): Promise<HancockTokenMetadataResponse>;
+  getTokenBalance(addressOrAlias: string, address: string): Promise<HancockTokenBalanceResponse>;
+  getTokenMetadata(addressOrAlias: string): Promise<HancockTokenMetadataResponse>;
   tokenRegister(alias: string, address: DltAddress): Promise<HancockTokenRegisterResponse>;
 }
 
