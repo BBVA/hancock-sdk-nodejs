@@ -9,6 +9,7 @@ import {
   HancockProtocolEncodeResponse,
   HancockTokenMetadataResponse,
   HancockTokenTransferRequest,
+  HancockTokenApproveRequest,
 } from '..';
 import { HancockClient } from '../hancock.model';
 import {
@@ -395,6 +396,24 @@ export class HancockEthereumClient implements HancockClient {
       });
   }
 
+  public async tokenApprove(
+    from: string, spender: string, value: string, addressOrAlias: string, options: HancockInvokeOptions = {},
+  ): Promise<HancockSignResponse> {
+
+    if (!options.signProvider && !options.privateKey) {
+      return Promise.reject('No key nor provider');
+    }
+
+    return this
+      .adaptTokenApprove(from, spender, value, addressOrAlias)
+      .then((resBody: HancockAdaptInvokeResponse) => {
+
+        return this.signAndSend(resBody, options);
+
+      });
+
+  }
+
   public async getTokenMetadata(addressOrAlias: string): Promise<HancockTokenMetadataResponse> {
 
     addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
@@ -441,6 +460,30 @@ export class HancockEthereumClient implements HancockClient {
       to,
       value,
       data,
+    };
+
+    return fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+      .then(
+        (res: any) => this.checkStatus(res),
+        (err: any) => this.errorHandler(err),
+    );
+  }
+
+  private async adaptTokenApprove(from: string, spender: string, value: string, addressOrAlias: string): Promise<HancockAdaptInvokeResponse> {
+
+    from = normalizeAddressOrAlias(from);
+    spender = normalizeAddress(spender);
+    addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
+
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.tokenAllowance}`.replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
+    const body: HancockTokenApproveRequest = {
+      from,
+      spender,
+      value,
     };
 
     return fetch(url, {

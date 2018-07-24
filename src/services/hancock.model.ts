@@ -131,6 +131,14 @@ export interface HancockTokenMetadataResponse {
   totalSupply: number;
 }
 
+//Token approve
+
+export interface HancockTokenApproveRequest {
+  from: string;
+  spender: string;
+  value: string;
+}
+
 // CONFIG
 
 export interface HancockAdapterConfig {
@@ -253,6 +261,7 @@ export interface HancockClient {
   getBalance(address: string): Promise<BigNumber>;
   transfer(from: string, to: string, value: string, options?: HancockInvokeOptions, data?: string): Promise<HancockSignResponse>;
   tokenTransfer(from: string, to: string, value: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
+  tokenApprove(from: string, spender: string, value: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
   encodeProtocol(action: HancockProtocolAction, dlt: HancockProtocolDlt, value: string, to: string, data: string): Promise<HancockProtocolEncodeResponse>;
   decodeProtocol(code: string): Promise<HancockProtocolDecodeResponse>;
   getTokenBalance(addressOrAlias: string, address: string): Promise<HancockTokenBalanceResponse>;
