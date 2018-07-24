@@ -10,7 +10,7 @@ import {
   HancockTokenMetadataResponse,
   HancockTokenTransferRequest,
 } from '..';
-import { HancockClient } from '../hancock.model';
+import { HancockClient, HancockTokenTransferFromRequest } from '../hancock.model';
 import {
   DltAddress,
   HancockAdaptInvokeRequest,
@@ -331,6 +331,24 @@ export class HancockEthereumClient implements HancockClient {
 
   }
 
+  public async tokenTransferFrom(
+    from: string, sender: string, to: string, value: string, addressOrAlias: string, options: HancockInvokeOptions = {},
+  ): Promise<HancockSignResponse> {
+
+    if (!options.signProvider && !options.privateKey) {
+      return Promise.reject('No key nor provider');
+    }
+
+    return this
+      .adaptTokenTransferFrom(from, sender, to, value, addressOrAlias)
+      .then((resBody: HancockAdaptInvokeResponse) => {
+
+        return this.signAndSend(resBody, options);
+
+      });
+
+  }
+
   public async encodeProtocol(
     action: HancockProtocolAction, value: string, to: string, data: string, dlt: HancockProtocolDlt,
   ): Promise<HancockProtocolEncodeResponse> {
@@ -441,6 +459,32 @@ export class HancockEthereumClient implements HancockClient {
       to,
       value,
       data,
+    };
+
+    return fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+      .then(
+        (res: any) => this.checkStatus(res),
+        (err: any) => this.errorHandler(err),
+    );
+  }
+
+  private async adaptTokenTransferFrom(from: string, sender: string, to: string, value: string, addressOrAlias: string): Promise<HancockAdaptInvokeResponse> {
+
+    from = normalizeAddressOrAlias(from);
+    sender = normalizeAddressOrAlias(sender);
+    to = normalizeAddress(to);
+    addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
+
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.tokenTransferFrom}`.replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
+    const body: HancockTokenTransferFromRequest = {
+      from,
+      sender,
+      to,
+      value,
     };
 
     return fetch(url, {

@@ -1,10 +1,24 @@
-import 'jest';
+import BigNumber from 'bignumber.js';
 import fetch from 'isomorphic-fetch';
 import * as ws from 'isomorphic-ws';
+import 'jest';
+import {
+  EthereumWallet, HancockCallResponse,
+  HancockInvokeOptions,
+  HancockProtocolAction,
+  HancockProtocolDecodeResponse,
+  HancockProtocolDlt,
+  HancockProtocolEncode,
+  HancockProtocolEncodeResponse,
+  HancockRegisterResponse,
+  HancockSendSignedTxResponse,
+  HancockSendTxResponse,
+  HancockSignResponse,
+  HancockSocketMessage,
+  HancockTokenMetadataResponse,
+} from '../..';
 import { HancockEthereumClient } from '../../..';
 import * as responses from '../__mocks__/responses';
-import { HancockInvokeOptions, HancockCallResponse, HancockSendTxResponse, HancockSendSignedTxResponse, HancockSignResponse, HancockRegisterResponse, HancockSocketMessage, EthereumWallet, HancockProtocolEncodeResponse, HancockProtocolDlt, HancockProtocolAction, HancockProtocolEncode, HancockProtocolDecodeResponse, HancockTokenMetadataResponse } from '../..';
-import BigNumber from 'bignumber.js';
 import { HancockEthereumSocket } from '../socket';
 
 jest.mock('isomorphic-fetch');
@@ -18,7 +32,6 @@ describe('HancockEthereumClient integration tests', () => {
   const normalizedAlias: string = 'mocked-alias';
   const address: string = 'DE8E772F0350E992DDEF81BF8F51D94A8EA9216D';
   const normalizedAddress: string = '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d';
-
 
   const socket: jest.Mock = (ws as any).__WebSocketConstructor__;
   const socketInstance: any = (ws as any).__WebSocketInstance__;
@@ -62,18 +75,18 @@ describe('HancockEthereumClient integration tests', () => {
         privateKey: responses.PRIVATE_KEY,
       };
 
-      fetch
+      (fetch as any)
         .once(JSON.stringify(responses.SC_INVOKE_ADAPT_RESPONSE))
         .once(JSON.stringify(responses.SEND_SIGNED_TX_RESPONSE));
 
       const result = await clientInstance.invokeSmartContract(alias, method, params, from, options);
 
-      const firstApiCall: any = fetch.mock.calls[0];
+      const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
       expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockInvoke/${normalizedAlias}`);
       expect(firstApiCall[1].method).toEqual('POST');
       expect(firstApiCall[1].body).toEqual(JSON.stringify({ method, from, params, action: 'send' }));
 
-      const secondApiCall: any = fetch.mock.calls[1];
+      const secondApiCall: any = (fetch as jest.Mock).mock.calls[1];
       expect(secondApiCall[0]).toEqual('http://mockWallet:6666/mockBase/mockSendSignedTx');
       expect(secondApiCall[1].method).toEqual('POST');
       expect(secondApiCall[1].body).toEqual(JSON.stringify({ tx: responses.SIGNED_TX }));
@@ -85,21 +98,21 @@ describe('HancockEthereumClient integration tests', () => {
     it('given a sign provider, should adapt a smartContract invoke by address (normalized) and send it to sign', async () => {
 
       const options: HancockInvokeOptions = {
-        signProvider: 'mockProvider'
+        signProvider: 'mockProvider',
       };
 
-      fetch
+      (fetch as any)
         .once(JSON.stringify(responses.SC_INVOKE_ADAPT_RESPONSE))
         .once(JSON.stringify(responses.SEND_TO_SIGN_RESPONSE));
 
       const result = await clientInstance.invokeSmartContract(address, method, params, from, options);
 
-      const firstApiCall: any = fetch.mock.calls[0];
+      const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
       expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockInvoke/${normalizedAddress}`);
       expect(firstApiCall[1].method).toEqual('POST');
       expect(firstApiCall[1].body).toEqual(JSON.stringify({ method, from, params, action: 'send' }));
 
-      const secondApiCall: any = fetch.mock.calls[1];
+      const secondApiCall: any = (fetch as jest.Mock).mock.calls[1];
       expect(secondApiCall[0]).toEqual('http://mockWallet:6666/mockBase/mockSignTx');
       expect(secondApiCall[1].method).toEqual('POST');
       expect(secondApiCall[1].body).toEqual(JSON.stringify({ rawTx: responses.SC_INVOKE_ADAPT_RESPONSE.data, provider: 'mockProvider' }));
@@ -118,12 +131,12 @@ describe('HancockEthereumClient integration tests', () => {
 
     it('should call a smartContract method by alias (normalized) and retrieve the response', async () => {
 
-      fetch
+      (fetch as any)
         .once(JSON.stringify(responses.SC_CALL_RESPONSE));
 
       const result: HancockCallResponse = await clientInstance.callSmartContract(alias, method, params, from);
 
-      const firstApiCall: any = fetch.mock.calls[0];
+      const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
       expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockInvoke/${normalizedAlias}`);
       expect(firstApiCall[1].method).toEqual('POST');
       expect(firstApiCall[1].body).toEqual(JSON.stringify({ method, from, params, action: 'call' }));
@@ -134,7 +147,7 @@ describe('HancockEthereumClient integration tests', () => {
 
     it('should call a smartContract method by address (normalized) and fail if there is an error', async () => {
 
-      fetch
+      (fetch as any)
         .mockRejectOnce(JSON.stringify(responses.COMMON_RESPONSE_ERROR), { status: 400 });
 
       try {
@@ -143,7 +156,7 @@ describe('HancockEthereumClient integration tests', () => {
 
       } catch (e) {
 
-        const firstApiCall: any = fetch.mock.calls[0];
+        const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
         expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockInvoke/${normalizedAddress}`);
         expect(firstApiCall[1].method).toEqual('POST');
         expect(firstApiCall[1].body).toEqual(JSON.stringify({ method, from, params, action: 'call' }));
@@ -164,12 +177,12 @@ describe('HancockEthereumClient integration tests', () => {
 
     it('should adapt a smartContract invoke by alias (normalized)', async () => {
 
-      fetch
+      (fetch as any)
         .once(JSON.stringify(responses.SC_INVOKE_ADAPT_RESPONSE));
 
       const result = await clientInstance.adaptInvokeSmartContract(alias, method, params, from);
 
-      const firstApiCall: any = fetch.mock.calls[0];
+      const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
       expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockInvoke/${normalizedAlias}`);
       expect(firstApiCall[1].method).toEqual('POST');
       expect(firstApiCall[1].body).toEqual(JSON.stringify({ method, from, params, action: 'send' }));
@@ -180,7 +193,7 @@ describe('HancockEthereumClient integration tests', () => {
 
     it('should call a smartContract method by address (normalized) and fail if there is an error', async () => {
 
-      fetch
+      (fetch as any)
         .mockRejectOnce(JSON.stringify(responses.COMMON_RESPONSE_ERROR), { status: 400 });
 
       try {
@@ -189,7 +202,7 @@ describe('HancockEthereumClient integration tests', () => {
 
       } catch (e) {
 
-        const firstApiCall: any = fetch.mock.calls[0];
+        const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
         expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockInvoke/${normalizedAddress}`);
         expect(firstApiCall[1].method).toEqual('POST');
         expect(firstApiCall[1].body).toEqual(JSON.stringify({ method, from, params, action: 'send' }));
@@ -208,12 +221,12 @@ describe('HancockEthereumClient integration tests', () => {
 
     it('should send the raw transaction to be signed by the node', async () => {
 
-      fetch
+      (fetch as any)
         .once(JSON.stringify(responses.SEND_TX_RESPONSE));
 
       const result: HancockSendTxResponse = await clientInstance.sendTransaction(tx);
 
-      const firstApiCall: any = fetch.mock.calls[0];
+      const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
       expect(firstApiCall[0]).toEqual(`http://mockWallet:6666/mockBase/mockSendTx`);
       expect(firstApiCall[1].method).toEqual('POST');
       expect(firstApiCall[1].body).toEqual(JSON.stringify({ tx }));
@@ -224,7 +237,7 @@ describe('HancockEthereumClient integration tests', () => {
 
     it('should send the raw transaction to be signed by the node and fail if there is an error', async () => {
 
-      fetch
+      (fetch as any)
         .mockRejectOnce(JSON.stringify(responses.COMMON_RESPONSE_ERROR), { status: 400 });
 
       try {
@@ -233,7 +246,7 @@ describe('HancockEthereumClient integration tests', () => {
 
       } catch (e) {
 
-        const firstApiCall: any = fetch.mock.calls[0];
+        const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
         expect(firstApiCall[0]).toEqual(`http://mockWallet:6666/mockBase/mockSendTx`);
         expect(firstApiCall[1].method).toEqual('POST');
         expect(firstApiCall[1].body).toEqual(JSON.stringify({ tx }));
@@ -252,12 +265,12 @@ describe('HancockEthereumClient integration tests', () => {
 
     it('should send the signed transaction to the dlt (by calling WalletHub)', async () => {
 
-      fetch
+      (fetch as any)
         .once(JSON.stringify(responses.SEND_SIGNED_TX_RESPONSE));
 
       const result: HancockSendSignedTxResponse = await clientInstance.sendSignedTransaction(tx);
 
-      const firstApiCall: any = fetch.mock.calls[0];
+      const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
       expect(firstApiCall[0]).toEqual(`http://mockWallet:6666/mockBase/mockSendSignedTx`);
       expect(firstApiCall[1].method).toEqual('POST');
       expect(firstApiCall[1].body).toEqual(JSON.stringify({ tx }));
@@ -268,7 +281,7 @@ describe('HancockEthereumClient integration tests', () => {
 
     it('should send the signed transaction to the dlt (by calling WalletHub) and fail if there is an error', async () => {
 
-      fetch
+      (fetch as any)
         .mockRejectOnce(JSON.stringify(responses.COMMON_RESPONSE_ERROR), { status: 400 });
 
       try {
@@ -277,7 +290,7 @@ describe('HancockEthereumClient integration tests', () => {
 
       } catch (e) {
 
-        const firstApiCall: any = fetch.mock.calls[0];
+        const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
         expect(firstApiCall[0]).toEqual(`http://mockWallet:6666/mockBase/mockSendSignedTx`);
         expect(firstApiCall[1].method).toEqual('POST');
         expect(firstApiCall[1].body).toEqual(JSON.stringify({ tx }));
@@ -297,12 +310,12 @@ describe('HancockEthereumClient integration tests', () => {
 
     it('should send the raw transaction throught WalletHub to be signed by the signProvider', async () => {
 
-      fetch
+      (fetch as any)
         .once(JSON.stringify(responses.SEND_SIGNED_TX_RESPONSE));
 
       const result: HancockSignResponse = await clientInstance.sendTransactionToSign(rawTx, signProvider);
 
-      const firstApiCall: any = fetch.mock.calls[0];
+      const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
       expect(firstApiCall[0]).toEqual(`http://mockWallet:6666/mockBase/mockSignTx`);
       expect(firstApiCall[1].method).toEqual('POST');
       expect(firstApiCall[1].body).toEqual(JSON.stringify({ rawTx, provider: signProvider }));
@@ -313,7 +326,7 @@ describe('HancockEthereumClient integration tests', () => {
 
     it('should send the raw transaction throught WalletHub to be signed by the signProvider and fail if there is an error', async () => {
 
-      fetch
+      (fetch as any)
         .mockRejectOnce(JSON.stringify(responses.COMMON_RESPONSE_ERROR), { status: 400 });
 
       try {
@@ -322,7 +335,7 @@ describe('HancockEthereumClient integration tests', () => {
 
       } catch (e) {
 
-        const firstApiCall: any = fetch.mock.calls[0];
+        const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
         expect(firstApiCall[0]).toEqual(`http://mockWallet:6666/mockBase/mockSignTx`);
         expect(firstApiCall[1].method).toEqual('POST');
         expect(firstApiCall[1].body).toEqual(JSON.stringify({ rawTx, provider: signProvider }));
@@ -341,12 +354,12 @@ describe('HancockEthereumClient integration tests', () => {
 
     it('should regiter the contract in hancock (normalizing address and alias)', async () => {
 
-      fetch
+      (fetch as any)
         .once(JSON.stringify(responses.SEND_SIGNED_TX_RESPONSE));
 
       const result: HancockRegisterResponse = await clientInstance.registerSmartContract(alias, address, abi);
 
-      const firstApiCall: any = fetch.mock.calls[0];
+      const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
       expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockRegister`);
       expect(firstApiCall[1].method).toEqual('POST');
       expect(firstApiCall[1].body).toEqual(JSON.stringify({ address: normalizedAddress, alias: normalizedAlias, abi }));
@@ -357,7 +370,7 @@ describe('HancockEthereumClient integration tests', () => {
 
     it('should try to regiter the contract in hancock and fail if there is an error', async () => {
 
-      fetch
+      (fetch as any)
         .mockRejectOnce(JSON.stringify(responses.COMMON_RESPONSE_ERROR), { status: 400 });
 
       try {
@@ -366,7 +379,7 @@ describe('HancockEthereumClient integration tests', () => {
 
       } catch (e) {
 
-        const firstApiCall: any = fetch.mock.calls[0];
+        const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
         expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockRegister`);
         expect(firstApiCall[1].method).toEqual('POST');
         expect(firstApiCall[1].body).toEqual(JSON.stringify({ address: normalizedAddress, alias: normalizedAlias, abi }));
@@ -383,12 +396,12 @@ describe('HancockEthereumClient integration tests', () => {
 
     it('should regiter the token in hancock (normalizing address and alias)', async () => {
 
-      fetch
+      (fetch as any)
         .once(JSON.stringify(responses.SEND_SIGNED_TX_RESPONSE));
 
       const result: HancockRegisterResponse = await clientInstance.tokenRegister(alias, address);
 
-      const firstApiCall: any = fetch.mock.calls[0];
+      const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
       expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockToken/mockRegister`);
       expect(firstApiCall[1].method).toEqual('POST');
       expect(firstApiCall[1].body).toEqual(JSON.stringify({ address: normalizedAddress, alias: normalizedAlias }));
@@ -399,7 +412,7 @@ describe('HancockEthereumClient integration tests', () => {
 
     it('should try to regiter the token in hancock and fail if there is an error', async () => {
 
-      fetch
+      (fetch as any)
         .mockRejectOnce(JSON.stringify(responses.COMMON_RESPONSE_ERROR), { status: 400 });
 
       try {
@@ -408,7 +421,7 @@ describe('HancockEthereumClient integration tests', () => {
 
       } catch (e) {
 
-        const firstApiCall: any = fetch.mock.calls[0];
+        const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
         expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockToken/mockRegister`);
         expect(firstApiCall[1].method).toEqual('POST');
         expect(firstApiCall[1].body).toEqual(JSON.stringify({ address: normalizedAddress, alias: normalizedAlias }));
@@ -425,12 +438,12 @@ describe('HancockEthereumClient integration tests', () => {
 
     it('should retrieve the balance in weis from the dlt', async () => {
 
-      fetch
+      (fetch as any)
         .once(JSON.stringify(responses.GET_BALANCE_RESPONSE));
 
       const result: BigNumber = await clientInstance.getBalance(normalizedAddress);
 
-      const firstApiCall: any = fetch.mock.calls[0];
+      const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
       expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockBalance/${normalizedAddress}`);
 
       expect(result).toEqual(new BigNumber(responses.GET_BALANCE_RESPONSE.data.balance));
@@ -439,7 +452,7 @@ describe('HancockEthereumClient integration tests', () => {
 
     it('should try to retrieve the balance in weis from the dlt and fail if there is an error', async () => {
 
-      fetch
+      (fetch as any)
         .mockRejectOnce(JSON.stringify(responses.GET_BALANCE_ERROR_RESPONSE), { status: 400 });
 
       try {
@@ -448,7 +461,7 @@ describe('HancockEthereumClient integration tests', () => {
 
       } catch (e) {
 
-        const firstApiCall: any = fetch.mock.calls[0];
+        const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
         expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockBalance/${normalizedAddress}`);
 
         expect(e).toEqual(new Error());
@@ -595,18 +608,18 @@ describe('HancockEthereumClient integration tests', () => {
         privateKey: responses.PRIVATE_KEY,
       };
 
-      fetch
+      (fetch as any)
         .once(JSON.stringify(responses.SC_INVOKE_ADAPT_RESPONSE))
         .once(JSON.stringify(responses.SEND_SIGNED_TX_RESPONSE));
 
       const result: HancockSignResponse = await clientInstance.transfer(from, to, value, options, data);
 
-      const firstApiCall: any = fetch.mock.calls[0];
+      const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
       expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockTransfer`);
       expect(firstApiCall[1].method).toEqual('POST');
       expect(firstApiCall[1].body).toEqual(JSON.stringify({ from: normalizedFrom, to: normalizedTo, value, data }));
 
-      const secondApiCall: any = fetch.mock.calls[1];
+      const secondApiCall: any = (fetch as jest.Mock).mock.calls[1];
       expect(secondApiCall[0]).toEqual('http://mockWallet:6666/mockBase/mockSendSignedTx');
       expect(secondApiCall[1].method).toEqual('POST');
       expect(secondApiCall[1].body).toEqual(JSON.stringify({ tx: responses.SIGNED_TX }));
@@ -618,21 +631,21 @@ describe('HancockEthereumClient integration tests', () => {
     it('given a sign provider, should adapt a transfer and send it to sign', async () => {
 
       const options: HancockInvokeOptions = {
-        signProvider: 'mockProvider'
+        signProvider: 'mockProvider',
       };
 
-      fetch
+      (fetch as any)
         .once(JSON.stringify(responses.SC_INVOKE_ADAPT_RESPONSE))
         .once(JSON.stringify(responses.SEND_TO_SIGN_RESPONSE));
 
       const result: HancockSignResponse = await clientInstance.transfer(from, to, value, options, data);
 
-      const firstApiCall: any = fetch.mock.calls[0];
+      const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
       expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockTransfer`);
       expect(firstApiCall[1].method).toEqual('POST');
       expect(firstApiCall[1].body).toEqual(JSON.stringify({ from: normalizedFrom, to: normalizedTo, value, data }));
 
-      const secondApiCall: any = fetch.mock.calls[1];
+      const secondApiCall: any = (fetch as jest.Mock).mock.calls[1];
       expect(secondApiCall[0]).toEqual('http://mockWallet:6666/mockBase/mockSignTx');
       expect(secondApiCall[1].method).toEqual('POST');
       expect(secondApiCall[1].body).toEqual(JSON.stringify({ rawTx: responses.SC_INVOKE_ADAPT_RESPONSE.data, provider: 'mockProvider' }));
@@ -677,18 +690,18 @@ describe('HancockEthereumClient integration tests', () => {
         privateKey: responses.PRIVATE_KEY,
       };
 
-      fetch
+      (fetch as any)
         .once(JSON.stringify(responses.SC_INVOKE_ADAPT_RESPONSE))
         .once(JSON.stringify(responses.SEND_SIGNED_TX_RESPONSE));
 
       const result: HancockSignResponse = await clientInstance.tokenTransfer(from, to, value, addressOrAlias, options);
 
-      const firstApiCall: any = fetch.mock.calls[0];
+      const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
       expect(firstApiCall[0]).toEqual('http://mockAdapter:6666/mockBase/mockToken/' + normalizedAlias + '/mockTransfer');
       expect(firstApiCall[1].method).toEqual('POST');
       expect(firstApiCall[1].body).toEqual(JSON.stringify({ from: normalizedFrom, to: normalizedTo, value }));
 
-      const secondApiCall: any = fetch.mock.calls[1];
+      const secondApiCall: any = (fetch as jest.Mock).mock.calls[1];
       expect(secondApiCall[0]).toEqual('http://mockWallet:6666/mockBase/mockSendSignedTx');
       expect(secondApiCall[1].method).toEqual('POST');
       expect(secondApiCall[1].body).toEqual(JSON.stringify({ tx: responses.SIGNED_TX }));
@@ -700,21 +713,105 @@ describe('HancockEthereumClient integration tests', () => {
     it('given a sign provider, should adapt a tokenTransfer and send it to sign', async () => {
 
       const options: HancockInvokeOptions = {
-        signProvider: 'mockProvider'
+        signProvider: 'mockProvider',
       };
 
-      fetch
+      (fetch as any)
         .once(JSON.stringify(responses.SC_INVOKE_ADAPT_RESPONSE))
         .once(JSON.stringify(responses.SEND_TO_SIGN_RESPONSE));
 
       const result: HancockSignResponse = await clientInstance.tokenTransfer(from, to, value, addressOrAlias, options);
 
-      const firstApiCall: any = fetch.mock.calls[0];
+      const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
       expect(firstApiCall[0]).toEqual('http://mockAdapter:6666/mockBase/mockToken/' + normalizedAlias + '/mockTransfer');
       expect(firstApiCall[1].method).toEqual('POST');
       expect(firstApiCall[1].body).toEqual(JSON.stringify({ from: normalizedFrom, to: normalizedTo, value }));
 
-      const secondApiCall: any = fetch.mock.calls[1];
+      const secondApiCall: any = (fetch as jest.Mock).mock.calls[1];
+      expect(secondApiCall[0]).toEqual('http://mockWallet:6666/mockBase/mockSignTx');
+      expect(secondApiCall[1].method).toEqual('POST');
+      expect(secondApiCall[1].body).toEqual(JSON.stringify({ rawTx: responses.SC_INVOKE_ADAPT_RESPONSE.data, provider: 'mockProvider' }));
+
+      expect(result).toEqual(responses.SEND_TO_SIGN_RESPONSE);
+
+    });
+
+  });
+
+  describe('::tokenTransferFrom', () => {
+
+    const from: string = 'F01B3C2131FB5BD8D1D1E5D44F8AD14A2728EC91';
+    const sender: string = 'F01B3C2131FB5BD8D1D1E5D44F8AD14A2728EC91';
+    const to: string = '187ACE2D9051D74296A8E4E154D652B8B6EC4738';
+
+    const normalizedFrom: string = '0xf01b3c2131fb5bd8d1d1e5d44f8ad14a2728ec91';
+    const normalizedSender: string = '0xf01b3c2131fb5bd8d1d1e5d44f8ad14a2728ec91';
+    const normalizedTo: string = '0x187ace2d9051d74296a8e4e154d652b8b6ec4738';
+
+    const value: string = 'mockedValue';
+    const addressOrAlias: string = 'mockedAlias';
+
+    it('should fail if there is neither privateKey nor signProvider', async () => {
+
+      const options: HancockInvokeOptions = {};
+
+      try {
+
+        await clientInstance.tokenTransferFrom(from, sender, to, value, addressOrAlias, options);
+        fail('It should fail');
+
+      } catch (e) {
+
+        expect(e).toEqual('No key nor provider');
+
+      }
+
+    });
+
+    it('given a private key, should adapt a tokenTransferFrom, sign and send it to dlt', async () => {
+
+      const options: HancockInvokeOptions = {
+        privateKey: responses.PRIVATE_KEY,
+      };
+
+      (fetch as any)
+        .once(JSON.stringify(responses.SC_INVOKE_ADAPT_RESPONSE))
+        .once(JSON.stringify(responses.SEND_SIGNED_TX_RESPONSE));
+
+      const result: HancockSignResponse = await clientInstance.tokenTransferFrom(from, sender, to, value, addressOrAlias, options);
+
+      const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
+      expect(firstApiCall[0]).toEqual('http://mockAdapter:6666/mockBase/mockToken/' + normalizedAlias + '/mockTransferFrom');
+      expect(firstApiCall[1].method).toEqual('POST');
+      expect(firstApiCall[1].body).toEqual(JSON.stringify({ from: normalizedFrom, sender: normalizedSender, to: normalizedTo, value }));
+
+      const secondApiCall: any = (fetch as jest.Mock).mock.calls[1];
+      expect(secondApiCall[0]).toEqual('http://mockWallet:6666/mockBase/mockSendSignedTx');
+      expect(secondApiCall[1].method).toEqual('POST');
+      expect(secondApiCall[1].body).toEqual(JSON.stringify({ tx: responses.SIGNED_TX }));
+
+      expect(result).toEqual(responses.SEND_SIGNED_TX_RESPONSE);
+
+    });
+
+    it('given a sign provider, should adapt a tokenTransferFrom and send it to sign', async () => {
+
+      const options: HancockInvokeOptions = {
+        signProvider: 'mockProvider',
+      };
+
+      (fetch as any)
+        .once(JSON.stringify(responses.SC_INVOKE_ADAPT_RESPONSE))
+        .once(JSON.stringify(responses.SEND_TO_SIGN_RESPONSE));
+
+      const result: HancockSignResponse = await clientInstance.tokenTransferFrom(from, sender, to, value, addressOrAlias, options);
+
+      const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
+      expect(firstApiCall[0]).toEqual('http://mockAdapter:6666/mockBase/mockToken/' + normalizedAlias + '/mockTransferFrom');
+      expect(firstApiCall[1].method).toEqual('POST');
+      expect(firstApiCall[1].body).toEqual(JSON.stringify({ from: normalizedFrom, sender: normalizedSender, to: normalizedTo, value }));
+
+      const secondApiCall: any = (fetch as jest.Mock).mock.calls[1];
       expect(secondApiCall[0]).toEqual('http://mockWallet:6666/mockBase/mockSignTx');
       expect(secondApiCall[1].method).toEqual('POST');
       expect(secondApiCall[1].body).toEqual(JSON.stringify({ rawTx: responses.SC_INVOKE_ADAPT_RESPONSE.data, provider: 'mockProvider' }));
@@ -739,19 +836,19 @@ describe('HancockEthereumClient integration tests', () => {
       body: {
         value,
         to: normalizedTo,
-        data
+        data,
       },
       dlt,
-    }
+    };
 
     it('should encode the action payload using hancock protocol', async () => {
 
-      fetch
+      (fetch as any)
         .once(JSON.stringify({ whatever: 'whatever' }));
 
       const result: HancockProtocolEncodeResponse = await clientInstance.encodeProtocol(action, value, to, data, dlt);
 
-      const firstApiCall: any = fetch.mock.calls[0];
+      const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
       expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockEncode`);
       expect(firstApiCall[1].method).toEqual('POST');
       expect(firstApiCall[1].body).toEqual(JSON.stringify(expectedRequest));
@@ -762,7 +859,7 @@ describe('HancockEthereumClient integration tests', () => {
 
     it('should try to encode the action payload using hancock protocol and fail if there is an error', async () => {
 
-      fetch
+      (fetch as any)
         .mockRejectOnce(JSON.stringify(responses.COMMON_RESPONSE_ERROR), { status: 400 });
 
       try {
@@ -771,7 +868,7 @@ describe('HancockEthereumClient integration tests', () => {
 
       } catch (e) {
 
-        const firstApiCall: any = fetch.mock.calls[0];
+        const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
         expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockEncode`);
         expect(firstApiCall[1].method).toEqual('POST');
         expect(firstApiCall[1].body).toEqual(JSON.stringify(expectedRequest));
@@ -790,12 +887,12 @@ describe('HancockEthereumClient integration tests', () => {
 
     it('should encode the action payload using hancock protocol', async () => {
 
-      fetch
+      (fetch as any)
         .once(JSON.stringify({ whatever: 'whatever' }));
 
       const result: HancockProtocolDecodeResponse = await clientInstance.decodeProtocol(code);
 
-      const firstApiCall: any = fetch.mock.calls[0];
+      const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
       expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockDecode`);
       expect(firstApiCall[1].method).toEqual('POST');
       expect(firstApiCall[1].body).toEqual(JSON.stringify({ code }));
@@ -806,7 +903,7 @@ describe('HancockEthereumClient integration tests', () => {
 
     it('should try to encode the action payload using hancock protocol and fail if there is an error', async () => {
 
-      fetch
+      (fetch as any)
         .mockRejectOnce(JSON.stringify(responses.COMMON_RESPONSE_ERROR), { status: 400 });
 
       try {
@@ -815,7 +912,7 @@ describe('HancockEthereumClient integration tests', () => {
 
       } catch (e) {
 
-        const firstApiCall: any = fetch.mock.calls[0];
+        const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
         expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockDecode`);
         expect(firstApiCall[1].method).toEqual('POST');
         expect(firstApiCall[1].body).toEqual(JSON.stringify({ code }));
@@ -834,21 +931,21 @@ describe('HancockEthereumClient integration tests', () => {
 
     it('should get TokenMetadata', async () => {
 
-      fetch
+      (fetch as any)
         .once(JSON.stringify({ data: 'whatever' }));
 
       const result: HancockTokenMetadataResponse = await clientInstance.getTokenMetadata(addressOrAlias);
 
-      const firstApiCall: any = fetch.mock.calls[0];
+      const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
       expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockToken/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d/mockMetadata`);
 
-      expect(result).toEqual('whatever' );
+      expect(result).toEqual('whatever');
 
     });
 
     it('should try to get TokenMetadata and fail if there is an error', async () => {
 
-      fetch
+      (fetch as any)
         .mockRejectOnce(JSON.stringify(responses.GET_TOKEN_METADATA_ERROR_RESPONSE), { status: 500 });
 
       try {
@@ -857,7 +954,7 @@ describe('HancockEthereumClient integration tests', () => {
 
       } catch (e) {
 
-        const firstApiCall: any = fetch.mock.calls[0];
+        const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
         expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockToken/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d/mockMetadata`);
 
         expect(e).toEqual(new Error());
@@ -869,4 +966,3 @@ describe('HancockEthereumClient integration tests', () => {
   });
 
 });
-
