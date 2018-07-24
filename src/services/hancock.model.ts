@@ -14,6 +14,13 @@ export interface DltWallet {
 
 // API
 
+export interface HancockGenericResponse {
+  result: {
+    code: number;
+    description: string;
+  };
+}
+
 export interface HancockInvokeRequest {
   method: string;
   from: string;
@@ -29,19 +36,11 @@ export interface HancockCallRequest extends HancockInvokeRequest {
   action: 'call';
 }
 
-export interface HancockAdaptInvokeResponse {
-  result: {
-    code: number;
-    description: string;
-  };
+export interface HancockAdaptInvokeResponse extends HancockGenericResponse {
   data: DltRawTransaction;
 }
 
-export interface HancockCallResponse {
-  result: {
-    code: number;
-    description: string;
-  };
+export interface HancockCallResponse extends HancockGenericResponse {
   data: any;
 }
 
@@ -84,11 +83,8 @@ export interface HancockRegisterRequest {
   abi: any;
 }
 
-export interface HancockRegisterResponse {
-  result: {
-    code: number;
-    description: string;
-  };
+// tslint:disable-next-line:no-empty-interface
+export interface HancockRegisterResponse extends HancockGenericResponse {
 }
 
 // Transfer
@@ -108,6 +104,23 @@ export interface HancockTokenTransferRequest {
   value: string;
 }
 
+// tslint:disable-next-line:no-empty-interface
+export interface HancockTokenTransferResponse extends HancockGenericResponse {
+}
+
+// TokenTransferFrom
+
+export interface HancockTokenTransferFromRequest {
+  from: string;
+  sender: string;
+  to: string;
+  value: string;
+}
+
+// tslint:disable-next-line:no-empty-interface
+export interface HancockTokenTransferFromResponse extends HancockGenericResponse {
+}
+
 // TokenAllowance
 
 export interface HancockTokenAllowanceRequest {
@@ -123,11 +136,8 @@ export interface HancockTokenRegisterRequest {
   address: DltAddress;
 }
 
-export interface HancockTokenRegisterResponse {
-  result: {
-    code: number;
-    description: string;
-  };
+// tslint:disable-next-line:no-empty-interface
+export interface HancockTokenRegisterResponse extends HancockGenericResponse {
 }
 
 // Token metadata
@@ -225,11 +235,7 @@ export interface HancockTokenBalanceResponse {
   decimals: number;
 }
 
-export interface HancockProtocolDecodeResponse {
-  result: {
-    code: number;
-    description: string;
-  };
+export interface HancockProtocolDecodeResponse extends HancockGenericResponse {
   data: HancockProtocolEncode;
 }
 
@@ -261,6 +267,8 @@ export interface HancockClient {
   getBalance(address: string): Promise<BigNumber>;
   transfer(from: string, to: string, value: string, options?: HancockInvokeOptions, data?: string): Promise<HancockSignResponse>;
   tokenTransfer(from: string, to: string, value: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
+  // tslint:disable-next-line:max-line-length
+  tokenTransferFrom(from: string, sender: string, to: string, value: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
   tokenAllowance(from: string, tokenOwner: string, spender: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
   encodeProtocol(action: HancockProtocolAction, dlt: HancockProtocolDlt, value: string, to: string, data: string): Promise<HancockProtocolEncodeResponse>;
   decodeProtocol(code: string): Promise<HancockProtocolDecodeResponse>;

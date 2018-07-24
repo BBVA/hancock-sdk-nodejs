@@ -7,11 +7,11 @@ import {
   HancockProtocolDlt,
   HancockProtocolEncode,
   HancockProtocolEncodeResponse,
+  HancockTokenAllowanceRequest,
   HancockTokenMetadataResponse,
   HancockTokenTransferRequest,
-  HancockTokenAllowanceRequest,
 } from '..';
-import { HancockClient } from '../hancock.model';
+import { HancockClient, HancockTokenTransferFromRequest } from '../hancock.model';
 import {
   DltAddress,
   HancockAdaptInvokeRequest,
@@ -332,6 +332,24 @@ export class HancockEthereumClient implements HancockClient {
 
   }
 
+  public async tokenTransferFrom(
+    from: string, sender: string, to: string, value: string, addressOrAlias: string, options: HancockInvokeOptions = {},
+  ): Promise<HancockSignResponse> {
+
+    if (!options.signProvider && !options.privateKey) {
+      return Promise.reject('No key nor provider');
+    }
+
+    return this
+      .adaptTokenTransferFrom(from, sender, to, value, addressOrAlias)
+      .then((resBody: HancockAdaptInvokeResponse) => {
+
+        return this.signAndSend(resBody, options);
+
+      });
+
+  }
+
   public async tokenAllowance(
     from: string, tokenOwner: string, spender: string, addressOrAlias: string, options: HancockInvokeOptions = {},
   ): Promise<HancockSignResponse> {
@@ -473,9 +491,35 @@ export class HancockEthereumClient implements HancockClient {
     );
   }
 
+  private async adaptTokenTransferFrom(from: string, sender: string, to: string, value: string, addressOrAlias: string): Promise<HancockAdaptInvokeResponse> {
+
+    from = normalizeAddress(from);
+    sender = normalizeAddress(sender);
+    to = normalizeAddress(to);
+    addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
+
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.tokenTransferFrom}`.replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
+    const body: HancockTokenTransferFromRequest = {
+      from,
+      sender,
+      to,
+      value,
+    };
+
+    return fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+      .then(
+        (res: any) => this.checkStatus(res),
+        (err: any) => this.errorHandler(err),
+    );
+  }
+
   private async adaptTokenTransfer(from: string, to: string, value: string, addressOrAlias: string): Promise<HancockAdaptInvokeResponse> {
 
-    from = normalizeAddressOrAlias(from);
+    from = normalizeAddress(from);
     to = normalizeAddress(to);
     addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
 
@@ -499,7 +543,7 @@ export class HancockEthereumClient implements HancockClient {
 
   private async adaptTokenAllowance(from: string, tokenOwner: string, spender: string, addressOrAlias: string): Promise<HancockAdaptInvokeResponse> {
 
-    from = normalizeAddressOrAlias(from);
+    from = normalizeAddress(from);
     tokenOwner = normalizeAddress(tokenOwner);
     spender = normalizeAddress(spender);
     addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
