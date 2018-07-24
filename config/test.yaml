@@ -11,6 +11,7 @@ adapter:
     tokenTransfer: '/mockToken/__ADDRESS_OR_ALIAS__/mockTransfer'
     tokenBalance: '/mockToken/__ADDRESS_OR_ALIAS__/mockBalance/__ADDRESS__'
     tokenMetadata: '/mockToken/__ADDRESS_OR_ALIAS__/mockMetadata'
+    tokenAllowance: '/mockToken/__ADDRESS_OR_ALIAS__/mockAllowance'
     encode: '/mockEncode'
     decode: '/mockDecode'
 wallet:

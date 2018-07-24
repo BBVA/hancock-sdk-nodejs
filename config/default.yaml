@@ -11,6 +11,7 @@ adapter:
     tokenTransfer: '/ethereum/token/__ADDRESS_OR_ALIAS__/transfer'
     tokenBalance: '/ethereum/token/__ADDRESS_OR_ALIAS__/balance/__ADDRESS__'
     tokenMetadata: '/ethereum/token/__ADDRESS_OR_ALIAS__/metadata'
+    tokenAllowance: '/ethereum/token/__ADDRESS_OR_ALIAS__/allowance'
     encode: '/protocol/encode'
     decode: '/protocol/decode'
 wallet:
