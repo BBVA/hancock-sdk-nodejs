@@ -1,7 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 import EventEmitter from 'eventemitter3';
 import { HancockEthereumSocket } from './ethereum/socket';
-import { HancockTokenTransferResponse } from './hancock.model';
 
 export type DltAddress = string;
 export type DltRawTransaction = any;
@@ -120,6 +119,14 @@ export interface HancockTokenTransferFromRequest {
 
 // tslint:disable-next-line:no-empty-interface
 export interface HancockTokenTransferFromResponse extends HancockGenericResponse {
+}
+
+// TokenAllowance
+
+export interface HancockTokenAllowanceRequest {
+  from: string;
+  tokenOwner: string;
+  spender: string;
 }
 
 // Token Register
@@ -262,6 +269,7 @@ export interface HancockClient {
   tokenTransfer(from: string, to: string, value: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
   // tslint:disable-next-line:max-line-length
   tokenTransferFrom(from: string, sender: string, to: string, value: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
+  tokenAllowance(from: string, tokenOwner: string, spender: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
   encodeProtocol(action: HancockProtocolAction, dlt: HancockProtocolDlt, value: string, to: string, data: string): Promise<HancockProtocolEncodeResponse>;
   decodeProtocol(code: string): Promise<HancockProtocolDecodeResponse>;
   getTokenBalance(addressOrAlias: string, address: string): Promise<HancockTokenBalanceResponse>;

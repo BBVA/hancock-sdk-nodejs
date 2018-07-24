@@ -7,6 +7,7 @@ import {
   HancockProtocolDlt,
   HancockProtocolEncode,
   HancockProtocolEncodeResponse,
+  HancockTokenAllowanceRequest,
   HancockTokenMetadataResponse,
   HancockTokenTransferRequest,
 } from '..';
@@ -349,6 +350,24 @@ export class HancockEthereumClient implements HancockClient {
 
   }
 
+  public async tokenAllowance(
+    from: string, tokenOwner: string, spender: string, addressOrAlias: string, options: HancockInvokeOptions = {},
+  ): Promise<HancockSignResponse> {
+
+    if (!options.signProvider && !options.privateKey) {
+      return Promise.reject('No key nor provider');
+    }
+
+    return this
+      .adaptTokenAllowance(from, tokenOwner, spender, addressOrAlias)
+      .then((resBody: HancockAdaptInvokeResponse) => {
+
+        return this.signAndSend(resBody, options);
+
+      });
+
+  }
+
   public async encodeProtocol(
     action: HancockProtocolAction, value: string, to: string, data: string, dlt: HancockProtocolDlt,
   ): Promise<HancockProtocolEncodeResponse> {
@@ -509,6 +528,31 @@ export class HancockEthereumClient implements HancockClient {
       from,
       to,
       value,
+    };
+
+    return fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+      .then(
+        (res: any) => this.checkStatus(res),
+        (err: any) => this.errorHandler(err),
+    );
+  }
+
+  private async adaptTokenAllowance(from: string, tokenOwner: string, spender: string, addressOrAlias: string): Promise<HancockAdaptInvokeResponse> {
+
+    from = normalizeAddressOrAlias(from);
+    tokenOwner = normalizeAddress(tokenOwner);
+    spender = normalizeAddress(spender);
+    addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
+
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.tokenAllowance}`.replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
+    const body: HancockTokenAllowanceRequest = {
+      from,
+      tokenOwner,
+      spender,
     };
 
     return fetch(url, {
