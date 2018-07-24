@@ -493,8 +493,8 @@ export class HancockEthereumClient implements HancockClient {
 
   private async adaptTokenTransferFrom(from: string, sender: string, to: string, value: string, addressOrAlias: string): Promise<HancockAdaptInvokeResponse> {
 
-    from = normalizeAddressOrAlias(from);
-    sender = normalizeAddressOrAlias(sender);
+    from = normalizeAddress(from);
+    sender = normalizeAddress(sender);
     to = normalizeAddress(to);
     addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
 
@@ -519,7 +519,7 @@ export class HancockEthereumClient implements HancockClient {
 
   private async adaptTokenTransfer(from: string, to: string, value: string, addressOrAlias: string): Promise<HancockAdaptInvokeResponse> {
 
-    from = normalizeAddressOrAlias(from);
+    from = normalizeAddress(from);
     to = normalizeAddress(to);
     addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
 
@@ -543,7 +543,7 @@ export class HancockEthereumClient implements HancockClient {
 
   private async adaptTokenAllowance(from: string, tokenOwner: string, spender: string, addressOrAlias: string): Promise<HancockAdaptInvokeResponse> {
 
-    from = normalizeAddressOrAlias(from);
+    from = normalizeAddress(from);
     tokenOwner = normalizeAddress(tokenOwner);
     spender = normalizeAddress(spender);
     addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
