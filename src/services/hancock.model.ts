@@ -108,6 +108,14 @@ export interface HancockTokenTransferRequest {
   value: string;
 }
 
+// TokenAllowance
+
+export interface HancockTokenAllowanceRequest {
+  from: string;
+  tokenOwner: string;
+  spender: string;
+}
+
 // Token Register
 
 export interface HancockTokenRegisterRequest {
@@ -253,6 +261,7 @@ export interface HancockClient {
   getBalance(address: string): Promise<BigNumber>;
   transfer(from: string, to: string, value: string, options?: HancockInvokeOptions, data?: string): Promise<HancockSignResponse>;
   tokenTransfer(from: string, to: string, value: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
+  tokenAllowance(from: string, tokenOwner: string, spender: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
   encodeProtocol(action: HancockProtocolAction, dlt: HancockProtocolDlt, value: string, to: string, data: string): Promise<HancockProtocolEncodeResponse>;
   decodeProtocol(code: string): Promise<HancockProtocolDecodeResponse>;
   getTokenBalance(addressOrAlias: string, address: string): Promise<HancockTokenBalanceResponse>;
