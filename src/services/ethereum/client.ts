@@ -479,7 +479,7 @@ export class HancockEthereumClient implements HancockClient {
     spender = normalizeAddress(spender);
     addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
 
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.tokenAllowance}`.replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.tokenApprove}`.replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
     const body: HancockTokenApproveRequest = {
       from,
       spender,
