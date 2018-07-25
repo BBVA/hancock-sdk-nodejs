@@ -9,9 +9,11 @@ adapter:
     transfer: '/mockTransfer'
     tokenRegister: '/mockToken/mockRegister'
     tokenTransfer: '/mockToken/__ADDRESS_OR_ALIAS__/mockTransfer'
+    tokenTransferFrom: '/mockToken/__ADDRESS_OR_ALIAS__/mockTransferFrom'
     tokenBalance: '/mockToken/__ADDRESS_OR_ALIAS__/mockBalance/__ADDRESS__'
     tokenMetadata: '/mockToken/__ADDRESS_OR_ALIAS__/mockMetadata'
     tokenApprove: '/mockToken/__ADDRESS_OR_ALIAS__/mockApprove'
+    tokenAllowance: '/mockToken/__ADDRESS_OR_ALIAS__/mockAllowance'
     encode: '/mockEncode'
     decode: '/mockDecode'
 wallet:
