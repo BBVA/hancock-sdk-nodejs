@@ -149,6 +149,14 @@ export interface HancockTokenMetadataResponse {
   totalSupply: number;
 }
 
+//Token approve
+
+export interface HancockTokenApproveRequest {
+  from: string;
+  spender: string;
+  value: string;
+}
+
 // CONFIG
 
 export interface HancockAdapterConfig {
@@ -267,6 +275,7 @@ export interface HancockClient {
   getBalance(address: string): Promise<BigNumber>;
   transfer(from: string, to: string, value: string, options?: HancockInvokeOptions, data?: string): Promise<HancockSignResponse>;
   tokenTransfer(from: string, to: string, value: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
+  tokenApprove(from: string, spender: string, value: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
   // tslint:disable-next-line:max-line-length
   tokenTransferFrom(from: string, sender: string, to: string, value: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
   tokenAllowance(from: string, tokenOwner: string, spender: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;

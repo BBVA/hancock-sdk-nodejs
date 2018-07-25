@@ -1048,4 +1048,86 @@ describe('HancockEthereumClient integration tests', () => {
 
   });
 
+  describe('::tokenApprove', () => {
+
+    const from: string = 'F01B3C2131FB5BD8D1D1E5D44F8AD14A2728EC91';
+    const spender: string = '187ACE2D9051D74296A8E4E154D652B8B6EC4745';
+
+    const normalizedFrom: string = '0xf01b3c2131fb5bd8d1d1e5d44f8ad14a2728ec91';
+    const normalizedSpender: string = '0x187ace2d9051d74296a8e4e154d652b8b6ec4745';
+
+    const value: string = 'mockedValue';
+    const addressOrAlias: string = 'mockedAlias';
+
+    it('should fail if there is neither privateKey nor signProvider', async () => {
+
+      const options: HancockInvokeOptions = {};
+
+      try {
+
+        await clientInstance.tokenApprove(from, spender, value, addressOrAlias, options);
+        fail('It should fail');
+
+      } catch (e) {
+
+        expect(e).toEqual('No key nor provider');
+
+      }
+
+    });
+
+    it('given a private key, should adapt a tokenapprove, sign and send it to dlt', async () => {
+
+      const options: HancockInvokeOptions = {
+        privateKey: responses.PRIVATE_KEY,
+      };
+
+      fetch
+        .once(JSON.stringify(responses.SC_INVOKE_ADAPT_RESPONSE))
+        .once(JSON.stringify(responses.SEND_SIGNED_TX_RESPONSE));
+
+      const result: HancockSignResponse = await clientInstance.tokenApprove(from, spender, value, addressOrAlias, options);
+
+      const firstApiCall: any = fetch.mock.calls[0];
+      expect(firstApiCall[0]).toEqual('http://mockAdapter:6666/mockBase/mockToken/' + normalizedAlias + '/mockApprove');
+      expect(firstApiCall[1].method).toEqual('POST');
+      expect(firstApiCall[1].body).toEqual(JSON.stringify({ from: normalizedFrom, spender: normalizedSpender, value }));
+
+      const secondApiCall: any = fetch.mock.calls[1];
+      expect(secondApiCall[0]).toEqual('http://mockWallet:6666/mockBase/mockSendSignedTx');
+      expect(secondApiCall[1].method).toEqual('POST');
+      expect(secondApiCall[1].body).toEqual(JSON.stringify({ tx: responses.SIGNED_TX }));
+
+      expect(result).toEqual(responses.SEND_SIGNED_TX_RESPONSE);
+
+    });
+
+    it('given a sign provider, should adapt a tokenApprove and send it to sign', async () => {
+
+      const options: HancockInvokeOptions = {
+        signProvider: 'mockProvider'
+      };
+
+      fetch
+        .once(JSON.stringify(responses.SC_INVOKE_ADAPT_RESPONSE))
+        .once(JSON.stringify(responses.SEND_TO_SIGN_RESPONSE));
+
+      const result: HancockSignResponse = await clientInstance.tokenApprove(from, spender, value, addressOrAlias, options);
+
+      const firstApiCall: any = fetch.mock.calls[0];
+      expect(firstApiCall[0]).toEqual('http://mockAdapter:6666/mockBase/mockToken/' + normalizedAlias + '/mockApprove');
+      expect(firstApiCall[1].method).toEqual('POST');
+      expect(firstApiCall[1].body).toEqual(JSON.stringify({ from: normalizedFrom, spender: normalizedSpender, value }));
+
+      const secondApiCall: any = fetch.mock.calls[1];
+      expect(secondApiCall[0]).toEqual('http://mockWallet:6666/mockBase/mockSignTx');
+      expect(secondApiCall[1].method).toEqual('POST');
+      expect(secondApiCall[1].body).toEqual(JSON.stringify({ rawTx: responses.SC_INVOKE_ADAPT_RESPONSE.data, provider: 'mockProvider' }));
+
+      expect(result).toEqual(responses.SEND_TO_SIGN_RESPONSE);
+
+    });
+
+  });
+
 });
