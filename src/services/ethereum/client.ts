@@ -8,9 +8,9 @@ import {
   HancockProtocolEncode,
   HancockProtocolEncodeResponse,
   HancockTokenAllowanceRequest,
+  HancockTokenApproveRequest,
   HancockTokenMetadataResponse,
   HancockTokenTransferRequest,
-  HancockTokenApproveRequest,
 } from '..';
 import { HancockClient, HancockTokenTransferFromRequest } from '../hancock.model';
 import {

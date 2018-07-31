@@ -149,7 +149,7 @@ export interface HancockTokenMetadataResponse {
   totalSupply: number;
 }
 
-//Token approve
+// Token approve
 
 export interface HancockTokenApproveRequest {
   from: string;
@@ -245,6 +245,15 @@ export interface HancockTokenBalanceResponse {
 
 export interface HancockProtocolDecodeResponse extends HancockGenericResponse {
   data: HancockProtocolEncode;
+}
+
+// ERROR
+
+export interface IHancockError extends Error {
+  internalError: string;
+  error: number;
+  message: string;
+  extendedMessage: string;
 }
 
 // INTERFACES
