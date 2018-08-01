@@ -19,6 +19,7 @@ import {
 } from '../..';
 import { HancockEthereumClient } from '../../..';
 import * as responses from '../__mocks__/responses';
+import { HancockError } from '../error';
 import { HancockEthereumSocket } from '../socket';
 
 jest.mock('isomorphic-fetch');
@@ -63,7 +64,7 @@ describe('HancockEthereumClient integration tests', () => {
 
       } catch (e) {
 
-        expect(e).toEqual('No key nor provider');
+        expect(e).toEqual(new HancockError('SDKINT_001', 500, 'No key nor provider'));
 
       }
 
@@ -161,7 +162,7 @@ describe('HancockEthereumClient integration tests', () => {
         expect(firstApiCall[1].method).toEqual('POST');
         expect(firstApiCall[1].body).toEqual(JSON.stringify({ method, from, params, action: 'call' }));
 
-        expect(e).toEqual(new Error());
+        expect(e).toEqual(new HancockError(e.internalError, e.error, e.message));
 
       }
 
@@ -207,7 +208,7 @@ describe('HancockEthereumClient integration tests', () => {
         expect(firstApiCall[1].method).toEqual('POST');
         expect(firstApiCall[1].body).toEqual(JSON.stringify({ method, from, params, action: 'send' }));
 
-        expect(e).toEqual(new Error());
+        expect(e).toEqual(new HancockError(e.internalError, e.error, e.message));
 
       }
 
@@ -251,7 +252,7 @@ describe('HancockEthereumClient integration tests', () => {
         expect(firstApiCall[1].method).toEqual('POST');
         expect(firstApiCall[1].body).toEqual(JSON.stringify({ tx }));
 
-        expect(e).toEqual(new Error());
+        expect(e).toEqual(new HancockError(e.internalError, e.error, e.message));
 
       }
 
@@ -295,7 +296,7 @@ describe('HancockEthereumClient integration tests', () => {
         expect(firstApiCall[1].method).toEqual('POST');
         expect(firstApiCall[1].body).toEqual(JSON.stringify({ tx }));
 
-        expect(e).toEqual(new Error());
+        expect(e).toEqual(new HancockError(e.internalError, e.error, e.message));
 
       }
 
@@ -340,7 +341,7 @@ describe('HancockEthereumClient integration tests', () => {
         expect(firstApiCall[1].method).toEqual('POST');
         expect(firstApiCall[1].body).toEqual(JSON.stringify({ rawTx, provider: signProvider }));
 
-        expect(e).toEqual(new Error());
+        expect(e).toEqual(new HancockError(e.internalError, e.error, e.message));
 
       }
 
@@ -384,7 +385,7 @@ describe('HancockEthereumClient integration tests', () => {
         expect(firstApiCall[1].method).toEqual('POST');
         expect(firstApiCall[1].body).toEqual(JSON.stringify({ address: normalizedAddress, alias: normalizedAlias, abi }));
 
-        expect(e).toEqual(new Error());
+        expect(e).toEqual(new HancockError(e.internalError, e.error, e.message));
 
       }
 
@@ -426,7 +427,7 @@ describe('HancockEthereumClient integration tests', () => {
         expect(firstApiCall[1].method).toEqual('POST');
         expect(firstApiCall[1].body).toEqual(JSON.stringify({ address: normalizedAddress, alias: normalizedAlias }));
 
-        expect(e).toEqual(new Error());
+        expect(e).toEqual(new HancockError(e.internalError, e.error, e.message));
 
       }
 
@@ -464,7 +465,7 @@ describe('HancockEthereumClient integration tests', () => {
         const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
         expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockBalance/${normalizedAddress}`);
 
-        expect(e).toEqual(new Error());
+        expect(e).toEqual(new HancockError(e.internalError, e.error, e.message));
 
       }
 
@@ -596,7 +597,7 @@ describe('HancockEthereumClient integration tests', () => {
 
       } catch (e) {
 
-        expect(e).toEqual('No key nor provider');
+        expect(e).toEqual(new HancockError('SDKINT_001', 500, 'No key nor provider'));
 
       }
 
@@ -678,7 +679,7 @@ describe('HancockEthereumClient integration tests', () => {
 
       } catch (e) {
 
-        expect(e).toEqual('No key nor provider');
+        expect(e).toEqual(new HancockError('SDKINT_001', 500, 'No key nor provider'));
 
       }
 
@@ -762,7 +763,7 @@ describe('HancockEthereumClient integration tests', () => {
 
       } catch (e) {
 
-        expect(e).toEqual('No key nor provider');
+        expect(e).toEqual(new HancockError('SDKINT_001', 500, 'No key nor provider'));
 
       }
 
@@ -845,7 +846,7 @@ describe('HancockEthereumClient integration tests', () => {
 
       } catch (e) {
 
-        expect(e).toEqual('No key nor provider');
+        expect(e).toEqual(new HancockError('SDKINT_001', 500, 'No key nor provider'));
 
       }
 
@@ -956,7 +957,7 @@ describe('HancockEthereumClient integration tests', () => {
         expect(firstApiCall[1].method).toEqual('POST');
         expect(firstApiCall[1].body).toEqual(JSON.stringify(expectedRequest));
 
-        expect(e).toEqual(new Error());
+        expect(e).toEqual(new HancockError(e.internalError, e.error, e.message));
 
       }
 
@@ -1000,7 +1001,7 @@ describe('HancockEthereumClient integration tests', () => {
         expect(firstApiCall[1].method).toEqual('POST');
         expect(firstApiCall[1].body).toEqual(JSON.stringify({ code }));
 
-        expect(e).toEqual(new Error());
+        expect(e).toEqual(new HancockError(e.internalError, e.error, e.message));
 
       }
 
@@ -1040,7 +1041,7 @@ describe('HancockEthereumClient integration tests', () => {
         const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
         expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockToken/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d/mockMetadata`);
 
-        expect(e).toEqual(new Error());
+        expect(e).toEqual(new HancockError(e.internalError, e.error, e.message));
 
       }
 
@@ -1070,7 +1071,7 @@ describe('HancockEthereumClient integration tests', () => {
 
       } catch (e) {
 
-        expect(e).toEqual('No key nor provider');
+        expect(e).toEqual(new HancockError('SDKINT_001', 500, 'No key nor provider'));
 
       }
 

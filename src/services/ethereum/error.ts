@@ -3,7 +3,7 @@ import { IHancockError } from './../hancock.model';
 export class HancockError extends Error implements IHancockError {
 
     public name: string = 'HancockError';
-    private prefix: string = 'SDKAPI';
+    // private prefix: string = 'SDKAPI';
 
     // public errorStack: HancockError[] = [];
 
@@ -14,7 +14,7 @@ export class HancockError extends Error implements IHancockError {
       public extendedError?: HancockError | Error) {
 
       super(message);
-      this.internalError = `${this.prefix}${internalError}`;
+      // this.internalError = `${this.prefix}${internalError}`;
 
     }
 
