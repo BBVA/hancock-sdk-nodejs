@@ -39,7 +39,7 @@ import {
   HancockTokenRegisterResponse,
   InitialHancockConfig,
 } from '../hancock.model';
-import { HancockError } from './error';
+import {HancockError, hancockErrorNoKey, numberErrorInternal, prefixApi, prefixInt } from './error';
 import { EthereumAbi } from './model';
 import {
   generateWallet,
@@ -47,10 +47,7 @@ import {
 } from './signer';
 import { EthereumRawTransaction, EthereumWallet } from './signer';
 import { HancockEthereumSocket } from './socket';
-import { normalizeAddress, normalizeAddressOrAlias, normalizeAlias } from './utils';
-
-const prefixApi = 'SDKAPI_';
-const prefixInt = 'SDKINT_';
+import { error, normalizeAddress, normalizeAddressOrAlias, normalizeAlias } from './utils';
 
 export class HancockEthereumClient implements HancockClient {
 
@@ -76,7 +73,7 @@ export class HancockEthereumClient implements HancockClient {
     // const normalizedContractAddressOrAlias: string = normalizeAddressOrAlias(contractAddressOrAlias);
 
     if (!options.signProvider && !options.privateKey) {
-      return Promise.reject(new HancockError(prefixInt.concat('001'), 500, 'No key nor provider'));
+      return Promise.reject(hancockErrorNoKey);
     }
 
     return this
@@ -306,7 +303,7 @@ export class HancockEthereumClient implements HancockClient {
   public async transfer(from: string, to: string, value: string, options: HancockInvokeOptions = {}, data: string = ''): Promise<HancockSignResponse> {
 
     if (!options.signProvider && !options.privateKey) {
-      return Promise.reject(new HancockError(prefixInt.concat('001'), 500, 'No key nor provider'));
+      return Promise.reject(hancockErrorNoKey);
     }
 
     return this
@@ -324,7 +321,7 @@ export class HancockEthereumClient implements HancockClient {
   ): Promise<HancockSignResponse> {
 
     if (!options.signProvider && !options.privateKey) {
-      return Promise.reject(new HancockError(prefixInt.concat('001'), 500, 'No key nor provider'));
+      return Promise.reject(hancockErrorNoKey);
     }
 
     return this
@@ -342,7 +339,7 @@ export class HancockEthereumClient implements HancockClient {
   ): Promise<HancockSignResponse> {
 
     if (!options.signProvider && !options.privateKey) {
-      return Promise.reject(new HancockError(prefixInt.concat('001'), 500, 'No key nor provider'));
+      return Promise.reject(hancockErrorNoKey);
     }
 
     return this
@@ -360,7 +357,7 @@ export class HancockEthereumClient implements HancockClient {
   ): Promise<HancockSignResponse> {
 
     if (!options.signProvider && !options.privateKey) {
-      return Promise.reject(new HancockError(prefixInt.concat('001'), 500, 'No key nor provider'));
+      return Promise.reject(hancockErrorNoKey);
     }
 
     return this
@@ -442,7 +439,7 @@ export class HancockEthereumClient implements HancockClient {
   ): Promise<HancockSignResponse> {
 
     if (!options.signProvider && !options.privateKey) {
-      return Promise.reject(new HancockError(prefixInt.concat('001'), 500, 'No key nor provider'));
+      return Promise.reject(hancockErrorNoKey);
     }
 
     return this
@@ -485,8 +482,8 @@ export class HancockEthereumClient implements HancockClient {
     throw err instanceof HancockError
       ? err
       : err.body
-        ? new HancockError(prefixApi.concat(err.body.internalError), err.body.error, err.body.message, err)
-        : new HancockError(err.code, err.code, err.message);
+        ? new HancockError(prefixApi, err.body.internalError, err.body.error, err.body.message, err)
+        : new HancockError(prefixInt, numberErrorInternal, err.code, err.message, err);
 
   }
 

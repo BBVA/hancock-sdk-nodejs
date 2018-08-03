@@ -1,3 +1,5 @@
+import { HancockError } from './error';
+
 const addressPattern = new RegExp(/^(0x)?([a-fA-F0-9]{40})$/i);
 
 export const isAddress = (addressOrAlias: string): boolean => {
@@ -24,3 +26,22 @@ export const normalizeAddressOrAlias = (addressOrAlias: string) => {
     ? normalizeAddress(addressOrAlias)
     : normalizeAlias(addressOrAlias);
 };
+
+export function error(hancockError: HancockError, originalError?: HancockError | Error): HancockError {
+
+  let retError: HancockError = hancockError;
+
+  if (originalError instanceof HancockError) {
+
+    retError = originalError;
+    retError.errorStack.push(hancockError);
+
+  } else {
+
+    retError.extendedError = originalError;
+
+  }
+
+  return retError;
+
+}

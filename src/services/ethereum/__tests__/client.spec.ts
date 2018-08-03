@@ -153,7 +153,7 @@ describe('ethereum client', async () => {
       await client.invokeSmartContract('contractAddressOrAlias', 'method', ['params'], 'from');
       fail('it should fail');
     } catch (error) {
-      expect(error).toEqual(new HancockError('SDKINT_001', 500, 'No key nor provider'));
+      expect(error).toEqual(new HancockError('internal', '002', 500, 'No key nor provider'));
     }
 
   });
@@ -193,7 +193,7 @@ describe('ethereum client', async () => {
     });
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-      .mockImplementation(() => { throw new HancockError('SDKAPI_001', 500, 'testError'); });
+      .mockImplementation(() => { throw new HancockError('api', '001', 500, 'testError'); });
 
     try {
       await client.callSmartContract('contractAddressOrAlias', 'method', ['params'], 'from');
@@ -203,7 +203,7 @@ describe('ethereum client', async () => {
         'genericHost:1genericBase/mockInvoke/contractAddressOrAlias',
         callParamFetch,
       );
-      expect(error).toEqual(new HancockError('SDKAPI_001', 500, 'testError'));
+      expect(error).toEqual(new HancockError('api', '001', 500, 'testError'));
     }
 
   });
@@ -231,7 +231,7 @@ describe('ethereum client', async () => {
     (fetch as any).mockRejectOnce(JSON.stringify(response.ERROR));
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-      .mockImplementation(() => { throw new HancockError('SDKAPI_001', 500, 'testError'); });
+      .mockImplementation(() => { throw new HancockError('api', '001', 500, 'testError'); });
 
     try {
       await client.adaptInvokeSmartContract('contractAddressOrAlias', 'method', ['params'], 'from');
@@ -241,7 +241,7 @@ describe('ethereum client', async () => {
         'genericHost:1genericBase/mockInvoke/contractAddressOrAlias',
         callParamFetch,
       );
-      expect(error).toEqual(new HancockError('SDKAPI_001', 500, 'testError'));
+      expect(error).toEqual(new HancockError('api', '001', 500, 'testError'));
     }
 
   });
@@ -271,7 +271,7 @@ describe('ethereum client', async () => {
     callParamFetch.body = JSON.stringify({ tx: { whatever: 'whatevervalue' } });
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-      .mockImplementation(() => { throw new HancockError('SDKAPI_001', 500, 'testError'); });
+      .mockImplementation(() => { throw new HancockError('api', '001', 500, 'testError'); });
 
     try {
       await client.sendTransaction({ whatever: 'whatevervalue' });
@@ -281,7 +281,7 @@ describe('ethereum client', async () => {
         'genericHost:1genericBase/mockSendTx',
         callParamFetch,
       );
-      expect(error).toEqual(new HancockError('SDKAPI_001', 500, 'testError'));
+      expect(error).toEqual(new HancockError('api', '001', 500, 'testError'));
     }
 
   });
@@ -311,7 +311,7 @@ describe('ethereum client', async () => {
     callParamFetch.body = JSON.stringify({ tx: { whatever: 'whatevervalue' } });
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-      .mockImplementation(() => { throw new HancockError('SDKAPI_001', 500, 'testError'); });
+      .mockImplementation(() => { throw new HancockError('api', '001', 500, 'testError'); });
 
     try {
       await client.sendSignedTransaction({ whatever: 'whatevervalue' });
@@ -321,7 +321,7 @@ describe('ethereum client', async () => {
         'genericHost:1genericBase/mockSendSignedTx',
         callParamFetch,
       );
-      expect(error).toEqual(new HancockError('SDKAPI_001', 500, 'testError'));
+      expect(error).toEqual(new HancockError('api', '001', 500, 'testError'));
     }
 
   });
@@ -351,7 +351,7 @@ describe('ethereum client', async () => {
     callParamFetch.body = JSON.stringify({ rawTx: { whatever: 'whatevervalue' }, provider: 'provider' });
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-      .mockImplementation(() => { throw new HancockError('SDKAPI_001', 500, 'testError'); });
+      .mockImplementation(() => { throw new HancockError('api', '001', 500, 'testError'); });
 
     try {
       await client.sendTransactionToSign({ whatever: 'whatevervalue' }, 'provider');
@@ -361,7 +361,7 @@ describe('ethereum client', async () => {
         'genericHost:1genericBase/mockSignTx',
         callParamFetch,
       );
-      expect(error).toEqual(new HancockError('SDKAPI_001', 500, 'testError'));
+      expect(error).toEqual(new HancockError('api', '001', 500, 'testError'));
     }
 
   });
@@ -399,7 +399,7 @@ describe('ethereum client', async () => {
     });
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-      .mockImplementation(() => { throw new HancockError('SDKAPI_001', 500, 'testError'); });
+      .mockImplementation(() => { throw new HancockError('api', '001', 500, 'testError'); });
 
     try {
       await client.registerSmartContract('contract-alias', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', ['abi']);
@@ -409,7 +409,7 @@ describe('ethereum client', async () => {
         'genericHost:1genericBase/mockRegister',
         callParamFetch,
       );
-      expect(error).toEqual(new HancockError('SDKAPI_001', 500, 'testError'));
+      expect(error).toEqual(new HancockError('api', '001', 500, 'testError'));
     }
 
   });
@@ -442,7 +442,7 @@ describe('ethereum client', async () => {
         alias: 'contract-alias',
       });
 
-      const throwedError = new HancockError('SDKAPI_001', 500, 'testError');
+      const throwedError = new HancockError('api', '001', 500, 'testError');
       const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
         .mockImplementation(() => { throw throwedError; });
 
@@ -485,7 +485,7 @@ describe('ethereum client', async () => {
     (fetch as any).mockRejectOnce(JSON.stringify(response.GET_BALANCE_ERROR_RESPONSE), { status: 400 });
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-      .mockImplementation((res) => { throw new HancockError('SDKAPI_002', res.code, res.description); });
+      .mockImplementation((res) => { throw new HancockError('api', '002', res.code, res.description); });
 
     try {
       const result = await client.getBalance('0xde8e772f0350e992ddef81bf8f51d94a8ea9216d');
@@ -521,7 +521,7 @@ describe('ethereum client', async () => {
     (fetch as any).mockRejectOnce(JSON.stringify(response.GET_TOKEN_BALANCE_ERROR_RESPONSE), { status: 400 });
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-      .mockImplementation((res) => { throw new HancockError('SDKAPI_002', res.code, res.description); });
+      .mockImplementation((res) => { throw new HancockError('api', '002', res.code, res.description); });
 
     try {
       await client.getTokenBalance('0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d');
@@ -596,10 +596,10 @@ describe('ethereum client', async () => {
   it('should call errorHandler with error correctly', async () => {
 
     try {
-      (client as any).errorHandler(new HancockError('SDKAPI_001', 500, 'testError'));
+      (client as any).errorHandler(new HancockError('api', '001', 500, 'testError'));
       fail('it should fail');
     } catch (error) {
-      expect(error).toEqual(new HancockError('SDKAPI_001', 500, 'testError'));
+      expect(error).toEqual(new HancockError('api', '001', 500, 'testError'));
     }
 
   });
@@ -610,7 +610,7 @@ describe('ethereum client', async () => {
       (client as any).errorHandler({ body: { message: 'testErrorBody' } });
       fail('it should fail');
     } catch (error) {
-      expect(error).toEqual(new HancockError('SDKAPI_001', 500, 'testErrorBody'));
+      expect(error).toEqual(new HancockError('api', '001', 500, 'testErrorBody'));
     }
 
   });
@@ -638,7 +638,7 @@ describe('ethereum client', async () => {
       await client.transfer('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '100');
       fail('it should fail');
     } catch (error) {
-      expect(error).toEqual(new HancockError('SDKINT_001', 500, 'No key nor provider'));
+      expect(error).toEqual(new HancockError('api', '002', 500, 'No key nor provider'));
     }
 
   });
@@ -685,7 +685,7 @@ describe('ethereum client', async () => {
     callParamFetch.body = JSON.stringify(bodyFetch);
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-      .mockImplementation(() => { throw new HancockError('SDKAPI_001', 500, 'testError'); });
+      .mockImplementation(() => { throw new HancockError('api', '001', 500, 'testError'); });
 
     try {
       await (client as any).adaptTransfer(
@@ -700,7 +700,7 @@ describe('ethereum client', async () => {
         'genericHost:1genericBase/mockTransfer',
         callParamFetch,
       );
-      expect(error).toEqual(new HancockError('SDKAPI_001', 500, 'testError'));
+      expect(error).toEqual(new HancockError('api', '001', 500, 'testError'));
     }
 
   });
@@ -731,7 +731,7 @@ describe('ethereum client', async () => {
         await client.tokenTransfer('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '100', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c');
         fail('it should fail');
       } catch (error) {
-        expect(error).toEqual(new HancockError('SDKINT_001', 500, 'No key nor provider'));
+        expect(error).toEqual(new HancockError('internal', '002', 500, 'No key nor provider'));
       }
 
     });
@@ -778,7 +778,7 @@ describe('ethereum client', async () => {
       callParamFetch.body = JSON.stringify(bodyFetch);
 
       const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-        .mockImplementation(() => { throw new HancockError('SDKAPI_001', 500, 'testError'); });
+        .mockImplementation(() => { throw new HancockError('api', '001', 500, 'testError'); });
 
       try {
         await (client as any).adaptTokenTransfer(
@@ -793,7 +793,7 @@ describe('ethereum client', async () => {
           'genericHost:1genericBase/mockToken/' + smartContractAddress + '/mockTransfer',
           callParamFetch,
         );
-        expect(error).toEqual(new HancockError('SDKAPI_001', 500, 'testError'));
+        expect(error).toEqual(new HancockError('api', '001', 500, 'testError'));
       }
 
     });
@@ -843,7 +843,7 @@ describe('ethereum client', async () => {
         );
         fail('it should fail');
       } catch (error) {
-        expect(error).toEqual(new HancockError('SDKINT_001', 500, 'No key nor provider'));
+        expect(error).toEqual(new HancockError('internal', '002', 500, 'No key nor provider'));
       }
 
     });
@@ -893,7 +893,7 @@ describe('ethereum client', async () => {
       callParamFetch.body = JSON.stringify(bodyFetch);
 
       const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-        .mockImplementation(() => { throw new HancockError('SDKAPI_001', 500, 'testError'); });
+        .mockImplementation(() => { throw new HancockError('api', '001', 500, 'testError'); });
 
       try {
         await (client as any).adaptTokenTransferFrom(
@@ -909,7 +909,7 @@ describe('ethereum client', async () => {
           'genericHost:1genericBase/mockToken/' + smartContractAddress + '/mockTransferFrom',
           callParamFetch,
         );
-        expect(error).toEqual(new HancockError('SDKAPI_001', 500, 'testError'));
+        expect(error).toEqual(new HancockError('api', '001', 500, 'testError'));
       }
 
     });
@@ -940,7 +940,7 @@ describe('ethereum client', async () => {
       await client.tokenAllowance('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '0xde8e772f0350e992ddef81bf8f51d94a8ea9215e', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c');
       fail('it should fail');
     } catch (error) {
-      expect(error).toEqual(new HancockError('SDKINT_001', 500, 'No key nor provider'));
+      expect(error).toEqual(new HancockError('internal', '002', 500, 'No key nor provider'));
     }
 
   });
@@ -987,7 +987,7 @@ describe('ethereum client', async () => {
     callParamFetch.body = JSON.stringify(bodyFetch);
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-      .mockImplementation(() => { throw new HancockError('SDKAPI_001', 500, 'testError'); });
+      .mockImplementation(() => { throw new HancockError('api', '001', 500, 'testError'); });
 
     try {
       await (client as any).adaptTokenAllowance(
@@ -1002,7 +1002,7 @@ describe('ethereum client', async () => {
         'genericHost:1genericBase/mockToken/' + smartContractAddress + '/mockAllowance',
         callParamFetch,
       );
-      expect(error).toEqual(new HancockError('SDKAPI_001', 500, 'testError'));
+      expect(error).toEqual(new HancockError('api', '001', 500, 'testError'));
     }
 
   });
@@ -1076,7 +1076,7 @@ describe('ethereum client', async () => {
     callParamFetch.body = JSON.stringify(encodeBody);
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-      .mockImplementation(() => { throw new HancockError('SDKAPI_001', 500, 'testError'); });
+      .mockImplementation(() => { throw new HancockError('api', '001', 500, 'testError'); });
 
     try {
       await client.encodeProtocol('transfer', '1000', '0xde8e772f0350e992ddef81bf8f51d94a8ea92123', 'dataTest', 'ethereum');
@@ -1086,7 +1086,7 @@ describe('ethereum client', async () => {
         'genericHost:1genericBase/mockEncode',
         callParamFetch,
       );
-      expect(error).toEqual(new HancockError('SDKAPI_001', 500, 'testError'));
+      expect(error).toEqual(new HancockError('api', '001', 500, 'testError'));
     }
 
   });
@@ -1116,7 +1116,7 @@ describe('ethereum client', async () => {
     callParamFetch.body = JSON.stringify({ code: 'testCode' });
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-      .mockImplementation(() => { throw new HancockError('SDKAPI_001', 500, 'testError'); });
+      .mockImplementation(() => { throw new HancockError('api', '001', 500, 'testError'); });
 
     try {
       await client.decodeProtocol('testCode');
@@ -1126,7 +1126,7 @@ describe('ethereum client', async () => {
         'genericHost:1genericBase/mockDecode',
         callParamFetch,
       );
-      expect(error).toEqual(new HancockError('SDKAPI_001', 500, 'testError'));
+      expect(error).toEqual(new HancockError('api', '001', 500, 'testError'));
     }
 
   });
@@ -1153,7 +1153,7 @@ describe('ethereum client', async () => {
     (fetch as any).mockRejectOnce(JSON.stringify(response.GET_TOKEN_METADATA_ERROR_RESPONSE), { status: 500 });
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-      .mockImplementation((res) => { throw new HancockError('SDKAPI_002', JSON.parse(res).result.code, JSON.parse(res).result.description); });
+      .mockImplementation((res) => { throw new HancockError('api', '002', JSON.parse(res).result.code, JSON.parse(res).result.description); });
 
     try {
       await client.getTokenMetadata('0xde8e772f0350e992ddef81bf8f51d94a8ea9216d');
@@ -1162,7 +1162,7 @@ describe('ethereum client', async () => {
       expect(fetch).toHaveBeenCalledWith(
         'genericHost:1genericBase/mockToken/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d/mockMetadata',
       );
-      expect(error).toEqual(new HancockError('SDKAPI_002', 500, response.GET_TOKEN_METADATA_ERROR_RESPONSE.result.description));
+      expect(error).toEqual(new HancockError('api', '002', 500, response.GET_TOKEN_METADATA_ERROR_RESPONSE.result.description));
     }
 
   });
@@ -1232,7 +1232,7 @@ describe('ethereum client', async () => {
       await client.tokenApprove('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '100', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c');
       fail('it should fail');
     } catch (error) {
-      expect(error).toEqual(new HancockError('SDKINT_001', 500, 'No key nor provider'));
+      expect(error).toEqual(new HancockError('internal', '002', 500, 'No key nor provider'));
     }
 
   });
@@ -1279,7 +1279,7 @@ describe('ethereum client', async () => {
     callParamFetch.body = JSON.stringify(bodyFetch);
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-      .mockImplementation(() => { throw new HancockError('SDKAPI_001', 500, 'testError'); });
+      .mockImplementation(() => { throw new HancockError('api', '001', 500, 'testError'); });
 
     try {
       await (client as any).adaptTokenApprove(
@@ -1294,7 +1294,7 @@ describe('ethereum client', async () => {
         'genericHost:1genericBase/mockToken/' + smartContractAddress + '/mockApprove',
         callParamFetch,
       );
-      expect(error).toEqual(new HancockError('SDKAPI_001', 500, 'testError'));
+      expect(error).toEqual(new HancockError('api', '001', 500, 'testError'));
     }
 
   });
