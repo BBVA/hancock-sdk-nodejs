@@ -73,7 +73,7 @@ export class HancockEthereumClient implements HancockClient {
     // const normalizedContractAddressOrAlias: string = normalizeAddressOrAlias(contractAddressOrAlias);
 
     if (!options.signProvider && !options.privateKey) {
-      return Promise.reject(hancockErrorNoKey);
+      return Promise.reject(error(hancockErrorNoKey));
     }
 
     return this
@@ -303,7 +303,7 @@ export class HancockEthereumClient implements HancockClient {
   public async transfer(from: string, to: string, value: string, options: HancockInvokeOptions = {}, data: string = ''): Promise<HancockSignResponse> {
 
     if (!options.signProvider && !options.privateKey) {
-      return Promise.reject(hancockErrorNoKey);
+      return Promise.reject(error(hancockErrorNoKey));
     }
 
     return this
@@ -321,7 +321,7 @@ export class HancockEthereumClient implements HancockClient {
   ): Promise<HancockSignResponse> {
 
     if (!options.signProvider && !options.privateKey) {
-      return Promise.reject(hancockErrorNoKey);
+      return Promise.reject(error(hancockErrorNoKey));
     }
 
     return this
@@ -339,7 +339,7 @@ export class HancockEthereumClient implements HancockClient {
   ): Promise<HancockSignResponse> {
 
     if (!options.signProvider && !options.privateKey) {
-      return Promise.reject(hancockErrorNoKey);
+      return Promise.reject(error(hancockErrorNoKey));
     }
 
     return this
@@ -357,7 +357,7 @@ export class HancockEthereumClient implements HancockClient {
   ): Promise<HancockSignResponse> {
 
     if (!options.signProvider && !options.privateKey) {
-      return Promise.reject(hancockErrorNoKey);
+      return Promise.reject(error(hancockErrorNoKey));
     }
 
     return this
@@ -439,7 +439,7 @@ export class HancockEthereumClient implements HancockClient {
   ): Promise<HancockSignResponse> {
 
     if (!options.signProvider && !options.privateKey) {
-      return Promise.reject(hancockErrorNoKey);
+      return Promise.reject(error(hancockErrorNoKey));
     }
 
     return this
@@ -482,8 +482,8 @@ export class HancockEthereumClient implements HancockClient {
     throw err instanceof HancockError
       ? err
       : err.body
-        ? new HancockError(prefixApi, err.body.internalError, err.body.error, err.body.message, err)
-        : new HancockError(prefixInt, numberErrorInternal, err.code, err.message, err);
+        ? error(new HancockError(prefixApi, err.body.internalError, err.body.error, err.body.message, err), err)
+        : error(new HancockError(prefixInt, numberErrorInternal, err.code, err.message, err), err);
 
   }
 

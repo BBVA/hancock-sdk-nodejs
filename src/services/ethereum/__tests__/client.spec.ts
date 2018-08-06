@@ -7,7 +7,7 @@ import { HancockEthereumClient } from '../client';
 import { HancockError } from '../error';
 import * as signer from '../signer';
 import * as socket from '../socket';
-
+import * as errorUtils from '../utils';
 // jest.mock('url');
 jest.mock('isomorphic-fetch');
 jest.mock('../socket');
@@ -68,7 +68,7 @@ describe('ethereum client constructor', async () => {
 describe('ethereum client', async () => {
 
   let client: HancockEthereumClient;
-
+  const errorFnMock = errorUtils.error as jest.Mock;
   const genericConfig = {
     host: 'genericHost',
     port: 1,
@@ -153,6 +153,7 @@ describe('ethereum client', async () => {
       await client.invokeSmartContract('contractAddressOrAlias', 'method', ['params'], 'from');
       fail('it should fail');
     } catch (error) {
+      expect(errorFnMock).toHaveBeenCalledWith(new HancockError('internal', '002', 500, 'No key nor provider'));
       expect(error).toEqual(new HancockError('internal', '002', 500, 'No key nor provider'));
     }
 
@@ -731,6 +732,7 @@ describe('ethereum client', async () => {
         await client.tokenTransfer('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '100', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c');
         fail('it should fail');
       } catch (error) {
+        expect(errorFnMock).toHaveBeenCalledWith(new HancockError('internal', '002', 500, 'No key nor provider'));
         expect(error).toEqual(new HancockError('internal', '002', 500, 'No key nor provider'));
       }
 
@@ -843,6 +845,7 @@ describe('ethereum client', async () => {
         );
         fail('it should fail');
       } catch (error) {
+        expect(errorFnMock).toHaveBeenCalledWith(new HancockError('internal', '002', 500, 'No key nor provider'));
         expect(error).toEqual(new HancockError('internal', '002', 500, 'No key nor provider'));
       }
 
@@ -940,6 +943,7 @@ describe('ethereum client', async () => {
       await client.tokenAllowance('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '0xde8e772f0350e992ddef81bf8f51d94a8ea9215e', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c');
       fail('it should fail');
     } catch (error) {
+      expect(errorFnMock).toHaveBeenCalledWith(new HancockError('internal', '002', 500, 'No key nor provider'));
       expect(error).toEqual(new HancockError('internal', '002', 500, 'No key nor provider'));
     }
 
@@ -1232,6 +1236,7 @@ describe('ethereum client', async () => {
       await client.tokenApprove('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '100', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c');
       fail('it should fail');
     } catch (error) {
+      expect(errorFnMock).toHaveBeenCalledWith(new HancockError('internal', '002', 500, 'No key nor provider'));
       expect(error).toEqual(new HancockError('internal', '002', 500, 'No key nor provider'));
     }
 
