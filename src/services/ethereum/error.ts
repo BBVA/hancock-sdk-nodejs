@@ -29,7 +29,6 @@ export class HancockError extends Error implements IHancockError {
 
   }
 
-export const numberErrorInternal = '001';
 export const prefixApi = 'api';
 export const prefixInt = 'internal';
 export const hancockErrorNoKey = new HancockError(prefixInt, '002', 500, 'No key nor provider');
