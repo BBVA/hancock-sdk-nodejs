@@ -9,14 +9,14 @@ export class HancockError extends Error implements IHancockError {
     public errorStack: HancockError[] = [];
 
     constructor(
-      public typeError: string,
+      public typeError: hancockErrorType,
       public internalError: string,
       public error: number,
       public message: string,
       public extendedError?: HancockError | Error) {
 
       super(message);
-      if (typeError.trim() === 'api') {
+      if (typeError === hancockErrorType.Api) {
         this.internalError = `${HancockError.prefixApi}${internalError}`;
       } else {
         this.internalError = `${HancockError.prefixInt}${internalError}`;
@@ -29,6 +29,9 @@ export class HancockError extends Error implements IHancockError {
 
   }
 
-export const prefixApi = 'api';
-export const prefixInt = 'internal';
-export const hancockErrorNoKey = new HancockError(prefixInt, '002', 500, 'No key nor provider');
+export enum hancockErrorType {
+  Api,
+  Internal,
+  }
+export const hancockGenericApiError = new HancockError(hancockErrorType.Internal, '50001', 500, 'Error calling Api');
+export const hancockNoKeyNorProviderError = new HancockError(hancockErrorType.Internal, '50002', 500, 'No key nor provider');
