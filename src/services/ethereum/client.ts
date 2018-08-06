@@ -39,7 +39,7 @@ import {
   HancockTokenRegisterResponse,
   InitialHancockConfig,
 } from '../hancock.model';
-import {HancockError, hancockErrorType, hancockGenericApiError, hancockNoKeyNorProviderError } from './error';
+import { HancockError, hancockErrorType, hancockGenericApiError, hancockNoKeyNorProviderError, hancockWalletError } from './error';
 import { EthereumAbi } from './model';
 import {
   generateWallet,
@@ -288,7 +288,17 @@ export class HancockEthereumClient implements HancockClient {
   }
 
   public generateWallet(): EthereumWallet {
-    return generateWallet();
+
+    try {
+
+      return generateWallet();
+
+    } catch (e) {
+
+      throw error(hancockWalletError, e);
+
+    }
+
   }
 
   public signTransaction(rawTx: EthereumRawTransaction | string, privateKey: string): string {

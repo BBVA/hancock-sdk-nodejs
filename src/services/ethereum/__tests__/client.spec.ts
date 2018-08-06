@@ -4,10 +4,11 @@ import 'jest';
 import { HancockAdaptInvokeResponse } from '../..';
 import * as response from '../__mocks__/responses';
 import { HancockEthereumClient } from '../client';
-import { HancockError, hancockErrorType } from '../error';
+import { HancockError, hancockErrorType, hancockWalletError } from '../error';
 import * as signer from '../signer';
 import * as socket from '../socket';
 import * as errorUtils from '../utils';
+
 // jest.mock('url');
 jest.mock('isomorphic-fetch');
 jest.mock('../socket');
@@ -544,6 +545,23 @@ describe('ethereum client', async () => {
 
   });
 
+  it('should fail calling generateWallet if there is an error generating the wallet', async () => {
+
+    (signer.generateWallet as jest.Mock).mockImplementationOnce(() => { throw new Error('Boom!'); });
+
+    try {
+
+      client.generateWallet();
+      fail('it should fail');
+
+    } catch (e) {
+
+      expect(e).toEqual(hancockWalletError);
+
+    }
+
+  });
+
   it('should call signTransaction correctly', async () => {
 
     const rawtx = '{\"test\":\"test\"}';
@@ -718,7 +736,7 @@ describe('ethereum client', async () => {
       const result = await client.tokenTransfer('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
         '100', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c', options);
 
-        // tslint:disable-next-line:max-line-length
+      // tslint:disable-next-line:max-line-length
       expect(adaptTokenTransferSpy).toHaveBeenCalledWith('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '100', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c');
       expect(signAndSendSpy).toHaveBeenCalledWith({ test: 'test' }, options);
       expect(result).toBe('ok!');
@@ -927,7 +945,7 @@ describe('ethereum client', async () => {
       .mockImplementation(() => Promise.resolve('ok!'));
 
     const result = await client.tokenAllowance('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
-    '0xde8e772f0350e992ddef81bf8f51d94a8ea9215e', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c', options);
+      '0xde8e772f0350e992ddef81bf8f51d94a8ea9215e', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c', options);
 
     // tslint:disable-next-line:max-line-length
     expect(adaptTokenAllowanceSpy).toHaveBeenCalledWith('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '0xde8e772f0350e992ddef81bf8f51d94a8ea9215e', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c');
@@ -1220,7 +1238,7 @@ describe('ethereum client', async () => {
       .mockImplementation(() => Promise.resolve('ok!'));
 
     const result = await client.tokenApprove('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
-    '100', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c', options);
+      '100', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c', options);
 
     // tslint:disable-next-line:max-line-length
     expect(adaptTokenApproveSpy).toHaveBeenCalledWith('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '100', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c');
