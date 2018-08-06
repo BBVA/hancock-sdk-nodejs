@@ -4,9 +4,10 @@ import 'jest';
 import { HancockAdaptInvokeResponse } from '../..';
 import * as response from '../__mocks__/responses';
 import { HancockEthereumClient } from '../client';
+import { HancockError, hancockErrorType } from '../error';
 import * as signer from '../signer';
 import * as socket from '../socket';
-
+import * as errorUtils from '../utils';
 // jest.mock('url');
 jest.mock('isomorphic-fetch');
 jest.mock('../socket');
@@ -67,7 +68,7 @@ describe('ethereum client constructor', async () => {
 describe('ethereum client', async () => {
 
   let client: HancockEthereumClient;
-
+  const errorFnMock = errorUtils.error as jest.Mock;
   const genericConfig = {
     host: 'genericHost',
     port: 1,
@@ -108,20 +109,20 @@ describe('ethereum client', async () => {
         description: 'descriptionTest',
       },
       data: 'testData',
-    }
+    };
 
     encodeBody = {
-      'action': 'transfer',
-      'body': {
-        'value': '1000',
-        'to': '0xde8e772f0350e992ddef81bf8f51d94a8ea92123',
-        'data': 'dataTest',
+      action: 'transfer',
+      body: {
+        value: '1000',
+        to: '0xde8e772f0350e992ddef81bf8f51d94a8ea92123',
+        data: 'dataTest',
       },
-      'dlt': 'ethereum',
+      dlt: 'ethereum',
     };
 
     options = {
-      privateKey: '0x0000000000000000000000000000000000000000000000000000000000000002'
+      privateKey: '0x0000000000000000000000000000000000000000000000000000000000000002',
     };
 
     jest.restoreAllMocks();
@@ -149,10 +150,11 @@ describe('ethereum client', async () => {
   it('should call invokeSmartContract and throw reject', async () => {
 
     try {
-      await client.invokeSmartContract('contractAddressOrAlias', 'method', ['params'], 'from')
+      await client.invokeSmartContract('contractAddressOrAlias', 'method', ['params'], 'from');
       fail('it should fail');
     } catch (error) {
-      expect(error).toBe('No key nor provider');
+      expect(errorFnMock).toHaveBeenCalledWith(new HancockError(hancockErrorType.Internal, '002', 500, 'No key nor provider'));
+      expect(error).toEqual(new HancockError(hancockErrorType.Internal, '002', 500, 'No key nor provider'));
     }
 
   });
@@ -174,7 +176,7 @@ describe('ethereum client', async () => {
 
     expect(fetch).toHaveBeenCalledWith(
       'genericHost:1genericBase/mockInvoke/contractAddressOrAlias',
-      callParamFetch
+      callParamFetch,
     );
 
     expect(result).toEqual(response.SC_INVOKE_ADAPT_RESPONSE);
@@ -192,7 +194,7 @@ describe('ethereum client', async () => {
     });
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-      .mockImplementation(() => { throw new Error('testError') });
+      .mockImplementation(() => { throw new HancockError(hancockErrorType.Api, '001', 500, 'testError'); });
 
     try {
       await client.callSmartContract('contractAddressOrAlias', 'method', ['params'], 'from');
@@ -202,7 +204,7 @@ describe('ethereum client', async () => {
         'genericHost:1genericBase/mockInvoke/contractAddressOrAlias',
         callParamFetch,
       );
-      expect(error).toEqual(new Error('testError'));
+      expect(error).toEqual(new HancockError(hancockErrorType.Api, '001', 500, 'testError'));
     }
 
   });
@@ -230,7 +232,7 @@ describe('ethereum client', async () => {
     (fetch as any).mockRejectOnce(JSON.stringify(response.ERROR));
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-      .mockImplementation(() => { throw new Error('testError') });
+      .mockImplementation(() => { throw new HancockError(hancockErrorType.Api, '001', 500, 'testError'); });
 
     try {
       await client.adaptInvokeSmartContract('contractAddressOrAlias', 'method', ['params'], 'from');
@@ -238,9 +240,9 @@ describe('ethereum client', async () => {
     } catch (error) {
       expect(fetch).toHaveBeenCalledWith(
         'genericHost:1genericBase/mockInvoke/contractAddressOrAlias',
-        callParamFetch
+        callParamFetch,
       );
-      expect(error).toEqual(new Error('testError'));
+      expect(error).toEqual(new HancockError(hancockErrorType.Api, '001', 500, 'testError'));
     }
 
   });
@@ -248,16 +250,16 @@ describe('ethereum client', async () => {
   it('should call sendTransaction correctly', async () => {
 
     (fetch as any).once(JSON.stringify(response.SC_INVOKE_ADAPT_RESPONSE));
-    callParamFetch.body = JSON.stringify({ 'tx': { 'whatever': 'whatevervalue' } });
+    callParamFetch.body = JSON.stringify({ tx: { whatever: 'whatevervalue' } });
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'checkStatus')
       .mockImplementation((res) => Promise.resolve(res.json()));
 
-    const result = await client.sendTransaction({ 'whatever': 'whatevervalue' });
+    const result = await client.sendTransaction({ whatever: 'whatevervalue' });
 
     expect(fetch).toHaveBeenCalledWith(
       'genericHost:1genericBase/mockSendTx',
-      callParamFetch
+      callParamFetch,
     );
     expect(checkStatusSpy).toHaveBeenCalledTimes(1);
     expect(result).toEqual(response.SC_INVOKE_ADAPT_RESPONSE);
@@ -267,20 +269,20 @@ describe('ethereum client', async () => {
   it('should call sendTransaction and throw error', async () => {
 
     (fetch as any).mockRejectOnce(JSON.stringify(response.ERROR));
-    callParamFetch.body = JSON.stringify({ 'tx': { 'whatever': 'whatevervalue' } });
+    callParamFetch.body = JSON.stringify({ tx: { whatever: 'whatevervalue' } });
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-      .mockImplementation(() => { throw new Error('testError') });
+      .mockImplementation(() => { throw new HancockError(hancockErrorType.Api, '001', 500, 'testError'); });
 
     try {
-      await client.sendTransaction({ 'whatever': 'whatevervalue' });
+      await client.sendTransaction({ whatever: 'whatevervalue' });
       fail('it should fail');
     } catch (error) {
       expect(fetch).toHaveBeenCalledWith(
         'genericHost:1genericBase/mockSendTx',
-        callParamFetch
+        callParamFetch,
       );
-      expect(error).toEqual(new Error('testError'));
+      expect(error).toEqual(new HancockError(hancockErrorType.Api, '001', 500, 'testError'));
     }
 
   });
@@ -288,16 +290,16 @@ describe('ethereum client', async () => {
   it('should call sendSignedTransaction correctly', async () => {
 
     (fetch as any).once(JSON.stringify(response.SC_INVOKE_ADAPT_RESPONSE));
-    callParamFetch.body = JSON.stringify({ 'tx': { 'whatever': 'whatevervalue' } });
+    callParamFetch.body = JSON.stringify({ tx: { whatever: 'whatevervalue' } });
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'checkStatus')
       .mockImplementation((res) => Promise.resolve(res.json()));
 
-    const result = await client.sendSignedTransaction({ 'whatever': 'whatevervalue' });
+    const result = await client.sendSignedTransaction({ whatever: 'whatevervalue' });
 
     expect(fetch).toHaveBeenCalledWith(
       'genericHost:1genericBase/mockSendSignedTx',
-      callParamFetch
+      callParamFetch,
     );
     expect(checkStatusSpy).toHaveBeenCalledTimes(1);
     expect(result).toEqual(response.SC_INVOKE_ADAPT_RESPONSE);
@@ -307,20 +309,20 @@ describe('ethereum client', async () => {
   it('should call sendSignedTransaction and throw error', async () => {
 
     (fetch as any).mockRejectOnce(JSON.stringify(response.ERROR));
-    callParamFetch.body = JSON.stringify({ 'tx': { 'whatever': 'whatevervalue' } });
+    callParamFetch.body = JSON.stringify({ tx: { whatever: 'whatevervalue' } });
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-      .mockImplementation(() => { throw new Error('testError') });
+      .mockImplementation(() => { throw new HancockError(hancockErrorType.Api, '001', 500, 'testError'); });
 
     try {
-      await client.sendSignedTransaction({ 'whatever': 'whatevervalue' });
+      await client.sendSignedTransaction({ whatever: 'whatevervalue' });
       fail('it should fail');
     } catch (error) {
       expect(fetch).toHaveBeenCalledWith(
         'genericHost:1genericBase/mockSendSignedTx',
-        callParamFetch
+        callParamFetch,
       );
-      expect(error).toEqual(new Error('testError'));
+      expect(error).toEqual(new HancockError(hancockErrorType.Api, '001', 500, 'testError'));
     }
 
   });
@@ -328,16 +330,16 @@ describe('ethereum client', async () => {
   it('should call sendTransactionToSign correctly', async () => {
 
     (fetch as any).once(JSON.stringify(response.SC_INVOKE_ADAPT_RESPONSE));
-    callParamFetch.body = JSON.stringify({ 'rawTx': { 'whatever': 'whatevervalue' }, 'provider': 'provider' });
+    callParamFetch.body = JSON.stringify({ rawTx: { whatever: 'whatevervalue' }, provider: 'provider' });
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'checkStatus')
       .mockImplementation((res) => Promise.resolve(res.json()));
 
-    const result = await client.sendTransactionToSign({ 'whatever': 'whatevervalue' }, 'provider');
+    const result = await client.sendTransactionToSign({ whatever: 'whatevervalue' }, 'provider');
 
     expect(fetch).toHaveBeenCalledWith(
       'genericHost:1genericBase/mockSignTx',
-      callParamFetch
+      callParamFetch,
     );
     expect(checkStatusSpy).toHaveBeenCalledTimes(1);
     expect(result).toEqual(response.SC_INVOKE_ADAPT_RESPONSE);
@@ -347,20 +349,20 @@ describe('ethereum client', async () => {
   it('should call sendSignedTransaction and throw error', async () => {
 
     (fetch as any).mockRejectOnce(JSON.stringify(response.ERROR));
-    callParamFetch.body = JSON.stringify({ 'rawTx': { 'whatever': 'whatevervalue' }, 'provider': 'provider' });
+    callParamFetch.body = JSON.stringify({ rawTx: { whatever: 'whatevervalue' }, provider: 'provider' });
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-      .mockImplementation(() => { throw new Error('testError') });
+      .mockImplementation(() => { throw new HancockError(hancockErrorType.Api, '001', 500, 'testError'); });
 
     try {
-      await client.sendTransactionToSign({ 'whatever': 'whatevervalue' }, 'provider');
+      await client.sendTransactionToSign({ whatever: 'whatevervalue' }, 'provider');
       fail('it should fail');
     } catch (error) {
       expect(fetch).toHaveBeenCalledWith(
         'genericHost:1genericBase/mockSignTx',
-        callParamFetch
+        callParamFetch,
       );
-      expect(error).toEqual(new Error('testError'));
+      expect(error).toEqual(new HancockError(hancockErrorType.Api, '001', 500, 'testError'));
     }
 
   });
@@ -369,9 +371,9 @@ describe('ethereum client', async () => {
 
     (fetch as any).once(JSON.stringify(response.SC_INVOKE_ADAPT_RESPONSE));
     callParamFetch.body = JSON.stringify({
-      'address': '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
-      'alias': 'contract-alias',
-      'abi': ['abi']
+      address: '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
+      alias: 'contract-alias',
+      abi: ['abi'],
     });
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'checkStatus')
@@ -381,7 +383,7 @@ describe('ethereum client', async () => {
 
     expect(fetch).toHaveBeenCalledWith(
       'genericHost:1genericBase/mockRegister',
-      callParamFetch
+      callParamFetch,
     );
     expect(checkStatusSpy).toHaveBeenCalledTimes(1);
     expect(result).toEqual(response.SC_INVOKE_ADAPT_RESPONSE);
@@ -392,13 +394,13 @@ describe('ethereum client', async () => {
 
     (fetch as any).mockRejectOnce(JSON.stringify(response.ERROR));
     callParamFetch.body = JSON.stringify({
-      'address': '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
-      'alias': 'contract-alias',
-      'abi': ['abi']
+      address: '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
+      alias: 'contract-alias',
+      abi: ['abi'],
     });
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-      .mockImplementation(() => { throw new Error('testError') });
+      .mockImplementation(() => { throw new HancockError(hancockErrorType.Api, '001', 500, 'testError'); });
 
     try {
       await client.registerSmartContract('contract-alias', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', ['abi']);
@@ -406,9 +408,9 @@ describe('ethereum client', async () => {
     } catch (error) {
       expect(fetch).toHaveBeenCalledWith(
         'genericHost:1genericBase/mockRegister',
-        callParamFetch
+        callParamFetch,
       );
-      expect(error).toEqual(new Error('testError'));
+      expect(error).toEqual(new HancockError(hancockErrorType.Api, '001', 500, 'testError'));
     }
 
   });
@@ -419,8 +421,8 @@ describe('ethereum client', async () => {
 
       (fetch as any).once(JSON.stringify(response.SC_INVOKE_ADAPT_RESPONSE));
       callParamFetch.body = JSON.stringify({
-        'address': '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
-        'alias': 'contract-alias'
+        address: '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
+        alias: 'contract-alias',
       });
 
       const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'checkStatus').mockImplementation((res) => Promise.resolve(res.json()));
@@ -437,13 +439,13 @@ describe('ethereum client', async () => {
 
       (fetch as any).mockRejectOnce(JSON.stringify(response.ERROR));
       callParamFetch.body = JSON.stringify({
-        'address': '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
-        'alias': 'contract-alias',
+        address: '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
+        alias: 'contract-alias',
       });
 
-      const throwedError = new Error('testError');
+      const throwedError = new HancockError(hancockErrorType.Api, '001', 500, 'testError');
       const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-        .mockImplementation(() => { throw throwedError });
+        .mockImplementation(() => { throw throwedError; });
 
       try {
 
@@ -472,7 +474,7 @@ describe('ethereum client', async () => {
     const result = await client.getBalance('0xde8e772f0350e992ddef81bf8f51d94a8ea9216d');
 
     expect(fetch).toHaveBeenCalledWith(
-      'genericHost:1genericBase/mockBalance/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d'
+      'genericHost:1genericBase/mockBalance/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
     );
     expect(checkStatusSpy).toHaveBeenCalledTimes(1);
     expect(result).toEqual(new BigNumber(response.GET_BALANCE_RESPONSE.data.balance));
@@ -484,20 +486,19 @@ describe('ethereum client', async () => {
     (fetch as any).mockRejectOnce(JSON.stringify(response.GET_BALANCE_ERROR_RESPONSE), { status: 400 });
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-      .mockImplementation((res) => { throw new Error(res.description) });
+      .mockImplementation((res) => { throw new HancockError(hancockErrorType.Api, '002', res.code, res.description); });
 
     try {
       const result = await client.getBalance('0xde8e772f0350e992ddef81bf8f51d94a8ea9216d');
       fail('it should fail');
     } catch (error) {
       expect(fetch).toHaveBeenCalledWith(
-        'genericHost:1genericBase/mockBalance/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d'
+        'genericHost:1genericBase/mockBalance/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
       );
       expect(checkStatusSpy).toHaveBeenCalledTimes(1);
     }
 
   });
-
 
   it('should call getTokenBalance correctly', async () => {
 
@@ -509,7 +510,7 @@ describe('ethereum client', async () => {
     const result = await client.getTokenBalance('0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d');
 
     expect(fetch).toHaveBeenCalledWith(
-      'genericHost:1genericBase/mockToken/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d/mockBalance/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d'
+      'genericHost:1genericBase/mockToken/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d/mockBalance/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
     );
     expect(checkStatusSpy).toHaveBeenCalledTimes(1);
     expect(result.balance).toEqual(response.GET_TOKEN_BALANCE_RESPONSE.data.balance);
@@ -521,14 +522,14 @@ describe('ethereum client', async () => {
     (fetch as any).mockRejectOnce(JSON.stringify(response.GET_TOKEN_BALANCE_ERROR_RESPONSE), { status: 400 });
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-      .mockImplementation((res) => { throw new Error(res.description) });
+      .mockImplementation((res) => { throw new HancockError(hancockErrorType.Api, '002', res.code, res.description); });
 
     try {
       await client.getTokenBalance('0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d');
       fail('it should fail');
     } catch (error) {
       expect(fetch).toHaveBeenCalledWith(
-        'genericHost:1genericBase/mockToken/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d/mockBalance/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d'
+        'genericHost:1genericBase/mockToken/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d/mockBalance/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
       );
       expect(checkStatusSpy).toHaveBeenCalledTimes(1);
     }
@@ -568,8 +569,8 @@ describe('ethereum client', async () => {
   it('should call checkStatus correctly', async () => {
 
     const checkstatusparam = {
-      'ok': true,
-      'json': () => 'response',
+      ok: true,
+      json: () => 'response',
     };
     const result = await (client as any).checkStatus(checkstatusparam);
 
@@ -580,8 +581,8 @@ describe('ethereum client', async () => {
   it('should call checkStatus and throw error', async () => {
 
     const checkstatusparam = {
-      'ok': false,
-      'json': () => 'response',
+      ok: false,
+      json: () => 'response',
     };
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
@@ -596,10 +597,10 @@ describe('ethereum client', async () => {
   it('should call errorHandler with error correctly', async () => {
 
     try {
-      (client as any).errorHandler(new Error('testError'));
-      fail('it should fail')
+      (client as any).errorHandler(new HancockError(hancockErrorType.Api, '001', 500, 'testError'));
+      fail('it should fail');
     } catch (error) {
-      expect(error).toEqual(new Error('testError'));
+      expect(error).toEqual(new HancockError(hancockErrorType.Api, '001', 500, 'testError'));
     }
 
   });
@@ -607,10 +608,10 @@ describe('ethereum client', async () => {
   it('should call errorHandler without error correctly', async () => {
 
     try {
-      (client as any).errorHandler({ 'body': { 'message': 'testErrorBody' } });
-      fail('it should fail')
+      (client as any).errorHandler({ body: { message: 'testErrorBody' } });
+      fail('it should fail');
     } catch (error) {
-      expect(error).toEqual(new Error('testErrorBody'));
+      expect(error).toEqual(new HancockError(hancockErrorType.Api, '001', 500, 'testErrorBody'));
     }
 
   });
@@ -618,14 +619,16 @@ describe('ethereum client', async () => {
   it('should call transfer correctly', async () => {
 
     const adaptTransferSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'adaptTransfer')
-      .mockImplementation(() => Promise.resolve({ 'test': 'test' }));
+      .mockImplementation(() => Promise.resolve({ test: 'test' }));
     const signAndSendSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'signAndSend')
       .mockImplementation(() => Promise.resolve('ok!'));
 
+    // tslint:disable-next-line:max-line-length
     const result = await client.transfer('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '100', options, 'whatever');
 
+    // tslint:disable-next-line:max-line-length
     expect(adaptTransferSpy).toHaveBeenCalledWith('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '100', 'whatever');
-    expect(signAndSendSpy).toHaveBeenCalledWith({ 'test': 'test' }, options);
+    expect(signAndSendSpy).toHaveBeenCalledWith({ test: 'test' }, options);
     expect(result).toBe('ok!');
 
   });
@@ -636,7 +639,7 @@ describe('ethereum client', async () => {
       await client.transfer('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '100');
       fail('it should fail');
     } catch (error) {
-      expect(error).toBe('No key nor provider');
+      expect(error).toEqual(new HancockError(hancockErrorType.Api, '002', 500, 'No key nor provider'));
     }
 
   });
@@ -645,10 +648,10 @@ describe('ethereum client', async () => {
 
     (fetch as any).once(JSON.stringify(response.SC_INVOKE_ADAPT_RESPONSE));
     const bodyFetch = {
-      'from': '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
-      'to': '0xde8e772f0350e992ddef81bf8f51d94a8ea92123',
-      'value': '100000',
-      'data': 'test',
+      from: '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
+      to: '0xde8e772f0350e992ddef81bf8f51d94a8ea92123',
+      value: '100000',
+      data: 'test',
     };
     callParamFetch.body = JSON.stringify(bodyFetch);
 
@@ -659,12 +662,12 @@ describe('ethereum client', async () => {
       bodyFetch.from,
       bodyFetch.to,
       bodyFetch.value,
-      bodyFetch.data
+      bodyFetch.data,
     );
 
     expect(fetch).toHaveBeenCalledWith(
       'genericHost:1genericBase/mockTransfer',
-      callParamFetch
+      callParamFetch,
     );
     expect(checkStatusSpy).toHaveBeenCalledTimes(1);
     expect(result).toEqual(response.SC_INVOKE_ADAPT_RESPONSE);
@@ -675,30 +678,30 @@ describe('ethereum client', async () => {
 
     (fetch as any).mockRejectOnce(JSON.stringify(response.ERROR));
     const bodyFetch = {
-      'from': '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
-      'to': '0xde8e772f0350e992ddef81bf8f51d94a8ea92123',
-      'value': '100000',
-      'data': 'test',
+      from: '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
+      to: '0xde8e772f0350e992ddef81bf8f51d94a8ea92123',
+      value: '100000',
+      data: 'test',
     };
     callParamFetch.body = JSON.stringify(bodyFetch);
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-      .mockImplementation(() => { throw new Error('testError') });
+      .mockImplementation(() => { throw new HancockError(hancockErrorType.Api, '001', 500, 'testError'); });
 
     try {
       await (client as any).adaptTransfer(
         bodyFetch.from,
         bodyFetch.to,
         bodyFetch.value,
-        bodyFetch.data
+        bodyFetch.data,
       );
       fail('it should fail');
     } catch (error) {
       expect(fetch).toHaveBeenCalledWith(
         'genericHost:1genericBase/mockTransfer',
-        callParamFetch
+        callParamFetch,
       );
-      expect(error).toEqual(new Error('testError'));
+      expect(error).toEqual(new HancockError(hancockErrorType.Api, '001', 500, 'testError'));
     }
 
   });
@@ -708,15 +711,16 @@ describe('ethereum client', async () => {
     it('should call tokenTransfer correctly', async () => {
 
       const adaptTokenTransferSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'adaptTokenTransfer')
-        .mockImplementation(() => Promise.resolve({ 'test': 'test' }));
+        .mockImplementation(() => Promise.resolve({ test: 'test' }));
       const signAndSendSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'signAndSend')
         .mockImplementation(() => Promise.resolve('ok!'));
 
       const result = await client.tokenTransfer('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
         '100', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c', options);
 
+        // tslint:disable-next-line:max-line-length
       expect(adaptTokenTransferSpy).toHaveBeenCalledWith('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '100', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c');
-      expect(signAndSendSpy).toHaveBeenCalledWith({ 'test': 'test' }, options);
+      expect(signAndSendSpy).toHaveBeenCalledWith({ test: 'test' }, options);
       expect(result).toBe('ok!');
 
     });
@@ -724,10 +728,12 @@ describe('ethereum client', async () => {
     it('should call tokenTransfer and throw error', async () => {
 
       try {
+        // tslint:disable-next-line:max-line-length
         await client.tokenTransfer('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '100', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c');
         fail('it should fail');
       } catch (error) {
-        expect(error).toBe('No key nor provider');
+        expect(errorFnMock).toHaveBeenCalledWith(new HancockError(hancockErrorType.Internal, '002', 500, 'No key nor provider'));
+        expect(error).toEqual(new HancockError(hancockErrorType.Internal, '002', 500, 'No key nor provider'));
       }
 
     });
@@ -736,9 +742,9 @@ describe('ethereum client', async () => {
 
       (fetch as any).once(JSON.stringify(response.SC_INVOKE_ADAPT_RESPONSE));
       const bodyFetch = {
-        'from': '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
-        'to': '0xde8e772f0350e992ddef81bf8f51d94a8ea92123',
-        'value': '100000',
+        from: '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
+        to: '0xde8e772f0350e992ddef81bf8f51d94a8ea92123',
+        value: '100000',
       };
       callParamFetch.body = JSON.stringify(bodyFetch);
       const smartContractAddress = '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c';
@@ -750,12 +756,12 @@ describe('ethereum client', async () => {
         bodyFetch.from,
         bodyFetch.to,
         bodyFetch.value,
-        smartContractAddress
+        smartContractAddress,
       );
 
       expect(fetch).toHaveBeenCalledWith(
         'genericHost:1genericBase/mockToken/' + smartContractAddress + '/mockTransfer',
-        callParamFetch
+        callParamFetch,
       );
       expect(checkStatusSpy).toHaveBeenCalledTimes(1);
       expect(result).toEqual(response.SC_INVOKE_ADAPT_RESPONSE);
@@ -766,30 +772,30 @@ describe('ethereum client', async () => {
 
       (fetch as any).mockRejectOnce(JSON.stringify(response.ERROR));
       const bodyFetch = {
-        'from': '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
-        'to': '0xde8e772f0350e992ddef81bf8f51d94a8ea92123',
-        'value': '100000'
+        from: '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
+        to: '0xde8e772f0350e992ddef81bf8f51d94a8ea92123',
+        value: '100000',
       };
       const smartContractAddress = '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c';
       callParamFetch.body = JSON.stringify(bodyFetch);
 
       const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-        .mockImplementation(() => { throw new Error('testError') });
+        .mockImplementation(() => { throw new HancockError(hancockErrorType.Api, '001', 500, 'testError'); });
 
       try {
         await (client as any).adaptTokenTransfer(
           bodyFetch.from,
           bodyFetch.to,
           bodyFetch.value,
-          smartContractAddress
+          smartContractAddress,
         );
         fail('it should fail');
       } catch (error) {
         expect(fetch).toHaveBeenCalledWith(
           'genericHost:1genericBase/mockToken/' + smartContractAddress + '/mockTransfer',
-          callParamFetch
+          callParamFetch,
         );
-        expect(error).toEqual(new Error('testError'));
+        expect(error).toEqual(new HancockError(hancockErrorType.Api, '001', 500, 'testError'));
       }
 
     });
@@ -839,7 +845,8 @@ describe('ethereum client', async () => {
         );
         fail('it should fail');
       } catch (error) {
-        expect(error).toBe('No key nor provider');
+        expect(errorFnMock).toHaveBeenCalledWith(new HancockError(hancockErrorType.Internal, '002', 500, 'No key nor provider'));
+        expect(error).toEqual(new HancockError(hancockErrorType.Internal, '002', 500, 'No key nor provider'));
       }
 
     });
@@ -889,7 +896,7 @@ describe('ethereum client', async () => {
       callParamFetch.body = JSON.stringify(bodyFetch);
 
       const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-        .mockImplementation(() => { throw new Error('testError'); });
+        .mockImplementation(() => { throw new HancockError(hancockErrorType.Api, '001', 500, 'testError'); });
 
       try {
         await (client as any).adaptTokenTransferFrom(
@@ -905,7 +912,7 @@ describe('ethereum client', async () => {
           'genericHost:1genericBase/mockToken/' + smartContractAddress + '/mockTransferFrom',
           callParamFetch,
         );
-        expect(error).toEqual(new Error('testError'));
+        expect(error).toEqual(new HancockError(hancockErrorType.Api, '001', 500, 'testError'));
       }
 
     });
@@ -915,15 +922,16 @@ describe('ethereum client', async () => {
   it('should call tokenAllowance correctly', async () => {
 
     const adaptTokenAllowanceSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'adaptTokenAllowance')
-      .mockImplementation(() => Promise.resolve({ "test": "test" }));
+      .mockImplementation(() => Promise.resolve({ test: 'test' }));
     const signAndSendSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'signAndSend')
-      .mockImplementation(() => Promise.resolve("ok!"));
+      .mockImplementation(() => Promise.resolve('ok!'));
 
-    const result = await client.tokenAllowance('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', 
-    "0xde8e772f0350e992ddef81bf8f51d94a8ea9215e", '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c', options);
+    const result = await client.tokenAllowance('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
+    '0xde8e772f0350e992ddef81bf8f51d94a8ea9215e', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c', options);
 
-    expect(adaptTokenAllowanceSpy).toHaveBeenCalledWith('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', "0xde8e772f0350e992ddef81bf8f51d94a8ea9215e", '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c');
-    expect(signAndSendSpy).toHaveBeenCalledWith({ "test": "test" }, options);
+    // tslint:disable-next-line:max-line-length
+    expect(adaptTokenAllowanceSpy).toHaveBeenCalledWith('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '0xde8e772f0350e992ddef81bf8f51d94a8ea9215e', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c');
+    expect(signAndSendSpy).toHaveBeenCalledWith({ test: 'test' }, options);
     expect(result).toBe('ok!');
 
   });
@@ -931,10 +939,12 @@ describe('ethereum client', async () => {
   it('should call tokenAllowance and throw error', async () => {
 
     try {
-      await client.tokenAllowance('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', "0xde8e772f0350e992ddef81bf8f51d94a8ea9215e", '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c');
+      // tslint:disable-next-line:max-line-length
+      await client.tokenAllowance('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '0xde8e772f0350e992ddef81bf8f51d94a8ea9215e', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c');
       fail('it should fail');
     } catch (error) {
-      expect(error).toBe('No key nor provider');
+      expect(errorFnMock).toHaveBeenCalledWith(new HancockError(hancockErrorType.Internal, '002', 500, 'No key nor provider'));
+      expect(error).toEqual(new HancockError(hancockErrorType.Internal, '002', 500, 'No key nor provider'));
     }
 
   });
@@ -943,9 +953,9 @@ describe('ethereum client', async () => {
 
     (fetch as any).once(JSON.stringify(response.SC_INVOKE_ADAPT_RESPONSE));
     const bodyFetch = {
-      'from': '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
-      'tokenOwner': '0xde8e772f0350e992ddef81bf8f51d94a8ea92123',
-      'spender':'0xde8e772f0350e992ddef81bf8f51d94a8ea9215e',
+      from: '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
+      tokenOwner: '0xde8e772f0350e992ddef81bf8f51d94a8ea92123',
+      spender: '0xde8e772f0350e992ddef81bf8f51d94a8ea9215e',
     };
     callParamFetch.body = JSON.stringify(bodyFetch);
     const smartContractAddress = '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c';
@@ -957,12 +967,12 @@ describe('ethereum client', async () => {
       bodyFetch.from,
       bodyFetch.tokenOwner,
       bodyFetch.spender,
-      smartContractAddress
+      smartContractAddress,
     );
 
     expect(fetch).toHaveBeenCalledWith(
       'genericHost:1genericBase/mockToken/' + smartContractAddress + '/mockAllowance',
-      callParamFetch
+      callParamFetch,
     );
     expect(checkStatusSpy).toHaveBeenCalledTimes(1);
     expect(result).toEqual(response.SC_INVOKE_ADAPT_RESPONSE);
@@ -973,30 +983,30 @@ describe('ethereum client', async () => {
 
     (fetch as any).mockRejectOnce(JSON.stringify(response.ERROR));
     const bodyFetch = {
-      'from': '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
-      'tokenOwner': '0xde8e772f0350e992ddef81bf8f51d94a8ea92123',
-      'spender':'0xde8e772f0350e992ddef81bf8f51d94a8ea9215e',
+      from: '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
+      tokenOwner: '0xde8e772f0350e992ddef81bf8f51d94a8ea92123',
+      spender: '0xde8e772f0350e992ddef81bf8f51d94a8ea9215e',
     };
     const smartContractAddress = '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c';
     callParamFetch.body = JSON.stringify(bodyFetch);
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-      .mockImplementation(() => { throw new Error('testError') });
+      .mockImplementation(() => { throw new HancockError(hancockErrorType.Api, '001', 500, 'testError'); });
 
     try {
       await (client as any).adaptTokenAllowance(
         bodyFetch.from,
         bodyFetch.tokenOwner,
         bodyFetch.spender,
-        smartContractAddress
+        smartContractAddress,
       );
       fail('it should fail');
     } catch (error) {
       expect(fetch).toHaveBeenCalledWith(
         'genericHost:1genericBase/mockToken/' + smartContractAddress + '/mockAllowance',
-        callParamFetch
+        callParamFetch,
       );
-      expect(error).toEqual(new Error('testError'));
+      expect(error).toEqual(new HancockError(hancockErrorType.Api, '001', 500, 'testError'));
     }
 
   });
@@ -1012,7 +1022,6 @@ describe('ethereum client', async () => {
     expect(sendTransactionToSignSpy).toHaveBeenCalledTimes(1);
     expect(sendTransactionToSignSpy).toHaveBeenCalledWith(hancockAdaptInvokeResponse.data, options.signProvider);
     expect(result).toBe('response');
-
 
   });
 
@@ -1044,7 +1053,6 @@ describe('ethereum client', async () => {
     expect(sendTransactionSpy).toHaveBeenCalledWith(hancockAdaptInvokeResponse.data);
     expect(result).toBe('response');
 
-
   });
 
   it('should call encodeProtocol correctly', async () => {
@@ -1059,7 +1067,7 @@ describe('ethereum client', async () => {
 
     expect(fetch).toHaveBeenCalledWith(
       'genericHost:1genericBase/mockEncode',
-      callParamFetch
+      callParamFetch,
     );
     expect(checkStatusSpy).toHaveBeenCalledTimes(1);
     expect(result).toEqual(response.SC_INVOKE_ADAPT_RESPONSE);
@@ -1072,7 +1080,7 @@ describe('ethereum client', async () => {
     callParamFetch.body = JSON.stringify(encodeBody);
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-      .mockImplementation(() => { throw new Error('testError') });
+      .mockImplementation(() => { throw new HancockError(hancockErrorType.Api, '001', 500, 'testError'); });
 
     try {
       await client.encodeProtocol('transfer', '1000', '0xde8e772f0350e992ddef81bf8f51d94a8ea92123', 'dataTest', 'ethereum');
@@ -1080,9 +1088,9 @@ describe('ethereum client', async () => {
     } catch (error) {
       expect(fetch).toHaveBeenCalledWith(
         'genericHost:1genericBase/mockEncode',
-        callParamFetch
+        callParamFetch,
       );
-      expect(error).toEqual(new Error('testError'));
+      expect(error).toEqual(new HancockError(hancockErrorType.Api, '001', 500, 'testError'));
     }
 
   });
@@ -1090,7 +1098,7 @@ describe('ethereum client', async () => {
   it('should call decodeProtocol correctly', async () => {
 
     (fetch as any).once(JSON.stringify(response.SC_INVOKE_ADAPT_RESPONSE));
-    callParamFetch.body = JSON.stringify({ 'code': 'testCode' });
+    callParamFetch.body = JSON.stringify({ code: 'testCode' });
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'checkStatus')
       .mockImplementation((res) => Promise.resolve(res.json()));
@@ -1099,7 +1107,7 @@ describe('ethereum client', async () => {
 
     expect(fetch).toHaveBeenCalledWith(
       'genericHost:1genericBase/mockDecode',
-      callParamFetch
+      callParamFetch,
     );
     expect(checkStatusSpy).toHaveBeenCalledTimes(1);
     expect(result).toEqual(response.SC_INVOKE_ADAPT_RESPONSE);
@@ -1109,10 +1117,10 @@ describe('ethereum client', async () => {
   it('should call decodeProtocol and throw error', async () => {
 
     (fetch as any).mockRejectOnce(JSON.stringify(response.ERROR));
-    callParamFetch.body = JSON.stringify({ 'code': 'testCode' });
+    callParamFetch.body = JSON.stringify({ code: 'testCode' });
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-      .mockImplementation(() => { throw new Error('testError') });
+      .mockImplementation(() => { throw new HancockError(hancockErrorType.Api, '001', 500, 'testError'); });
 
     try {
       await client.decodeProtocol('testCode');
@@ -1120,9 +1128,9 @@ describe('ethereum client', async () => {
     } catch (error) {
       expect(fetch).toHaveBeenCalledWith(
         'genericHost:1genericBase/mockDecode',
-        callParamFetch
+        callParamFetch,
       );
-      expect(error).toEqual(new Error('testError'));
+      expect(error).toEqual(new HancockError(hancockErrorType.Api, '001', 500, 'testError'));
     }
 
   });
@@ -1137,7 +1145,7 @@ describe('ethereum client', async () => {
     const result = await client.getTokenMetadata('0xde8e772f0350e992ddef81bf8f51d94a8ea9216d');
 
     expect(fetch).toHaveBeenCalledWith(
-      'genericHost:1genericBase/mockToken/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d/mockMetadata'
+      'genericHost:1genericBase/mockToken/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d/mockMetadata',
     );
     expect(checkStatusSpy).toHaveBeenCalledTimes(1);
     expect(result).toEqual(response.GET_TOKEN_METADATA_RESPONSE.data);
@@ -1149,26 +1157,23 @@ describe('ethereum client', async () => {
     (fetch as any).mockRejectOnce(JSON.stringify(response.GET_TOKEN_METADATA_ERROR_RESPONSE), { status: 500 });
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-      .mockImplementation((res) => { throw new Error(JSON.parse(res).result.description) });
+      .mockImplementation((res) => { throw new HancockError(hancockErrorType.Api, '002', JSON.parse(res).result.code, JSON.parse(res).result.description); });
 
     try {
       await client.getTokenMetadata('0xde8e772f0350e992ddef81bf8f51d94a8ea9216d');
       fail('it should fail');
     } catch (error) {
       expect(fetch).toHaveBeenCalledWith(
-        'genericHost:1genericBase/mockToken/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d/mockMetadata'
+        'genericHost:1genericBase/mockToken/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d/mockMetadata',
       );
-      expect(error).toEqual(new Error(response.GET_TOKEN_METADATA_ERROR_RESPONSE.result.description));
+      expect(error).toEqual(new HancockError(hancockErrorType.Api, '002', 500, response.GET_TOKEN_METADATA_ERROR_RESPONSE.result.description));
     }
 
   });
 
-
-
-
-
   it('should call subscribeToContract correctly', async () => {
 
+    // tslint:disable-next-line:no-shadowed-variable
     const response = client.subscribeToContract(['testContract']);
 
     expect(socket.HancockEthereumSocket).toHaveBeenCalledTimes(1);
@@ -1178,7 +1183,7 @@ describe('ethereum client', async () => {
   });
 
   it('should call subscribeToTransfer correctly', async () => {
-
+    // tslint:disable-next-line:no-shadowed-variable
     const response = client.subscribeToTransfer(['0x1234']);
 
     expect(socket.HancockEthereumSocket).toHaveBeenCalledTimes(1);
@@ -1188,7 +1193,7 @@ describe('ethereum client', async () => {
   });
 
   it('should call subscribeToContract empty correctly', async () => {
-
+    // tslint:disable-next-line:no-shadowed-variable
     const response = client.subscribeToContract();
 
     expect(socket.HancockEthereumSocket).toHaveBeenCalledTimes(1);
@@ -1198,7 +1203,7 @@ describe('ethereum client', async () => {
   });
 
   it('should call subscribeToTransfer empty correctly', async () => {
-
+    // tslint:disable-next-line:no-shadowed-variable
     const response = client.subscribeToTransfer();
 
     expect(socket.HancockEthereumSocket).toHaveBeenCalledTimes(1);
@@ -1210,15 +1215,16 @@ describe('ethereum client', async () => {
   it('should call tokenApprove correctly', async () => {
 
     const adaptTokenApproveSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'adaptTokenApprove')
-      .mockImplementation(() => Promise.resolve({ "test": "test" }));
+      .mockImplementation(() => Promise.resolve({ test: 'test' }));
     const signAndSendSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'signAndSend')
-      .mockImplementation(() => Promise.resolve("ok!"));
+      .mockImplementation(() => Promise.resolve('ok!'));
 
-    const result = await client.tokenApprove('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', 
-    "100", '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c', options);
+    const result = await client.tokenApprove('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
+    '100', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c', options);
 
-    expect(adaptTokenApproveSpy).toHaveBeenCalledWith('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', "100", '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c');
-    expect(signAndSendSpy).toHaveBeenCalledWith({ "test": "test" }, options);
+    // tslint:disable-next-line:max-line-length
+    expect(adaptTokenApproveSpy).toHaveBeenCalledWith('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '100', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c');
+    expect(signAndSendSpy).toHaveBeenCalledWith({ test: 'test' }, options);
     expect(result).toBe('ok!');
 
   });
@@ -1226,10 +1232,12 @@ describe('ethereum client', async () => {
   it('should call tokenApprove and throw error', async () => {
 
     try {
-      await client.tokenApprove('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', "100", '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c');
+      // tslint:disable-next-line:max-line-length
+      await client.tokenApprove('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '100', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c');
       fail('it should fail');
     } catch (error) {
-      expect(error).toBe('No key nor provider');
+      expect(errorFnMock).toHaveBeenCalledWith(new HancockError(hancockErrorType.Internal, '002', 500, 'No key nor provider'));
+      expect(error).toEqual(new HancockError(hancockErrorType.Internal, '002', 500, 'No key nor provider'));
     }
 
   });
@@ -1238,9 +1246,9 @@ describe('ethereum client', async () => {
 
     (fetch as any).once(JSON.stringify(response.SC_INVOKE_ADAPT_RESPONSE));
     const bodyFetch = {
-      'from': '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
-      'spender': '0xde8e772f0350e992ddef81bf8f51d94a8ea92123',
-      'value':'100000',
+      from: '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
+      spender: '0xde8e772f0350e992ddef81bf8f51d94a8ea92123',
+      value: '100000',
     };
     callParamFetch.body = JSON.stringify(bodyFetch);
     const smartContractAddress = '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c';
@@ -1252,12 +1260,12 @@ describe('ethereum client', async () => {
       bodyFetch.from,
       bodyFetch.spender,
       bodyFetch.value,
-      smartContractAddress
+      smartContractAddress,
     );
 
     expect(fetch).toHaveBeenCalledWith(
       'genericHost:1genericBase/mockToken/' + smartContractAddress + '/mockApprove',
-      callParamFetch
+      callParamFetch,
     );
     expect(checkStatusSpy).toHaveBeenCalledTimes(1);
     expect(result).toEqual(response.SC_INVOKE_ADAPT_RESPONSE);
@@ -1268,30 +1276,30 @@ describe('ethereum client', async () => {
 
     (fetch as any).mockRejectOnce(JSON.stringify(response.ERROR));
     const bodyFetch = {
-      'from': '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
-      'spender': '0xde8e772f0350e992ddef81bf8f51d94a8ea92123',
-      'value':'100000'
+      from: '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
+      spender: '0xde8e772f0350e992ddef81bf8f51d94a8ea92123',
+      value: '100000',
     };
     const smartContractAddress = '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c';
     callParamFetch.body = JSON.stringify(bodyFetch);
 
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
-      .mockImplementation(() => { throw new Error('testError') });
+      .mockImplementation(() => { throw new HancockError(hancockErrorType.Api, '001', 500, 'testError'); });
 
     try {
       await (client as any).adaptTokenApprove(
         bodyFetch.from,
         bodyFetch.spender,
         bodyFetch.value,
-        smartContractAddress
+        smartContractAddress,
       );
       fail('it should fail');
     } catch (error) {
       expect(fetch).toHaveBeenCalledWith(
         'genericHost:1genericBase/mockToken/' + smartContractAddress + '/mockApprove',
-        callParamFetch
+        callParamFetch,
       );
-      expect(error).toEqual(new Error('testError'));
+      expect(error).toEqual(new HancockError(hancockErrorType.Api, '001', 500, 'testError'));
     }
 
   });
