@@ -559,7 +559,7 @@ export class HancockEthereumClient implements HancockClient {
   private async checkStatus(response: any): Promise<any> {
     // HTTP status code between 200 and 299
     if (!response.ok) {
-      this.errorHandler(response);
+      this.errorHandler({body: response.json()});
     }
 
     return response.json();
