@@ -603,12 +603,16 @@ describe('ethereum client', async () => {
       json: () => 'response',
     };
 
+    const answer = {
+      body: 'response',
+    };
+
     const checkStatusSpy = jest.spyOn((HancockEthereumClient.prototype as any), 'errorHandler')
       .mockImplementation((res) => Promise.resolve(res));
     const result = await (client as any).checkStatus(checkstatusparam);
 
     expect(checkStatusSpy).toHaveBeenCalledTimes(1);
-    expect(checkStatusSpy).toHaveBeenCalledWith(checkstatusparam);
+    expect(checkStatusSpy).toHaveBeenCalledWith(answer);
 
   });
 

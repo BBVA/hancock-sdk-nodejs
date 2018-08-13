@@ -9,6 +9,16 @@ describe('utils', async () => {
     jest.restoreAllMocks();
   });
 
+  it('should call isEmpty correctly', async () => {
+
+    const response = utils.isEmpty(['']);
+    expect(response).toBeFalsy();
+  });
+  it('should call isAddressList correctly', async () => {
+
+    const response = utils.isAddressList(['0xde8e772f0350e992ddef81bf8f51d94a8ea92123']);
+    expect(response).toBeTruthy();
+  });
   it('should call isAddress correctly', async () => {
 
     const response = utils.isAddress('0xde8e772f0350e992ddef81bf8f51d94a8ea92123');

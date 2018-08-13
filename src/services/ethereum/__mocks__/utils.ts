@@ -1,4 +1,8 @@
+export const isEmpty = jest.fn().mockReturnValue(false);
+
 export const isAddress = jest.fn().mockReturnValue(true);
+
+export const isAddressList = jest.fn().mockReturnValue(true);
 
 export const isAlias = jest.fn().mockReturnValue(true);
 
