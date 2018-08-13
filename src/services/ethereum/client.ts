@@ -90,7 +90,7 @@ export class HancockEthereumClient implements HancockClient {
 
     const normalizedContractAddressOrAlias: string = normalizeAddressOrAlias(contractAddressOrAlias);
 
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invoke}`.replace(/__ADDRESS__/, normalizedContractAddressOrAlias);
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invoke}`.replace(/__ADDRESS_OR_ALIAS__/, normalizedContractAddressOrAlias);
 
     const body: HancockCallRequest = {
       method,
@@ -115,7 +115,7 @@ export class HancockEthereumClient implements HancockClient {
 
     const normalizedContractAddressOrAlias: string = normalizeAddressOrAlias(contractAddressOrAlias);
 
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invoke}`.replace(/__ADDRESS__/, normalizedContractAddressOrAlias);
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invoke}`.replace(/__ADDRESS_OR_ALIAS__/, normalizedContractAddressOrAlias);
     const body: HancockAdaptInvokeRequest = {
       method,
       from,
