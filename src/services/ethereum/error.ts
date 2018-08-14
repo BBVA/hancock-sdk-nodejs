@@ -34,3 +34,5 @@ export enum hancockErrorType {
 export const hancockGenericApiError = new HancockError(hancockErrorType.Internal, '50001', 500, 'Error calling Api');
 export const hancockNoKeyNorProviderError = new HancockError(hancockErrorType.Internal, '50002', 500, 'No key nor provider');
 export const hancockWalletError = new HancockError(hancockErrorType.Internal, '50003', 500, 'Error generating wallet');
+export const hancockInvalidParameterError = new HancockError(hancockErrorType.Internal, '50005', 500, 'Empty parameters');
+export const hancockFormatParameterError = new HancockError(hancockErrorType.Internal, '50006', 500, 'Addres invalid format');

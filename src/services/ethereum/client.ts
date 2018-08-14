@@ -39,7 +39,8 @@ import {
   HancockTokenRegisterResponse,
   InitialHancockConfig,
 } from '../hancock.model';
-import { HancockError, hancockErrorType, hancockGenericApiError, hancockNoKeyNorProviderError, hancockWalletError } from './error';
+import { HancockError, hancockErrorType, hancockFormatParameterError,
+   hancockGenericApiError, hancockInvalidParameterError, hancockNoKeyNorProviderError, hancockWalletError } from './error';
 import { EthereumAbi } from './model';
 import {
   generateWallet,
@@ -47,7 +48,7 @@ import {
 } from './signer';
 import { EthereumRawTransaction, EthereumWallet } from './signer';
 import { HancockEthereumSocket } from './socket';
-import { error, normalizeAddress, normalizeAddressOrAlias, normalizeAlias } from './utils';
+import { error, isAddress, isAddressAny, isEmpty, isEmptyAny, normalizeAddress, normalizeAddressOrAlias, normalizeAlias } from './utils';
 
 export class HancockEthereumClient implements HancockClient {
 
@@ -75,6 +76,12 @@ export class HancockEthereumClient implements HancockClient {
     if (!options.signProvider && !options.privateKey) {
       return Promise.reject(error(hancockNoKeyNorProviderError));
     }
+    if (isEmptyAny(contractAddressOrAlias, from, method)) {
+      return Promise.reject(error(hancockInvalidParameterError));
+    }
+    if (!isAddress(from)) {
+      return Promise.reject(error(hancockFormatParameterError));
+    }
 
     return this
       .adaptInvokeSmartContract(contractAddressOrAlias, method, params, from)
@@ -88,9 +95,15 @@ export class HancockEthereumClient implements HancockClient {
 
   public async callSmartContract(contractAddressOrAlias: string, method: string, params: string[], from: string): Promise<HancockCallResponse> {
 
+    if (isEmptyAny(contractAddressOrAlias, from)) {
+      return Promise.reject(error(hancockInvalidParameterError));
+    }
+    if (!isAddress(from)) {
+      return Promise.reject(error(hancockFormatParameterError));
+    }
     const normalizedContractAddressOrAlias: string = normalizeAddressOrAlias(contractAddressOrAlias);
 
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invoke}`.replace(/__ADDRESS__/, normalizedContractAddressOrAlias);
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invoke}`.replace(/__ADDRESS_OR_ALIAS__/, normalizedContractAddressOrAlias);
 
     const body: HancockCallRequest = {
       method,
@@ -115,7 +128,7 @@ export class HancockEthereumClient implements HancockClient {
 
     const normalizedContractAddressOrAlias: string = normalizeAddressOrAlias(contractAddressOrAlias);
 
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invoke}`.replace(/__ADDRESS__/, normalizedContractAddressOrAlias);
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invoke}`.replace(/__ADDRESS_OR_ALIAS__/, normalizedContractAddressOrAlias);
     const body: HancockAdaptInvokeRequest = {
       method,
       from,
@@ -195,6 +208,12 @@ export class HancockEthereumClient implements HancockClient {
 
   public async registerSmartContract(alias: string, address: DltAddress, abi: EthereumAbi): Promise<HancockRegisterResponse> {
 
+    if (isEmptyAny(alias, address)) {
+      return Promise.reject(error(hancockInvalidParameterError));
+    }
+    if (!isAddress(address)) {
+      return Promise.reject(error(hancockFormatParameterError));
+    }
     alias = normalizeAlias(alias);
     address = normalizeAddress(address);
 
@@ -219,6 +238,12 @@ export class HancockEthereumClient implements HancockClient {
 
   public async tokenRegister(alias: string, address: DltAddress): Promise<HancockTokenRegisterResponse> {
 
+    if (isEmptyAny(alias, address)) {
+      return Promise.reject(error(hancockInvalidParameterError));
+    }
+    if (!isAddress(address)) {
+      return Promise.reject(error(hancockFormatParameterError));
+    }
     alias = normalizeAlias(alias);
     address = normalizeAddress(address);
 
@@ -242,6 +267,12 @@ export class HancockEthereumClient implements HancockClient {
 
   public async getBalance(address: string): Promise<BigNumber> {
 
+    if (isEmpty(address)) {
+      return Promise.reject(error(hancockInvalidParameterError));
+    }
+    if (!isAddress(address)) {
+      return Promise.reject(error(hancockFormatParameterError));
+    }
     address = normalizeAddress(address);
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.balance}`.replace(/__ADDRESS__/, address);
 
@@ -312,6 +343,12 @@ export class HancockEthereumClient implements HancockClient {
 
   public async transfer(from: string, to: string, value: string, options: HancockInvokeOptions = {}, data: string = ''): Promise<HancockSignResponse> {
 
+    if (isEmptyAny(to, from)) {
+      return Promise.reject(error(hancockInvalidParameterError));
+    }
+    if (!isAddressAny(to, from)) {
+      return Promise.reject(error(hancockFormatParameterError));
+    }
     if (!options.signProvider && !options.privateKey) {
       return Promise.reject(error(hancockNoKeyNorProviderError));
     }
@@ -330,6 +367,12 @@ export class HancockEthereumClient implements HancockClient {
     from: string, to: string, value: string, addressOrAlias: string, options: HancockInvokeOptions = {},
   ): Promise<HancockSignResponse> {
 
+    if (isEmptyAny(to, from, addressOrAlias)) {
+      return Promise.reject(error(hancockInvalidParameterError));
+    }
+    if (!isAddressAny(to, from)) {
+      return Promise.reject(error(hancockFormatParameterError));
+    }
     if (!options.signProvider && !options.privateKey) {
       return Promise.reject(error(hancockNoKeyNorProviderError));
     }
@@ -348,6 +391,12 @@ export class HancockEthereumClient implements HancockClient {
     from: string, sender: string, to: string, value: string, addressOrAlias: string, options: HancockInvokeOptions = {},
   ): Promise<HancockSignResponse> {
 
+    if (isEmptyAny(to, from, addressOrAlias)) {
+      return Promise.reject(error(hancockInvalidParameterError));
+    }
+    if (!isAddressAny(to, from)) {
+      return Promise.reject(error(hancockFormatParameterError));
+    }
     if (!options.signProvider && !options.privateKey) {
       return Promise.reject(error(hancockNoKeyNorProviderError));
     }
@@ -366,6 +415,12 @@ export class HancockEthereumClient implements HancockClient {
     from: string, tokenOwner: string, spender: string, addressOrAlias: string, options: HancockInvokeOptions = {},
   ): Promise<HancockSignResponse> {
 
+    if (isEmptyAny(spender, from, addressOrAlias)) {
+      return Promise.reject(error(hancockInvalidParameterError));
+    }
+    if (!isAddressAny(from, spender)) {
+      return Promise.reject(error(hancockFormatParameterError));
+    }
     if (!options.signProvider && !options.privateKey) {
       return Promise.reject(error(hancockNoKeyNorProviderError));
     }
@@ -384,6 +439,12 @@ export class HancockEthereumClient implements HancockClient {
     action: HancockProtocolAction, value: string, to: string, data: string, dlt: HancockProtocolDlt,
   ): Promise<HancockProtocolEncodeResponse> {
 
+    if (isEmpty(to)) {
+      return Promise.reject(error(hancockInvalidParameterError));
+    }
+    if (!isAddress(to)) {
+      return Promise.reject(error(hancockFormatParameterError));
+    }
     to = normalizeAddress(to);
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.encode}`;
@@ -428,6 +489,12 @@ export class HancockEthereumClient implements HancockClient {
 
   public async getTokenBalance(addresOrAlias: string, address: string): Promise<HancockTokenBalanceResponse> {
 
+    if (isEmptyAny(address, addresOrAlias)) {
+      return Promise.reject(error(hancockInvalidParameterError));
+    }
+    if (!isAddress(address)) {
+      return Promise.reject(error(hancockFormatParameterError));
+    }
     address = normalizeAddress(address);
     addresOrAlias = normalizeAddressOrAlias(addresOrAlias);
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.tokenBalance}`
@@ -448,6 +515,12 @@ export class HancockEthereumClient implements HancockClient {
     from: string, spender: string, value: string, addressOrAlias: string, options: HancockInvokeOptions = {},
   ): Promise<HancockSignResponse> {
 
+    if (isEmptyAny(spender, from, addressOrAlias)) {
+      return Promise.reject(error(hancockInvalidParameterError));
+    }
+    if (!isAddressAny(from, spender)) {
+      return Promise.reject(error(hancockFormatParameterError));
+    }
     if (!options.signProvider && !options.privateKey) {
       return Promise.reject(error(hancockNoKeyNorProviderError));
     }
@@ -464,6 +537,9 @@ export class HancockEthereumClient implements HancockClient {
 
   public async getTokenMetadata(addressOrAlias: string): Promise<HancockTokenMetadataResponse> {
 
+    if (isEmpty(addressOrAlias)) {
+      return Promise.reject(error(hancockInvalidParameterError));
+    }
     addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.tokenMetadata}`.replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
 
@@ -480,7 +556,7 @@ export class HancockEthereumClient implements HancockClient {
   private async checkStatus(response: any): Promise<any> {
     // HTTP status code between 200 and 299
     if (!response.ok) {
-      this.errorHandler(response);
+      this.errorHandler({body: response.json()});
     }
 
     return response.json();
@@ -499,6 +575,12 @@ export class HancockEthereumClient implements HancockClient {
 
   private async adaptTransfer(from: string, to: string, value: string, data: string): Promise<HancockAdaptInvokeResponse> {
 
+    if (isEmptyAny(from, to)) {
+      return Promise.reject(error(hancockInvalidParameterError));
+    }
+    if (!isAddressAny(from, to)) {
+      return Promise.reject(error(hancockFormatParameterError));
+    }
     from = normalizeAddress(from);
     to = normalizeAddress(to);
 
@@ -523,6 +605,12 @@ export class HancockEthereumClient implements HancockClient {
 
   private async adaptTokenApprove(from: string, spender: string, value: string, addressOrAlias: string): Promise<HancockAdaptInvokeResponse> {
 
+    if (isEmptyAny(from, spender, addressOrAlias)) {
+      return Promise.reject(error(hancockInvalidParameterError));
+    }
+    if (!isAddressAny(from, spender)) {
+      return Promise.reject(error(hancockFormatParameterError));
+    }
     from = normalizeAddressOrAlias(from);
     spender = normalizeAddress(spender);
     addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
@@ -547,6 +635,12 @@ export class HancockEthereumClient implements HancockClient {
 
   private async adaptTokenTransferFrom(from: string, sender: string, to: string, value: string, addressOrAlias: string): Promise<HancockAdaptInvokeResponse> {
 
+    if (isEmptyAny(from, sender, addressOrAlias, to)) {
+      return Promise.reject(error(hancockInvalidParameterError));
+    }
+    if (!isAddressAny(from, sender, to)) {
+      return Promise.reject(error(hancockFormatParameterError));
+    }
     from = normalizeAddress(from);
     sender = normalizeAddress(sender);
     to = normalizeAddress(to);
@@ -573,6 +667,12 @@ export class HancockEthereumClient implements HancockClient {
 
   private async adaptTokenTransfer(from: string, to: string, value: string, addressOrAlias: string): Promise<HancockAdaptInvokeResponse> {
 
+    if (isEmptyAny(from, addressOrAlias, to)) {
+      return Promise.reject(error(hancockInvalidParameterError));
+    }
+    if (!isAddressAny(from, to)) {
+      return Promise.reject(error(hancockFormatParameterError));
+    }
     from = normalizeAddress(from);
     to = normalizeAddress(to);
     addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
@@ -597,6 +697,12 @@ export class HancockEthereumClient implements HancockClient {
 
   private async adaptTokenAllowance(from: string, tokenOwner: string, spender: string, addressOrAlias: string): Promise<HancockAdaptInvokeResponse> {
 
+    if (isEmptyAny(from, spender, addressOrAlias, tokenOwner)) {
+      return Promise.reject(error(hancockInvalidParameterError));
+    }
+    if (!isAddressAny(from, spender, tokenOwner)) {
+      return Promise.reject(error(hancockFormatParameterError));
+    }
     from = normalizeAddress(from);
     tokenOwner = normalizeAddress(tokenOwner);
     spender = normalizeAddress(spender);

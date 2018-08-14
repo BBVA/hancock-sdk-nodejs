@@ -3,7 +3,7 @@ adapter:
   port: 3004
   base: ''
   resources:
-    invoke: '/ethereum/smartcontracts/__ADDRESS__'
+    invoke: '/ethereum/smartcontracts/invoke/__ADDRESS_OR_ALIAS__'
     register: '/ethereum/smartcontracts/register'
     balance: '/ethereum/balance/__ADDRESS__'
     transfer: '/ethereum/transfers'

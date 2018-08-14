@@ -2,6 +2,28 @@ import { HancockError } from './error';
 
 const addressPattern = new RegExp(/^(0x)?([a-fA-F0-9]{40})$/i);
 
+export const isEmpty = (param: string): boolean => {
+  return !param.trim();
+};
+
+export const isEmptyAny = (...param: string[]): boolean => {
+  param.forEach((element) => {
+    if (isEmpty(element)) {
+      return true;
+    }
+  });
+  return false;
+};
+
+export const isAddressAny = (...addressOrAlias: string[]): boolean => {
+  addressOrAlias.forEach((element) => {
+    if (!addressPattern.test(element)) {
+      return false;
+    }
+  });
+  return true;
+};
+
 export const isAddress = (addressOrAlias: string): boolean => {
   return addressPattern.test(addressOrAlias);
 };
