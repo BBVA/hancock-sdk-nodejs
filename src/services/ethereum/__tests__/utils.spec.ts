@@ -2,21 +2,25 @@ import 'jest';
 import * as utils from '../utils';
 import { exec } from 'child_process';
 
-
 describe('utils', async () => {
 
   beforeEach(() => {
     jest.restoreAllMocks();
   });
 
-  it('should call isEmpty correctly', async () => {
+  it('should call isEmptyAny correctly', async () => {
 
-    const response = utils.isEmpty(['']);
+    const response = utils.isEmptyAny('address', 'address');
     expect(response).toBeFalsy();
   });
-  it('should call isAddressList correctly', async () => {
+  it('should call isEmpty correctly', async () => {
 
-    const response = utils.isAddressList(['0xde8e772f0350e992ddef81bf8f51d94a8ea92123']);
+    const response = utils.isEmpty('address');
+    expect(response).toBeFalsy();
+  });
+  it('should call isAddressAny correctly', async () => {
+
+    const response = utils.isAddressAny('0xde8e772f0350e992ddef81bf8f51d94a8ea92123', '0xde8e772f0350e992ddef81bf8f51d94a8ea92123');
     expect(response).toBeTruthy();
   });
   it('should call isAddress correctly', async () => {
@@ -60,7 +64,7 @@ describe('utils', async () => {
     const response = utils.normalizeAlias('ContractAddress');
     expect(response).toBe('contract-address');
   });
-  
+
   it('should call normalizeAddressOrAlias correctly and call normalizeAddress', async () => {
 
     const response = utils.normalizeAddressOrAlias('0xde8e772f0350e992ddef81bf8f51d94a8ea92123');
