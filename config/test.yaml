@@ -3,7 +3,7 @@ adapter:
   port: 6666
   base: '/mockBase'
   resources:
-    invoke: '/mockInvoke/__ADDRESS__'
+    invoke: '/mockInvoke/__ADDRESS_OR_ALIAS__'
     register: '/mockRegister'
     balance: '/mockBalance/__ADDRESS__'
     transfer: '/mockTransfer'
