@@ -21,18 +21,21 @@ import { HancockEthereumClient } from '../../..';
 import * as responses from '../__mocks__/responses';
 import { HancockError } from '../error';
 import { HancockEthereumSocket } from '../socket';
+import * as errorUtils from '../utils';
 
+jest.mock('../utils');
 jest.mock('isomorphic-fetch');
 jest.mock('isomorphic-ws');
 jest.unmock('ethereumjs-wallet');
 
 describe('HancockEthereumClient integration tests', () => {
 
+  const errorFnMock = errorUtils.error as jest.Mock;
   let clientInstance: HancockEthereumClient;
   const alias: string = 'mockedAlias';
-  const normalizedAlias: string = 'mocked-alias';
+  const normalizedAlias: string = 'mockedAlias';
   const address: string = 'DE8E772F0350E992DDEF81BF8F51D94A8EA9216D';
-  const normalizedAddress: string = '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d';
+  const normalizedAddress: string = 'DE8E772F0350E992DDEF81BF8F51D94A8EA9216D';
 
   const socket: jest.Mock = (ws as any).__WebSocketConstructor__;
   const socketInstance: any = (ws as any).__WebSocketInstance__;
@@ -482,7 +485,7 @@ describe('HancockEthereumClient integration tests', () => {
     });
 
     const contracts: string[] = ['mockedAlias', 'DE8E772F0350E992DDEF81BF8F51D94A8EA9216D'];
-    const normalizedContracts: string[] = ['mocked-alias', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d'];
+    const normalizedContracts: string[] = ['mockedAlias', 'DE8E772F0350E992DDEF81BF8F51D94A8EA9216D'];
     const consumer: string = 'mockConsumer';
 
     it('should retrieve a HancockSocket instance that receive events from broker (related with contracts)', () => {
@@ -517,7 +520,7 @@ describe('HancockEthereumClient integration tests', () => {
     });
 
     const addresses: string[] = ['DE8E772F0350E992DDEF81BF8F51D94A8EA9216D'];
-    const normalizedAddresses: string[] = ['0xde8e772f0350e992ddef81bf8f51d94a8ea9216d'];
+    const normalizedAddresses: string[] = ['DE8E772F0350E992DDEF81BF8F51D94A8EA9216D'];
     const consumer: string = 'mockConsumer';
 
     it('should retrieve a HancockSocket instance that receive events from broker (related with transfers)', () => {
@@ -580,8 +583,8 @@ describe('HancockEthereumClient integration tests', () => {
     const from: string = 'F01B3C2131FB5BD8D1D1E5D44F8AD14A2728EC91';
     const to: string = '187ACE2D9051D74296A8E4E154D652B8B6EC4738';
 
-    const normalizedFrom: string = '0xf01b3c2131fb5bd8d1d1e5d44f8ad14a2728ec91';
-    const normalizedTo: string = '0x187ace2d9051d74296a8e4e154d652b8b6ec4738';
+    const normalizedFrom: string = 'F01B3C2131FB5BD8D1D1E5D44F8AD14A2728EC91';
+    const normalizedTo: string = '187ACE2D9051D74296A8E4E154D652B8B6EC4738';
 
     const value: string = 'mockedValue';
     const data: string = 'mockedData';
@@ -662,8 +665,8 @@ describe('HancockEthereumClient integration tests', () => {
     const from: string = 'F01B3C2131FB5BD8D1D1E5D44F8AD14A2728EC91';
     const to: string = '187ACE2D9051D74296A8E4E154D652B8B6EC4738';
 
-    const normalizedFrom: string = '0xf01b3c2131fb5bd8d1d1e5d44f8ad14a2728ec91';
-    const normalizedTo: string = '0x187ace2d9051d74296a8e4e154d652b8b6ec4738';
+    const normalizedFrom: string = 'F01B3C2131FB5BD8D1D1E5D44F8AD14A2728EC91';
+    const normalizedTo: string = '187ACE2D9051D74296A8E4E154D652B8B6EC4738';
 
     const value: string = 'mockedValue';
     const addressOrAlias: string = 'mockedAlias';
@@ -745,9 +748,9 @@ describe('HancockEthereumClient integration tests', () => {
     const sender: string = 'F01B3C2131FB5BD8D1D1E5D44F8AD14A2728EC91';
     const to: string = '187ACE2D9051D74296A8E4E154D652B8B6EC4738';
 
-    const normalizedFrom: string = '0xf01b3c2131fb5bd8d1d1e5d44f8ad14a2728ec91';
-    const normalizedSender: string = '0xf01b3c2131fb5bd8d1d1e5d44f8ad14a2728ec91';
-    const normalizedTo: string = '0x187ace2d9051d74296a8e4e154d652b8b6ec4738';
+    const normalizedFrom: string = 'F01B3C2131FB5BD8D1D1E5D44F8AD14A2728EC91';
+    const normalizedSender: string = 'F01B3C2131FB5BD8D1D1E5D44F8AD14A2728EC91';
+    const normalizedTo: string = '187ACE2D9051D74296A8E4E154D652B8B6EC4738';
 
     const value: string = 'mockedValue';
     const addressOrAlias: string = 'mockedAlias';
@@ -829,9 +832,9 @@ describe('HancockEthereumClient integration tests', () => {
     const tokenOwner: string = '187ACE2D9051D74296A8E4E154D652B8B6EC4738';
     const spender: string = '187ACE2D9051D74296A8E4E154D652B8B6EC4745';
 
-    const normalizedFrom: string = '0xf01b3c2131fb5bd8d1d1e5d44f8ad14a2728ec91';
-    const normalizedTokenOwner: string = '0x187ace2d9051d74296a8e4e154d652b8b6ec4738';
-    const normalizedSpender: string = '0x187ace2d9051d74296a8e4e154d652b8b6ec4745';
+    const normalizedFrom: string = 'F01B3C2131FB5BD8D1D1E5D44F8AD14A2728EC91';
+    const normalizedTokenOwner: string = '187ACE2D9051D74296A8E4E154D652B8B6EC4738';
+    const normalizedSpender: string = '187ACE2D9051D74296A8E4E154D652B8B6EC4745';
 
     const addressOrAlias: string = 'mockedAlias';
 
@@ -909,7 +912,7 @@ describe('HancockEthereumClient integration tests', () => {
   describe('::encodeProtocol', () => {
 
     const to: string = '187ACE2D9051D74296A8E4E154D652B8B6EC4738';
-    const normalizedTo: string = '0x187ace2d9051d74296a8e4e154d652b8b6ec4738';
+    const normalizedTo: string = '187ACE2D9051D74296A8E4E154D652B8B6EC4738';
     const action: HancockProtocolAction = 'transfer';
     const value: string = 'mockedValue';
     const data: string = 'mockedData';
@@ -1011,7 +1014,7 @@ describe('HancockEthereumClient integration tests', () => {
 
   describe('::tokenMetadata', () => {
 
-    const addressOrAlias: string = '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d';
+    const addressOrAlias: string = 'DE8E772F0350E992DDEF81BF8F51D94A8EA9216D';
 
     it('should get TokenMetadata', async () => {
 
@@ -1021,7 +1024,7 @@ describe('HancockEthereumClient integration tests', () => {
       const result: HancockTokenMetadataResponse = await clientInstance.getTokenMetadata(addressOrAlias);
 
       const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
-      expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockToken/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d/mockMetadata`);
+      expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockToken/DE8E772F0350E992DDEF81BF8F51D94A8EA9216D/mockMetadata`);
 
       expect(result).toEqual('whatever');
 
@@ -1039,7 +1042,7 @@ describe('HancockEthereumClient integration tests', () => {
       } catch (e) {
 
         const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
-        expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockToken/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d/mockMetadata`);
+        expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockToken/DE8E772F0350E992DDEF81BF8F51D94A8EA9216D/mockMetadata`);
 
         expect(e).toEqual(new HancockError('api', e.internalError, e.error, e.message));
 
@@ -1054,8 +1057,8 @@ describe('HancockEthereumClient integration tests', () => {
     const from: string = 'F01B3C2131FB5BD8D1D1E5D44F8AD14A2728EC91';
     const spender: string = '187ACE2D9051D74296A8E4E154D652B8B6EC4745';
 
-    const normalizedFrom: string = '0xf01b3c2131fb5bd8d1d1e5d44f8ad14a2728ec91';
-    const normalizedSpender: string = '0x187ace2d9051d74296a8e4e154d652b8b6ec4745';
+    const normalizedFrom: string = 'F01B3C2131FB5BD8D1D1E5D44F8AD14A2728EC91';
+    const normalizedSpender: string = '187ACE2D9051D74296A8E4E154D652B8B6EC4745';
 
     const value: string = 'mockedValue';
     const addressOrAlias: string = 'mockedAlias';
