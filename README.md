@@ -30,9 +30,9 @@ In node:
 
 ```javascript
 require('es6-promise').polyfill();
-const hancockClient = require('@kst-hancock/sdk-client').HancockClient
+const HancockEthereumClient = require('@kst-hancock/sdk-client').HancockEthereumClient
 
-new HancockClient(cfg);
+new HancockEthereumClient(cfg);
 ```
 
 In browser ES7 + some bundler:
@@ -41,6 +41,6 @@ In browser ES7 + some bundler:
 import * as es6Promise from 'es6-promise';
 require('es6-promise').polyfill();
 
-import { HancockClient } from '@kst-hancock/sdk-client';
-new HancockClient(cfg);
+import { HancockEthereumClient } from '@kst-hancock/sdk-client';
+new HancockEthereumClient(cfg);
 ```
