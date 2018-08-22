@@ -318,6 +318,22 @@ export class HancockEthereumClient implements HancockClient {
 
   }
 
+  public subscribeToTransaction(addresses: string[] = [], consumer: string = ''): HancockEthereumSocket {
+
+    const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`
+      .replace(/__ADDRESS__/, '')
+      .replace(/__SENDER__/, '')
+      .replace(/__CONSUMER__/, consumer);
+
+    const hancockSocket = new HancockEthereumSocket(url, consumer);
+    hancockSocket.on('ready', () => {
+      hancockSocket.addTransaction(addresses);
+    });
+
+    return hancockSocket;
+
+  }
+
   public generateWallet(): EthereumWallet {
 
     try {
