@@ -5,6 +5,7 @@ export const __socketInstance__ = {
   }),
   addContract: jest.fn().mockReturnThis(),
   addTransfer: jest.fn().mockReturnThis(),
+  addTransaction: jest.fn().mockReturnThis(),
 };
 
 // tslint:disable-next-line:variable-name

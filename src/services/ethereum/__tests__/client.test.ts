@@ -528,12 +528,47 @@ describe('HancockEthereumClient integration tests', () => {
       const socketOn: jest.Mock = socketInstance.on;
       const socketSend: jest.Mock = socketInstance.send;
       const expectedMessage: HancockSocketMessage = {
-        kind: 'watch-addresses',
+        kind: 'watch-transfers',
         body: normalizedAddresses,
         consumer,
       };
 
       const hancockSocket: HancockEthereumSocket = clientInstance.subscribeToTransfer(addresses, consumer);
+
+      socketInstance._trigger('message', JSON.stringify({ kind: 'ready' }));
+
+      expect(socket).toHaveBeenCalledWith(`ws://mockBroker:6666/mockBase/mockEvents?address=&sender=&consumer=${consumer}`);
+      expect(hancockSocket instanceof HancockEthereumSocket).toBeTruthy();
+      expect(socketOn).toHaveBeenCalledTimes(3);
+      expect(socketSend).toHaveBeenCalledWith(JSON.stringify(expectedMessage));
+
+    });
+
+  });
+
+  describe('::subscribeToTransaction', () => {
+
+    beforeEach(() => {
+
+      socketInstance._clear();
+
+    });
+
+    const addresses: string[] = ['DE8E772F0350E992DDEF81BF8F51D94A8EA9216D'];
+    const normalizedAddresses: string[] = ['DE8E772F0350E992DDEF81BF8F51D94A8EA9216D'];
+    const consumer: string = 'mockConsumer';
+
+    it('should retrieve a HancockSocket instance that receive events from broker (related with transfers)', () => {
+
+      const socketOn: jest.Mock = socketInstance.on;
+      const socketSend: jest.Mock = socketInstance.send;
+      const expectedMessage: HancockSocketMessage = {
+        kind: 'watch-transactions',
+        body: normalizedAddresses,
+        consumer,
+      };
+
+      const hancockSocket: HancockEthereumSocket = clientInstance.subscribeToTransaction(addresses, consumer);
 
       socketInstance._trigger('message', JSON.stringify({ kind: 'ready' }));
 

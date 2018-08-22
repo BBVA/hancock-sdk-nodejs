@@ -1214,6 +1214,16 @@ describe('ethereum client', async () => {
 
   });
 
+  it('should call subscribeToTransaction correctly', async () => {
+    // tslint:disable-next-line:no-shadowed-variable
+    const response = client.subscribeToTransaction(['0x1234']);
+
+    expect(socket.HancockEthereumSocket).toHaveBeenCalledTimes(1);
+    expect(response.on).toHaveBeenCalledTimes(1);
+    expect(response.addTransaction).toHaveBeenCalledWith(['0x1234']);
+
+  });
+
   it('should call subscribeToContract empty correctly', async () => {
     // tslint:disable-next-line:no-shadowed-variable
     const response = client.subscribeToContract();
@@ -1231,6 +1241,16 @@ describe('ethereum client', async () => {
     expect(socket.HancockEthereumSocket).toHaveBeenCalledTimes(1);
     expect(response.on).toHaveBeenCalledTimes(1);
     expect(response.addTransfer).toHaveBeenCalledWith([]);
+
+  });
+
+  it('should call subscribeToTransaction empty correctly', async () => {
+    // tslint:disable-next-line:no-shadowed-variable
+    const response = client.subscribeToTransaction();
+
+    expect(socket.HancockEthereumSocket).toHaveBeenCalledTimes(1);
+    expect(response.on).toHaveBeenCalledTimes(1);
+    expect(response.addTransaction).toHaveBeenCalledWith([]);
 
   });
 

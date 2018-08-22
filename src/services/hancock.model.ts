@@ -281,6 +281,7 @@ export interface HancockClient {
   generateWallet(): DltWallet;
   subscribeToContract(contracts: string[]): HancockEthereumSocket;
   subscribeToTransfer(addresses: string[]): HancockEthereumSocket;
+  subscribeToTransaction(addresses: string[]): HancockEthereumSocket;
   getBalance(address: string): Promise<BigNumber>;
   transfer(from: string, to: string, value: string, options?: HancockInvokeOptions, data?: string): Promise<HancockSignResponse>;
   tokenTransfer(from: string, to: string, value: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
@@ -302,7 +303,7 @@ export interface HancockInvokeOptions {
   signProvider?: string;
 }
 
-export type HancockSocketKind = 'watch-addresses' | 'watch-contracts';
+export type HancockSocketKind = 'watch-transfers' | 'watch-transactions' | 'watch-contracts';
 export type HancockSocketBody = any;
 export interface HancockSocketMessage {
   kind: HancockSocketKind;

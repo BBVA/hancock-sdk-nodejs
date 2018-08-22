@@ -27,7 +27,14 @@ export class HancockEthereumSocket extends EventEmitter {
   public addTransfer(addresses: string[]) {
     if (addresses.length > 0) {
       const normalizedAddresses: string[] = addresses.map((addr: string) => normalizeAddress(addr));
-      this.sendMessage('watch-addresses', normalizedAddresses);
+      this.sendMessage('watch-transfers', normalizedAddresses);
+    }
+  }
+
+  public addTransaction(addresses: string[]) {
+    if (addresses.length > 0) {
+      const normalizedAddresses: string[] = addresses.map((addr: string) => normalizeAddress(addr));
+      this.sendMessage('watch-transactions', normalizedAddresses);
     }
   }
 
