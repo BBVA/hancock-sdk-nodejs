@@ -1,6 +1,6 @@
 import 'jest';
 
-(process as any).browser = false; 
+(process as any).browser = false;
 process.env.NODE_ENV = 'test';
 
 global.console = {
