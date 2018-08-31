@@ -1,3 +1,14 @@
+declare module 'web3-provider-engine';
+declare module 'web3-provider-engine/subproviders/rpc';
+
+declare module 'web3-provider-engine/subproviders/subprovider' {
+  class Subprovider {
+    engine: any;
+    constructor();
+    public emitPayload(...args: any[]): any;
+  }
+  export = Subprovider;
+}
 
 declare module "config" {
 }
