@@ -12,7 +12,11 @@ import {
   HancockTokenMetadataResponse,
   HancockTokenTransferRequest,
 } from '..';
-import { HancockClient, HancockTokenTransferFromRequest } from '../hancock.model';
+import {
+  HancockCallBackOptions,
+  HancockClient,
+  HancockTokenTransferFromRequest,
+} from '../hancock.model';
 import {
   DltAddress,
   HancockAdaptInvokeRequest,
@@ -167,16 +171,25 @@ export class HancockEthereumClient implements HancockClient {
 
   }
 
-  public async sendSignedTransaction(tx: any): Promise<HancockSendSignedTxResponse> {
+  public async sendSignedTransaction(tx: any, requestId?: string): Promise<HancockSendSignedTxResponse> {
 
     const url: string = `${this.walletApiBaseUrl + this.config.wallet.resources.sendSignedTx}`;
     const body: HancockSendSignedTxRequest = {
       tx,
     };
 
+    let headers: any = {
+      'Content-Type': 'application/json',
+    };
+
+    headers = !requestId ? headers : {
+      ...headers,
+      'Hancock-Request-Id': requestId,
+    };
+
     return fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify(body),
     })
       .then(
@@ -186,17 +199,32 @@ export class HancockEthereumClient implements HancockClient {
 
   }
 
-  public async sendTransactionToSign(rawTx: any, provider: string): Promise<HancockSignResponse> {
+  public async sendTransactionToSign(rawTx: any, provider: string, callback?: HancockCallBackOptions): Promise<HancockSignResponse> {
 
     const url: string = `${this.walletApiBaseUrl + this.config.wallet.resources.signTx}`;
-    const body: HancockSignRequest = {
+    let body: HancockSignRequest = {
       rawTx,
       provider,
     };
 
+    let headers: any = {
+      'Content-Type': 'application/json',
+    };
+
+    if (callback) {
+      headers = {
+        ...headers,
+        'Hancock-Request-Id' : callback.requestId,
+      };
+      body = {
+        ...body,
+        backUrl : callback.backUrl,
+      };
+    }
+
     return fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify(body),
     })
       .then(
@@ -746,7 +774,9 @@ export class HancockEthereumClient implements HancockClient {
 
     if (options.signProvider) {
 
-      return this.sendTransactionToSign(resBody.data, options.signProvider);
+      return options.callback ?
+        this.sendTransactionToSign(resBody.data, options.signProvider, options.callback) :
+        this.sendTransactionToSign(resBody.data, options.signProvider);
 
     }
 

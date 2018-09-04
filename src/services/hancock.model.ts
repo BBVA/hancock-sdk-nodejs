@@ -49,6 +49,7 @@ export interface HancockCallResponse extends HancockGenericResponse {
 export interface HancockSignRequest {
   rawTx: any;
   provider: string;
+  backUrl?: string;
 }
 
 export interface HancockSignResponse {
@@ -276,7 +277,7 @@ export interface HancockClient {
   adaptInvokeSmartContract(contractAddress: string, method: string, params: string[], from: string): Promise<HancockAdaptInvokeResponse>;
   sendTransaction(tx: any): Promise<HancockSendTxResponse>;
   sendSignedTransaction(tx: any): Promise<HancockSendSignedTxResponse>;
-  sendTransactionToSign(rawTx: any, provider: string): Promise<HancockSignResponse>;
+  sendTransactionToSign(rawTx: any, provider: string, callback?: HancockCallBackOptions): Promise<HancockSignResponse>;
   signTransaction(rawTx: DltRawTransaction, privateKey: string): string;
   generateWallet(): DltWallet;
   subscribeToContract(contracts: string[]): HancockEthereumSocket;
@@ -301,6 +302,12 @@ export type HancockInvokeAction = 'send' | 'call';
 export interface HancockInvokeOptions {
   privateKey?: string;
   signProvider?: string;
+  callback?: HancockCallBackOptions;
+}
+
+export interface HancockCallBackOptions {
+  backUrl?: string;
+  requestId?: string;
 }
 
 export type HancockSocketKind = 'watch-transfers' | 'watch-transactions' | 'watch-contracts';
