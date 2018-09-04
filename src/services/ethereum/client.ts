@@ -184,7 +184,7 @@ export class HancockEthereumClient implements HancockClient {
 
     headers = !requestId ? headers : {
       ...headers,
-      'Hancock-Request-Id': requestId,
+      'vnd-hancock-request-id': requestId,
     };
 
     return fetch(url, {
@@ -214,7 +214,7 @@ export class HancockEthereumClient implements HancockClient {
     if (callback) {
       headers = {
         ...headers,
-        'Hancock-Request-Id' : callback.requestId,
+        'vnd-hancock-request-id' : callback.requestId,
       };
       body = {
         ...body,
