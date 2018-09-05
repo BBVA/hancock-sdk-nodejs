@@ -1,6 +1,5 @@
 import 'jest';
 import * as utils from '../utils';
-import { exec } from 'child_process';
 
 describe('utils', async () => {
 
@@ -76,5 +75,5 @@ describe('utils', async () => {
     const response = utils.normalizeAddressOrAlias('ContractAddress');
     expect(response).toBe('contract-address');
   });
-  
+
 });

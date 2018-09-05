@@ -307,7 +307,7 @@ describe('HancockEthereumClient integration tests', () => {
 
   });
 
-  describe('::sendTransactionToSign', () => {
+  describe('::sendTransactionToSignProvider', () => {
 
     const rawTx: any = responses.RAW_TX;
     const signProvider: string = 'mockSignProvider';
@@ -317,7 +317,7 @@ describe('HancockEthereumClient integration tests', () => {
       (fetch as any)
         .once(JSON.stringify(responses.SEND_SIGNED_TX_RESPONSE));
 
-      const result: HancockSignResponse = await clientInstance.sendTransactionToSign(rawTx, signProvider);
+      const result: HancockSignResponse = await clientInstance.sendTransactionToSignProvider(rawTx, signProvider);
 
       const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
       expect(firstApiCall[0]).toEqual(`http://mockWallet:6666/mockBase/mockSignTx`);
@@ -335,7 +335,7 @@ describe('HancockEthereumClient integration tests', () => {
 
       try {
 
-        await clientInstance.sendTransactionToSign(rawTx, signProvider);
+        await clientInstance.sendTransactionToSignProvider(rawTx, signProvider);
 
       } catch (e) {
 

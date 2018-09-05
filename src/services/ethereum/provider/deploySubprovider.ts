@@ -37,7 +37,7 @@ export class DeploySubprovider extends Subprovider {
     const socket = this.subscribeToTransaction([rawTx.from], end, rawTx.to == null);
     rawTx.nonce = data.result;
     this.hancockClient
-      .sendTransactionToSign(rawTx, this.provider)
+      .sendTransactionToSignProvider(rawTx, this.provider)
       .then((response: any) => console.log(response))
       .catch((err: any) => {
         console.log(err);
