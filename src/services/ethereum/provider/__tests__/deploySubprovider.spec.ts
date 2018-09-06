@@ -30,8 +30,8 @@ describe('DeploySubProvider', async () => {
     };
 
     hancockCli = {
-      sendTransactionToSignProvider: jest.fn().mockResolvedValue('okSend'),
-      subscribeToTransaction: jest.fn().mockReturnValue(socket),
+      sendToSignProvider: jest.fn().mockResolvedValue('okSend'),
+      subscribe: jest.fn().mockReturnValue(socket),
     };
 
     next = jest.fn().mockReturnThis();
@@ -61,7 +61,7 @@ describe('DeploySubProvider', async () => {
 
   describe('handleRequest', async () => {
 
-    it('should call handleRequest correctly with sendTransaction', async () => {
+    it('should call handleRequest correctly with send', async () => {
 
       const testProvider = new DeploySubprovider('test', hancockCli);
       const emitPayloadSpy = jest.spyOn((DeploySubprovider.prototype as any), 'emitPayload')
@@ -76,7 +76,7 @@ describe('DeploySubProvider', async () => {
 
     });
 
-    it('should call handleRequest correctly with sendTransaction and end with error', async () => {
+    it('should call handleRequest correctly with send and end with error', async () => {
 
       const testProvider = new DeploySubprovider('test', hancockCli);
       const emitPayloadSpy = jest.spyOn((DeploySubprovider.prototype as any), 'emitPayload')
@@ -109,67 +109,67 @@ describe('DeploySubProvider', async () => {
 
     it('should call addNonceAndSend correctly', async () => {
 
-      const subscribeToTransactionSpy = jest.spyOn((DeploySubprovider.prototype as any), 'subscribeToTransaction')
+      const subscribeToTransactionSpy = jest.spyOn((DeploySubprovider.prototype as any), 'subscribe')
         .mockImplementation(() => 'socketTest');
 
       const testProvider = new DeploySubprovider('test', hancockCli);
 
       (testProvider as any).addNonceAndSend(data, payload.params[0], end);
 
-      expect(hancockCli.sendTransactionToSignProvider).toHaveBeenCalledWith(payload.params[0], 'test');
+      expect(hancockCli.sendToSignProvider).toHaveBeenCalledWith(payload.params[0], 'test');
       expect(subscribeToTransactionSpy).toHaveBeenCalledWith([payload.params[0].from], end, payload.params[0].to == null);
 
     });
 
     it('should call addNonceAndSend and catch', async () => {
 
-      hancockCli.sendTransactionToSignProvider = jest.fn().mockRejectedValue('badSend');
-      const subscribeToTransactionSpy = jest.spyOn((DeploySubprovider.prototype as any), 'subscribeToTransaction')
+      hancockCli.sendToSignProvider = jest.fn().mockRejectedValue('badSend');
+      const subscribeToTransactionSpy = jest.spyOn((DeploySubprovider.prototype as any), 'subscribe')
         .mockReturnValue(socket);
 
       const testProvider = new DeploySubprovider('test', hancockCli);
 
       (testProvider as any).addNonceAndSend(data, payload.params[0], end);
 
-      expect(hancockCli.sendTransactionToSignProvider).toHaveBeenCalledWith(payload.params[0], 'test');
+      expect(hancockCli.sendToSignProvider).toHaveBeenCalledWith(payload.params[0], 'test');
       expect(subscribeToTransactionSpy).toHaveBeenCalledWith([payload.params[0].from], end, payload.params[0].to == null);
 
     });
 
   });
 
-  describe('subscribeToTransaction', async () => {
+  describe('subscribe', async () => {
 
-    it('should call subscribeToTransaction correctly', async () => {
+    it('should call subscribe correctly', async () => {
 
       const testProvider = new DeploySubprovider('test', hancockCli);
 
-      (testProvider as any).subscribeToTransaction(payload, end, true);
+      (testProvider as any).subscribe(payload, end, true);
 
-      expect(hancockCli.subscribeToTransaction).toHaveBeenCalledTimes(1);
+      expect(hancockCli.subscribe).toHaveBeenCalledTimes(1);
       expect(end).toHaveBeenCalledWith(null, message.body.hash);
 
     });
 
-    it('should call subscribeToTransaction correctly with deploy = false', async () => {
+    it('should call subscribe correctly with deploy = false', async () => {
 
       const testProvider = new DeploySubprovider('test', hancockCli);
 
-      (testProvider as any).subscribeToTransaction(payload, end, false);
+      (testProvider as any).subscribe(payload, end, false);
 
-      expect(hancockCli.subscribeToTransaction).toHaveBeenCalledTimes(1);
+      expect(hancockCli.subscribe).toHaveBeenCalledTimes(1);
       expect(end).toHaveBeenCalledWith(null, message.body.hash);
 
     });
 
-    it('should call subscribeToTransaction correctly with to 0x0000..0', async () => {
+    it('should call subscribe correctly with to 0x0000..0', async () => {
 
       const testProvider = new DeploySubprovider('test', hancockCli);
       message.body.to = '0x0000000000000000000000000000000000000000';
 
-      (testProvider as any).subscribeToTransaction(payload, end, true);
+      (testProvider as any).subscribe(payload, end, true);
 
-      expect(hancockCli.subscribeToTransaction).toHaveBeenCalledTimes(1);
+      expect(hancockCli.subscribe).toHaveBeenCalledTimes(1);
       expect(end).toHaveBeenCalledWith(null, message.body.hash);
 
     });

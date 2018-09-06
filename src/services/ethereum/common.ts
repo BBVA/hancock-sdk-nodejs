@@ -1,15 +1,6 @@
 import { HancockError, hancockErrorType, hancockGenericApiError } from './error';
 import { error } from './utils';
 
-export const checkStatus = async (response: any): Promise<any> => {
-  // HTTP status code between 200 and 299
-  if (!response.ok) {
-    errorHandler({body: response.json()});
-  }
-
-  return response.json();
-};
-
 export const errorHandler = (err: any) => {
 
   const out: HancockError = err instanceof HancockError
@@ -19,4 +10,13 @@ export const errorHandler = (err: any) => {
       : error(hancockGenericApiError, err);
 
   throw out;
+};
+
+export const checkStatus = async (response: any): Promise<any> => {
+  // HTTP status code between 200 and 299
+  if (!response.ok) {
+    module.exports.errorHandler({body: response.json()});
+  }
+
+  return response.json();
 };

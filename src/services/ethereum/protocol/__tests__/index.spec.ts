@@ -4,7 +4,6 @@ import { HancockEthereumProtocolClient } from '..';
 import * as response from '../../__mocks__/responses';
 import * as common from '../../common';
 import { HancockError, hancockErrorType } from '../../error';
-import * as errorUtils from '../../utils';
 
 jest.mock('isomorphic-fetch');
 jest.mock('../../utils');
@@ -13,12 +12,14 @@ jest.mock('../../common');
 describe('HancockEthereumProtocolClient', async () => {
 
   let client: HancockEthereumProtocolClient;
-  const errorFnMock = errorUtils.error as jest.Mock;
   const genericConfig = {
     host: 'genericHost',
     port: 1,
     base: 'genericBase',
-    resources: { resource: 'genericResource' },
+    resources: {
+      encode: '/mockEncode',
+      decode: '/mockDecode',
+    },
   };
   let config: any;
   const configAdapter: any = genericConfig;
@@ -68,7 +69,7 @@ describe('HancockEthereumProtocolClient', async () => {
     jest.clearAllMocks();
   });
 
-  it('should call encodeProtocol correctly', async () => {
+  it('should call encode correctly', async () => {
 
     (fetch as any).once(JSON.stringify(response.SC_INVOKE_ADAPT_RESPONSE));
     callParamFetch.body = JSON.stringify(encodeBody);
@@ -76,7 +77,7 @@ describe('HancockEthereumProtocolClient', async () => {
     const checkStatusSpy = checkStatusMock
       .mockImplementation((res) => Promise.resolve(res.json()));
 
-    const result = await client.encodeProtocol('transfer', '1000', '0xde8e772f0350e992ddef81bf8f51d94a8ea92123', 'dataTest', 'ethereum');
+    const result = await client.encode('transfer', '1000', '0xde8e772f0350e992ddef81bf8f51d94a8ea92123', 'dataTest', 'ethereum');
 
     expect(fetch).toHaveBeenCalledWith(
       'genericHost:1genericBase/mockEncode',
@@ -87,7 +88,7 @@ describe('HancockEthereumProtocolClient', async () => {
 
   });
 
-  it('should call encodeProtocol and throw error', async () => {
+  it('should call encode and throw error', async () => {
 
     (fetch as any).mockRejectOnce(JSON.stringify(response.ERROR));
     callParamFetch.body = JSON.stringify(encodeBody);
@@ -96,7 +97,7 @@ describe('HancockEthereumProtocolClient', async () => {
       .mockImplementation(() => { throw new HancockError(hancockErrorType.Api, '001', 500, 'testError'); });
 
     try {
-      await client.encodeProtocol('transfer', '1000', '0xde8e772f0350e992ddef81bf8f51d94a8ea92123', 'dataTest', 'ethereum');
+      await client.encode('transfer', '1000', '0xde8e772f0350e992ddef81bf8f51d94a8ea92123', 'dataTest', 'ethereum');
       fail('it should fail');
     } catch (error) {
       expect(fetch).toHaveBeenCalledWith(
@@ -108,7 +109,7 @@ describe('HancockEthereumProtocolClient', async () => {
 
   });
 
-  it('should call decodeProtocol correctly', async () => {
+  it('should call decode correctly', async () => {
 
     (fetch as any).once(JSON.stringify(response.SC_INVOKE_ADAPT_RESPONSE));
     callParamFetch.body = JSON.stringify({ code: 'testCode' });
@@ -116,7 +117,7 @@ describe('HancockEthereumProtocolClient', async () => {
     const checkStatusSpy = checkStatusMock
       .mockImplementation((res) => Promise.resolve(res.json()));
 
-    const result = await client.decodeProtocol('testCode');
+    const result = await client.decode('testCode');
 
     expect(fetch).toHaveBeenCalledWith(
       'genericHost:1genericBase/mockDecode',
@@ -127,7 +128,7 @@ describe('HancockEthereumProtocolClient', async () => {
 
   });
 
-  it('should call decodeProtocol and throw error', async () => {
+  it('should call decode and throw error', async () => {
 
     (fetch as any).mockRejectOnce(JSON.stringify(response.ERROR));
     callParamFetch.body = JSON.stringify({ code: 'testCode' });
@@ -136,7 +137,7 @@ describe('HancockEthereumProtocolClient', async () => {
       .mockImplementation(() => { throw new HancockError(hancockErrorType.Api, '001', 500, 'testError'); });
 
     try {
-      await client.decodeProtocol('testCode');
+      await client.decode('testCode');
       fail('it should fail');
     } catch (error) {
       expect(fetch).toHaveBeenCalledWith(

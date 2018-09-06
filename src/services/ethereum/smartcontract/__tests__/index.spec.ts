@@ -73,27 +73,27 @@ describe('HancockEthereumSmartContractClient', async () => {
     jest.clearAllMocks();
   });
 
-  it('should call invokeSmartContract correctly', async () => {
+  it('should call invoke correctly', async () => {
 
     const adaptSpy = jest
-      .spyOn((HancockEthereumSmartContractClient.prototype as any), 'adaptInvokeSmartContract')
+      .spyOn((HancockEthereumSmartContractClient.prototype as any), 'adaptInvoke')
       .mockImplementation(() => Promise.resolve('whatever'));
 
     const signTransactionAndSendSpy = jest
-      .spyOn(transactionClient as any, 'signTransactionAndSend')
+      .spyOn(transactionClient as any, 'signAndSend')
       .mockImplementation(() => Promise.resolve('whatever'));
 
-    await client.invokeSmartContract('contractAddressOrAlias', 'method', ['params'], 'from', options);
+    await client.invoke('contractAddressOrAlias', 'method', ['params'], 'from', options);
 
     expect(adaptSpy).toHaveBeenCalledWith('contractAddressOrAlias', 'method', ['params'], 'from');
     expect(signTransactionAndSendSpy).toHaveBeenCalledWith('whatever', options);
 
   });
 
-  it('should call invokeSmartContract and throw reject', async () => {
+  it('should call invoke and throw reject', async () => {
 
     try {
-      await client.invokeSmartContract('contractAddressOrAlias', 'method', ['params'], 'from');
+      await client.invoke('contractAddressOrAlias', 'method', ['params'], 'from');
       fail('it should fail');
     } catch (error) {
       expect(errorFnMock).toHaveBeenCalledWith(new HancockError(hancockErrorType.Internal, '002', 500, 'No key nor provider'));
@@ -102,7 +102,7 @@ describe('HancockEthereumSmartContractClient', async () => {
 
   });
 
-  it('should call callSmartContract correctly', async () => {
+  it('should call call correctly', async () => {
 
     (fetch as any).once(JSON.stringify(response.SC_INVOKE_ADAPT_RESPONSE));
     callParamFetch.body = JSON.stringify({
@@ -115,7 +115,7 @@ describe('HancockEthereumSmartContractClient', async () => {
     const checkStatusSpy = checkStatusMock
       .mockImplementation((res) => Promise.resolve(res.json()));
 
-    const result = await client.callSmartContract('contractAddressOrAlias', 'method', ['params'], 'from');
+    const result = await client.call('contractAddressOrAlias', 'method', ['params'], 'from');
 
     expect(fetch).toHaveBeenCalledWith(
       'genericHost:1genericBase/mockInvoke/contractAddressOrAlias',
@@ -126,7 +126,7 @@ describe('HancockEthereumSmartContractClient', async () => {
 
   });
 
-  it('should call callSmartContract and throw error', async () => {
+  it('should call call and throw error', async () => {
 
     (fetch as any).mockRejectOnce(JSON.stringify(response.ERROR));
     callParamFetch.body = JSON.stringify({
@@ -140,7 +140,7 @@ describe('HancockEthereumSmartContractClient', async () => {
       .mockImplementation(() => { throw new HancockError(hancockErrorType.Api, '001', 500, 'testError'); });
 
     try {
-      await client.callSmartContract('contractAddressOrAlias', 'method', ['params'], 'from');
+      await client.call('contractAddressOrAlias', 'method', ['params'], 'from');
       fail('it should fail');
     } catch (error) {
       expect(fetch).toHaveBeenCalledWith(
@@ -152,14 +152,14 @@ describe('HancockEthereumSmartContractClient', async () => {
 
   });
 
-  it('should call adaptInvokeSmartContract correctly', async () => {
+  it('should call adaptInvoke correctly', async () => {
 
     (fetch as any).once(JSON.stringify(response.SC_INVOKE_ADAPT_RESPONSE));
 
     const checkStatusSpy = checkStatusMock
       .mockImplementation((res) => Promise.resolve(res.json()));
 
-    const result = await (client as any).adaptInvokeSmartContract('contractAddressOrAlias', 'method', ['params'], 'from');
+    const result = await (client as any).adaptInvoke('contractAddressOrAlias', 'method', ['params'], 'from');
 
     expect(fetch).toHaveBeenCalledWith(
       'genericHost:1genericBase/mockInvoke/contractAddressOrAlias',
@@ -170,7 +170,7 @@ describe('HancockEthereumSmartContractClient', async () => {
 
   });
 
-  it('should call adaptInvokeSmartContract and throw error', async () => {
+  it('should call adaptInvoke and throw error', async () => {
 
     (fetch as any).mockRejectOnce(JSON.stringify(response.ERROR));
 
@@ -178,7 +178,7 @@ describe('HancockEthereumSmartContractClient', async () => {
       .mockImplementation(() => { throw new HancockError(hancockErrorType.Api, '001', 500, 'testError'); });
 
     try {
-      await (client as any).adaptInvokeSmartContract('contractAddressOrAlias', 'method', ['params'], 'from');
+      await (client as any).adaptInvoke('contractAddressOrAlias', 'method', ['params'], 'from');
       fail('it should fail');
     } catch (error) {
       expect(fetch).toHaveBeenCalledWith(
@@ -190,7 +190,7 @@ describe('HancockEthereumSmartContractClient', async () => {
 
   });
 
-  it('should call registerSmartContract correctly', async () => {
+  it('should call register correctly', async () => {
 
     (fetch as any).once(JSON.stringify(response.SC_INVOKE_ADAPT_RESPONSE));
     callParamFetch.body = JSON.stringify({
@@ -202,7 +202,7 @@ describe('HancockEthereumSmartContractClient', async () => {
     const checkStatusSpy = checkStatusMock
       .mockImplementation((res) => Promise.resolve(res.json()));
 
-    const result = await client.registerSmartContract('contract-alias', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', ['abi']);
+    const result = await client.register('contract-alias', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', ['abi']);
 
     expect(fetch).toHaveBeenCalledWith(
       'genericHost:1genericBase/mockRegister',
@@ -213,7 +213,7 @@ describe('HancockEthereumSmartContractClient', async () => {
 
   });
 
-  it('should call registerSmartContract and throw error', async () => {
+  it('should call register and throw error', async () => {
 
     (fetch as any).mockRejectOnce(JSON.stringify(response.ERROR));
     callParamFetch.body = JSON.stringify({
@@ -226,7 +226,7 @@ describe('HancockEthereumSmartContractClient', async () => {
       .mockImplementation(() => { throw new HancockError(hancockErrorType.Api, '001', 500, 'testError'); });
 
     try {
-      await client.registerSmartContract('contract-alias', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', ['abi']);
+      await client.register('contract-alias', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', ['abi']);
       fail('it should fail');
     } catch (error) {
       expect(fetch).toHaveBeenCalledWith(
@@ -238,10 +238,10 @@ describe('HancockEthereumSmartContractClient', async () => {
 
   });
 
-  it('should call subscribeToContract correctly', async () => {
+  it('should call subscribe correctly', async () => {
 
     // tslint:disable-next-line:no-shadowed-variable
-    const response = client.subscribeToContract(['testContract']);
+    const response = client.subscribe(['testContract']);
 
     expect(socket.HancockEthereumSocket).toHaveBeenCalledTimes(1);
     expect(response.on).toHaveBeenCalledTimes(1);
@@ -249,9 +249,9 @@ describe('HancockEthereumSmartContractClient', async () => {
 
   });
 
-  it('should call subscribeToContract empty correctly', async () => {
+  it('should call subscribe empty correctly', async () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const response = client.subscribeToContract();
+    const response = client.subscribe();
 
     expect(socket.HancockEthereumSocket).toHaveBeenCalledTimes(1);
     expect(response.on).toHaveBeenCalledTimes(1);

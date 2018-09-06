@@ -1,6 +1,5 @@
 import 'jest';
 
-import BigNumber from 'bignumber.js';
 import fetch from 'isomorphic-fetch';
 import { HancockEthereumTransferClient } from '..';
 import * as response from '../../__mocks__/responses';
@@ -72,54 +71,18 @@ describe('ethereum client', async () => {
     jest.clearAllMocks();
   });
 
-  it('should call getBalance correctly', async () => {
-
-    (fetch as any).once(JSON.stringify(response.GET_BALANCE_RESPONSE));
-
-    const checkStatusSpy = checkStatusMock
-      .mockImplementation((res) => Promise.resolve(res.json()));
-
-    const result = await client.getBalance('0xde8e772f0350e992ddef81bf8f51d94a8ea9216d');
-
-    expect(fetch).toHaveBeenCalledWith(
-      'genericHost:1genericBase/mockBalance/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
-    );
-    expect(checkStatusSpy).toHaveBeenCalledTimes(1);
-    expect(result).toEqual(new BigNumber(response.GET_BALANCE_RESPONSE.data.balance));
-
-  });
-
-  it('should call getBalance and throw error', async () => {
-
-    (fetch as any).mockRejectOnce(JSON.stringify(response.GET_BALANCE_ERROR_RESPONSE), { status: 400 });
-
-    const checkStatusSpy = errorHandlerMock
-      .mockImplementation((res) => { throw new HancockError(hancockErrorType.Api, '002', res.code, res.description); });
-
-    try {
-      const result = await client.getBalance('0xde8e772f0350e992ddef81bf8f51d94a8ea9216d');
-      fail('it should fail');
-    } catch (error) {
-      expect(fetch).toHaveBeenCalledWith(
-        'genericHost:1genericBase/mockBalance/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
-      );
-      expect(checkStatusSpy).toHaveBeenCalledTimes(1);
-    }
-
-  });
-
   it('should call transfer correctly', async () => {
 
     const adaptTransferSpy = jest
-      .spyOn((HancockEthereumTransferClient.prototype as any), 'adaptTransfer')
+      .spyOn((HancockEthereumTransferClient.prototype as any), 'adaptSend')
       .mockImplementation(() => Promise.resolve({ test: 'test' }));
 
     const signAndSendSpy = jest
-      .spyOn(transactionClient as any, 'signTransactionAndSend')
+      .spyOn(transactionClient as any, 'signAndSend')
       .mockImplementation(() => Promise.resolve('ok!'));
 
     // tslint:disable-next-line:max-line-length
-    const result = await client.transfer('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '100', options, 'whatever');
+    const result = await client.send('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '100', options, 'whatever');
 
     // tslint:disable-next-line:max-line-length
     expect(adaptTransferSpy).toHaveBeenCalledWith('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '100', 'whatever');
@@ -131,7 +94,7 @@ describe('ethereum client', async () => {
   it('should call transfer and throw error', async () => {
 
     try {
-      await client.transfer('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '100');
+      await client.send('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '100');
       fail('it should fail');
     } catch (error) {
       expect(error).toEqual(new HancockError(hancockErrorType.Api, '002', 500, 'No key nor provider'));
@@ -139,7 +102,7 @@ describe('ethereum client', async () => {
 
   });
 
-  it('should call adaptTransfer correctly', async () => {
+  it('should call adaptSend correctly', async () => {
 
     (fetch as any).once(JSON.stringify(response.SC_INVOKE_ADAPT_RESPONSE));
     const bodyFetch = {
@@ -153,7 +116,7 @@ describe('ethereum client', async () => {
     const checkStatusSpy = checkStatusMock
       .mockImplementation((res) => Promise.resolve(res.json()));
 
-    const result = await (client as any).adaptTransfer(
+    const result = await (client as any).adaptSend(
       bodyFetch.from,
       bodyFetch.to,
       bodyFetch.value,
@@ -169,7 +132,7 @@ describe('ethereum client', async () => {
 
   });
 
-  it('should call adaptTransfer and throw error', async () => {
+  it('should call adaptSend and throw error', async () => {
 
     (fetch as any).mockRejectOnce(JSON.stringify(response.ERROR));
     const bodyFetch = {
@@ -184,7 +147,7 @@ describe('ethereum client', async () => {
       .mockImplementation(() => { throw new HancockError(hancockErrorType.Api, '001', 500, 'testError'); });
 
     try {
-      await (client as any).adaptTransfer(
+      await (client as any).adaptSend(
         bodyFetch.from,
         bodyFetch.to,
         bodyFetch.value,
@@ -201,9 +164,9 @@ describe('ethereum client', async () => {
 
   });
 
-  it('should call subscribeToTransfer correctly', async () => {
+  it('should call subscribe correctly', async () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const response = client.subscribeToTransfer(['0x1234']);
+    const response = client.subscribe(['0x1234']);
 
     expect(socket.HancockEthereumSocket).toHaveBeenCalledTimes(1);
     expect(response.on).toHaveBeenCalledTimes(1);
@@ -211,9 +174,9 @@ describe('ethereum client', async () => {
 
   });
 
-  it('should call subscribeToTransfer empty correctly', async () => {
+  it('should call subscribe empty correctly', async () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const response = client.subscribeToTransfer();
+    const response = client.subscribe();
 
     expect(socket.HancockEthereumSocket).toHaveBeenCalledTimes(1);
     expect(response.on).toHaveBeenCalledTimes(1);

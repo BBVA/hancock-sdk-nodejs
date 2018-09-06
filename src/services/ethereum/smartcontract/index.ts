@@ -33,11 +33,11 @@ export class HancockEthereumSmartContractClient {
     this.brokerBaseUrl = `${config.broker.host}:${config.broker.port}${config.broker.base}`;
   }
 
-  public async invokeSmartContract(
+  public async invoke(
     contractAddressOrAlias: string, method: string, params: string[], from: string, options: HancockInvokeOptions = {},
   ): Promise<HancockSignResponse> {
 
-    // Done in adaptInvokeSmartContract
+    // Done in adaptInvoke
     // const normalizedContractAddressOrAlias: string = normalizeAddressOrAlias(contractAddressOrAlias);
 
     if (!options.signProvider && !options.privateKey) {
@@ -51,16 +51,16 @@ export class HancockEthereumSmartContractClient {
     }
 
     return this
-      .adaptInvokeSmartContract(contractAddressOrAlias, method, params, from)
+      .adaptInvoke(contractAddressOrAlias, method, params, from)
       .then((resBody: HancockAdaptInvokeResponse) => {
 
-        return this.transactionClient.signTransactionAndSend(resBody, options);
+        return this.transactionClient.signAndSend(resBody, options);
 
       });
 
   }
 
-  public async callSmartContract(contractAddressOrAlias: string, method: string, params: string[], from: string): Promise<HancockCallResponse> {
+  public async call(contractAddressOrAlias: string, method: string, params: string[], from: string): Promise<HancockCallResponse> {
 
     if (isEmptyAny(contractAddressOrAlias, from)) {
       return Promise.reject(error(hancockInvalidParameterError));
@@ -91,7 +91,7 @@ export class HancockEthereumSmartContractClient {
 
   }
 
-  public async registerSmartContract(alias: string, address: DltAddress, abi: EthereumAbi): Promise<HancockRegisterResponse> {
+  public async register(alias: string, address: DltAddress, abi: EthereumAbi): Promise<HancockRegisterResponse> {
 
     if (isEmptyAny(alias, address)) {
       return Promise.reject(error(hancockInvalidParameterError));
@@ -121,7 +121,7 @@ export class HancockEthereumSmartContractClient {
 
   }
 
-  public subscribeToContract(contracts: string[] = [], consumer: string = ''): HancockEthereumSocket {
+  public subscribe(contracts: string[] = [], consumer: string = ''): HancockEthereumSocket {
 
     const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`
       .replace(/__ADDRESS__/, '')
@@ -137,7 +137,7 @@ export class HancockEthereumSmartContractClient {
 
   }
 
-  private async adaptInvokeSmartContract(contractAddressOrAlias: string, method: string, params: string[], from: string): Promise<HancockAdaptInvokeResponse> {
+  private async adaptInvoke(contractAddressOrAlias: string, method: string, params: string[], from: string): Promise<HancockAdaptInvokeResponse> {
 
     const normalizedContractAddressOrAlias: string = normalizeAddressOrAlias(contractAddressOrAlias);
 

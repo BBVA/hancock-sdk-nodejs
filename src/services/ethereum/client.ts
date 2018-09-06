@@ -7,25 +7,21 @@ import {
 import {
   HancockClient,
 } from '../hancock.model';
-import { hancockWalletError } from './error';
 import { HancockEthereumProtocolClient } from './protocol';
-import {
-  generateWallet,
-} from './signer';
-import { EthereumWallet } from './signer';
 import { HancockEthereumSmartContractClient } from './smartcontract';
 import { HancockEthereumTokenClient } from './token';
 import { HancockEthereumTransactionClient } from './transaction';
 import { HancockEthereumTransferClient } from './transfer';
-import { error } from './utils';
+import { HancockEthereumWalletClient } from './wallet';
 
 export class HancockEthereumClient implements HancockClient {
 
-  public transactionClient: HancockEthereumTransactionClient;
-  public transferClient: HancockEthereumTransferClient;
-  public protocolClient: HancockEthereumProtocolClient;
-  public smartContractClient: HancockEthereumSmartContractClient;
-  public tokenClient: HancockEthereumTokenClient;
+  public transaction: HancockEthereumTransactionClient;
+  public transfer: HancockEthereumTransferClient;
+  public wallet: HancockEthereumWalletClient;
+  public protocol: HancockEthereumProtocolClient;
+  public smartContract: HancockEthereumSmartContractClient;
+  public token: HancockEthereumTokenClient;
 
   private config: InitialHancockConfig;
 
@@ -33,27 +29,12 @@ export class HancockEthereumClient implements HancockClient {
 
     this.config = merge(config, cfg) as InitialHancockConfig;
 
-    this.transactionClient = new HancockEthereumTransactionClient(this.config);
-    this.transferClient = new HancockEthereumTransferClient(this.config, this.transactionClient);
-    this.protocolClient = new HancockEthereumProtocolClient(this.config);
-    this.smartContractClient = new HancockEthereumSmartContractClient(this.config, this.transactionClient);
-    this.tokenClient = new HancockEthereumTokenClient(this.config, this.transactionClient);
-
-  }
-
-  // WALLET API
-
-  public generateWallet(): EthereumWallet {
-
-    try {
-
-      return generateWallet();
-
-    } catch (e) {
-
-      throw error(hancockWalletError, e);
-
-    }
+    this.transaction = new HancockEthereumTransactionClient(this.config);
+    this.wallet = new HancockEthereumWalletClient(this.config);
+    this.transfer = new HancockEthereumTransferClient(this.config, this.transaction);
+    this.protocol = new HancockEthereumProtocolClient(this.config);
+    this.smartContract = new HancockEthereumSmartContractClient(this.config, this.transaction);
+    this.token = new HancockEthereumTokenClient(this.config, this.transaction);
 
   }
 

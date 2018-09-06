@@ -1,4 +1,3 @@
-import { BigNumber } from 'bignumber.js';
 import fetch from 'isomorphic-fetch';
 import {
   HancockSignResponse,
@@ -10,11 +9,14 @@ import {
   HancockInvokeOptions,
 } from '../../hancock.model';
 import { checkStatus, errorHandler } from '../common';
-import { hancockFormatParameterError,
-   hancockInvalidParameterError, hancockNoKeyNorProviderError } from '../error';
+import {
+  hancockFormatParameterError,
+  hancockInvalidParameterError,
+  hancockNoKeyNorProviderError,
+} from '../error';
 import { HancockEthereumSocket } from '../socket';
 import { HancockEthereumTransactionClient } from '../transaction';
-import { error, isAddress, isAddressAny, isEmpty, isEmptyAny, normalizeAddress } from '../utils';
+import { error, isAddressAny, isEmptyAny, normalizeAddress } from '../utils';
 
 export class HancockEthereumTransferClient {
 
@@ -26,28 +28,29 @@ export class HancockEthereumTransferClient {
     this.brokerBaseUrl = `${config.broker.host}:${config.broker.port}${config.broker.base}`;
   }
 
-  public async getBalance(address: string): Promise<BigNumber> {
+  public async send(from: string, to: string, value: string, options: HancockInvokeOptions = {}, data: string = ''): Promise<HancockSignResponse> {
 
-    if (isEmpty(address)) {
+    if (isEmptyAny(to, from)) {
       return Promise.reject(error(hancockInvalidParameterError));
     }
-    if (!isAddress(address)) {
+    if (!isAddressAny(to, from)) {
       return Promise.reject(error(hancockFormatParameterError));
     }
-    address = normalizeAddress(address);
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.balance}`.replace(/__ADDRESS__/, address);
+    if (!options.signProvider && !options.privateKey) {
+      return Promise.reject(error(hancockNoKeyNorProviderError));
+    }
 
-    return fetch(url)
-      .then(
-        (res: any) => checkStatus(res),
-        (err: any) => errorHandler(err),
-    )
-      .then((resBody: any) => {
-        return new BigNumber(resBody.data.balance);
+    return this
+      .adaptSend(from, to, value, data)
+      .then((resBody: HancockAdaptInvokeResponse) => {
+
+        return this.transactionClient.signAndSend(resBody, options);
+
       });
+
   }
 
-  public subscribeToTransfer(addresses: string[] = [], consumer: string = ''): HancockEthereumSocket {
+  public subscribe(addresses: string[] = [], consumer: string = ''): HancockEthereumSocket {
 
     const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`
       .replace(/__ADDRESS__/, '')
@@ -63,29 +66,7 @@ export class HancockEthereumTransferClient {
 
   }
 
-  public async transfer(from: string, to: string, value: string, options: HancockInvokeOptions = {}, data: string = ''): Promise<HancockSignResponse> {
-
-    if (isEmptyAny(to, from)) {
-      return Promise.reject(error(hancockInvalidParameterError));
-    }
-    if (!isAddressAny(to, from)) {
-      return Promise.reject(error(hancockFormatParameterError));
-    }
-    if (!options.signProvider && !options.privateKey) {
-      return Promise.reject(error(hancockNoKeyNorProviderError));
-    }
-
-    return this
-      .adaptTransfer(from, to, value, data)
-      .then((resBody: HancockAdaptInvokeResponse) => {
-
-        return this.transactionClient.signTransactionAndSend(resBody, options);
-
-      });
-
-  }
-
-  private async adaptTransfer(from: string, to: string, value: string, data: string): Promise<HancockAdaptInvokeResponse> {
+  private async adaptSend(from: string, to: string, value: string, data: string): Promise<HancockAdaptInvokeResponse> {
 
     if (isEmptyAny(from, to)) {
       return Promise.reject(error(hancockInvalidParameterError));
@@ -112,7 +93,7 @@ export class HancockEthereumTransferClient {
       .then(
         (res: any) => checkStatus(res),
         (err: any) => errorHandler(err),
-    );
+      );
   }
 
 }

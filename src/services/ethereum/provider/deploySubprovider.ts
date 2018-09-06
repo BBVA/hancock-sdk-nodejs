@@ -34,10 +34,10 @@ export class DeploySubprovider extends Subprovider {
   }
 
   private addNonceAndSend(data: any, rawTx: any, end: any) {
-    const socket = this.subscribeToTransaction([rawTx.from], end, rawTx.to == null);
+    const socket = this.subscribe([rawTx.from], end, rawTx.to == null);
     rawTx.nonce = data.result;
     this.hancockClient
-      .sendTransactionToSignProvider(rawTx, this.provider)
+      .sendToSignProvider(rawTx, this.provider)
       .then((response: any) => console.log(response))
       .catch((err: any) => {
         console.log(err);
@@ -45,8 +45,8 @@ export class DeploySubprovider extends Subprovider {
       });
   }
 
-  private subscribeToTransaction(from: any, end: any, deploy: boolean) {
-    const socket = this.hancockClient.subscribeToTransaction(from);
+  private subscribe(from: any, end: any, deploy: boolean) {
+    const socket = this.hancockClient.subscribe(from);
     socket.on('tx', (message: any) => {
       console.log(message.body);
       if (deploy && (message.body.to === null || message.body.to === '0x0000000000000000000000000000000000000000' ) || !deploy) {

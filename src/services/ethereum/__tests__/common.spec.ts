@@ -1,4 +1,3 @@
-import { checkStatus, errorHandler } from '../common';
 import * as common from '../common';
 import { HancockError, hancockErrorType } from '../error';
 
@@ -17,7 +16,7 @@ describe('common', async () => {
       ok: true,
       json: () => 'response',
     };
-    const result = await checkStatus(checkstatusparam);
+    const result = await common.checkStatus(checkstatusparam);
 
     expect(result).toBe('response');
 
@@ -36,7 +35,8 @@ describe('common', async () => {
 
     const checkStatusSpy = jest.spyOn(common, 'errorHandler')
       .mockImplementation((res) => Promise.resolve(res));
-    const result = await checkStatus(checkstatusparam);
+
+    const result = await common.checkStatus(checkstatusparam);
 
     expect(checkStatusSpy).toHaveBeenCalledTimes(1);
     expect(checkStatusSpy).toHaveBeenCalledWith(answer);
@@ -46,7 +46,7 @@ describe('common', async () => {
   it('should call errorHandler with error correctly', async () => {
 
     try {
-      errorHandler(new HancockError(hancockErrorType.Api, '001', 500, 'testError'));
+      common.errorHandler(new HancockError(hancockErrorType.Api, '001', 500, 'testError'));
       fail('it should fail');
     } catch (error) {
       expect(error).toEqual(new HancockError(hancockErrorType.Api, '001', 500, 'testError'));
@@ -57,7 +57,7 @@ describe('common', async () => {
   it('should call errorHandler without error correctly', async () => {
 
     try {
-      errorHandler({ body: { message: 'testErrorBody' } });
+      common.errorHandler({ body: { message: 'testErrorBody' } });
       fail('it should fail');
     } catch (error) {
       expect(error).toEqual(new HancockError(hancockErrorType.Api, '001', 500, 'testErrorBody'));

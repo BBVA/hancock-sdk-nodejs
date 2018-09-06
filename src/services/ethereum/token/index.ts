@@ -38,7 +38,7 @@ export class HancockEthereumTokenClient {
     this.adapterApiBaseUrl = `${config.adapter.host}:${config.adapter.port}${config.adapter.base}`;
   }
 
-  public async tokenRegister(alias: string, address: DltAddress): Promise<HancockTokenRegisterResponse> {
+  public async register(alias: string, address: DltAddress): Promise<HancockTokenRegisterResponse> {
 
     if (isEmptyAny(alias, address)) {
       return Promise.reject(error(hancockInvalidParameterError));
@@ -49,7 +49,7 @@ export class HancockEthereumTokenClient {
     alias = normalizeAlias(alias);
     address = normalizeAddress(address);
 
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.tokenRegister}`;
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.register}`;
     const body: HancockTokenRegisterRequest = {
       address,
       alias,
@@ -67,7 +67,7 @@ export class HancockEthereumTokenClient {
 
   }
 
-  public async tokenTransfer(
+  public async transfer(
     from: string, to: string, value: string, addressOrAlias: string, options: HancockInvokeOptions = {},
   ): Promise<HancockSignResponse> {
 
@@ -82,16 +82,16 @@ export class HancockEthereumTokenClient {
     }
 
     return this
-      .adaptTokenTransfer(from, to, value, addressOrAlias)
+      .adaptSend(from, to, value, addressOrAlias)
       .then((resBody: HancockAdaptInvokeResponse) => {
 
-        return this.transactionClient.signTransactionAndSend(resBody, options);
+        return this.transactionClient.signAndSend(resBody, options);
 
       });
 
   }
 
-  public async tokenTransferFrom(
+  public async transferFrom(
     from: string, sender: string, to: string, value: string, addressOrAlias: string, options: HancockInvokeOptions = {},
   ): Promise<HancockSignResponse> {
 
@@ -106,16 +106,16 @@ export class HancockEthereumTokenClient {
     }
 
     return this
-      .adaptTokenTransferFrom(from, sender, to, value, addressOrAlias)
+      .adaptTransferFrom(from, sender, to, value, addressOrAlias)
       .then((resBody: HancockAdaptInvokeResponse) => {
 
-        return this.transactionClient.signTransactionAndSend(resBody, options);
+        return this.transactionClient.signAndSend(resBody, options);
 
       });
 
   }
 
-  public async tokenAllowance(
+  public async allowance(
     from: string, tokenOwner: string, spender: string, addressOrAlias: string, options: HancockInvokeOptions = {},
   ): Promise<HancockSignResponse> {
 
@@ -130,16 +130,16 @@ export class HancockEthereumTokenClient {
     }
 
     return this
-      .adaptTokenAllowance(from, tokenOwner, spender, addressOrAlias)
+      .adaptAllowance(from, tokenOwner, spender, addressOrAlias)
       .then((resBody: HancockAdaptInvokeResponse) => {
 
-        return this.transactionClient.signTransactionAndSend(resBody, options);
+        return this.transactionClient.signAndSend(resBody, options);
 
       });
 
   }
 
-  public async getTokenBalance(addresOrAlias: string, address: string): Promise<HancockTokenBalanceResponse> {
+  public async getBalance(addresOrAlias: string, address: string): Promise<HancockTokenBalanceResponse> {
 
     if (isEmptyAny(address, addresOrAlias)) {
       return Promise.reject(error(hancockInvalidParameterError));
@@ -149,7 +149,7 @@ export class HancockEthereumTokenClient {
     }
     address = normalizeAddress(address);
     addresOrAlias = normalizeAddressOrAlias(addresOrAlias);
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.tokenBalance}`
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.balance}`
       .replace(/__ADDRESS_OR_ALIAS__/, addresOrAlias)
       .replace(/__ADDRESS__/, address);
 
@@ -163,7 +163,7 @@ export class HancockEthereumTokenClient {
       });
   }
 
-  public async tokenApprove(
+  public async approve(
     from: string, spender: string, value: string, addressOrAlias: string, options: HancockInvokeOptions = {},
   ): Promise<HancockSignResponse> {
 
@@ -178,22 +178,22 @@ export class HancockEthereumTokenClient {
     }
 
     return this
-      .adaptTokenApprove(from, spender, value, addressOrAlias)
+      .adaptApprove(from, spender, value, addressOrAlias)
       .then((resBody: HancockAdaptInvokeResponse) => {
 
-        return this.transactionClient.signTransactionAndSend(resBody, options);
+        return this.transactionClient.signAndSend(resBody, options);
 
       });
 
   }
 
-  public async getTokenMetadata(addressOrAlias: string): Promise<HancockTokenMetadataResponse> {
+  public async getMetadata(addressOrAlias: string): Promise<HancockTokenMetadataResponse> {
 
     if (isEmpty(addressOrAlias)) {
       return Promise.reject(error(hancockInvalidParameterError));
     }
     addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.tokenMetadata}`.replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.metadata}`.replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
 
     return fetch(url)
       .then(
@@ -205,7 +205,7 @@ export class HancockEthereumTokenClient {
       });
   }
 
-  private async adaptTokenApprove(from: string, spender: string, value: string, addressOrAlias: string): Promise<HancockAdaptInvokeResponse> {
+  private async adaptApprove(from: string, spender: string, value: string, addressOrAlias: string): Promise<HancockAdaptInvokeResponse> {
 
     if (isEmptyAny(from, spender, addressOrAlias)) {
       return Promise.reject(error(hancockInvalidParameterError));
@@ -217,7 +217,7 @@ export class HancockEthereumTokenClient {
     spender = normalizeAddress(spender);
     addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
 
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.tokenApprove}`.replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.approve}`.replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
     const body: HancockTokenApproveRequest = {
       from,
       spender,
@@ -235,7 +235,7 @@ export class HancockEthereumTokenClient {
       );
   }
 
-  private async adaptTokenTransferFrom(from: string, sender: string, to: string, value: string, addressOrAlias: string): Promise<HancockAdaptInvokeResponse> {
+  private async adaptTransferFrom(from: string, sender: string, to: string, value: string, addressOrAlias: string): Promise<HancockAdaptInvokeResponse> {
 
     if (isEmptyAny(from, sender, addressOrAlias, to)) {
       return Promise.reject(error(hancockInvalidParameterError));
@@ -248,7 +248,7 @@ export class HancockEthereumTokenClient {
     to = normalizeAddress(to);
     addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
 
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.tokenTransferFrom}`.replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.transferFrom}`.replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
     const body: HancockTokenTransferFromRequest = {
       from,
       sender,
@@ -267,7 +267,7 @@ export class HancockEthereumTokenClient {
       );
   }
 
-  private async adaptTokenTransfer(from: string, to: string, value: string, addressOrAlias: string): Promise<HancockAdaptInvokeResponse> {
+  private async adaptSend(from: string, to: string, value: string, addressOrAlias: string): Promise<HancockAdaptInvokeResponse> {
 
     if (isEmptyAny(from, addressOrAlias, to)) {
       return Promise.reject(error(hancockInvalidParameterError));
@@ -279,7 +279,7 @@ export class HancockEthereumTokenClient {
     to = normalizeAddress(to);
     addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
 
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.tokenTransfer}`.replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.transfer}`.replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
     const body: HancockTokenTransferRequest = {
       from,
       to,
@@ -297,7 +297,7 @@ export class HancockEthereumTokenClient {
       );
   }
 
-  private async adaptTokenAllowance(from: string, tokenOwner: string, spender: string, addressOrAlias: string): Promise<HancockAdaptInvokeResponse> {
+  private async adaptAllowance(from: string, tokenOwner: string, spender: string, addressOrAlias: string): Promise<HancockAdaptInvokeResponse> {
 
     if (isEmptyAny(from, spender, addressOrAlias, tokenOwner)) {
       return Promise.reject(error(hancockInvalidParameterError));
@@ -310,7 +310,7 @@ export class HancockEthereumTokenClient {
     spender = normalizeAddress(spender);
     addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
 
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.tokenAllowance}`.replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.allowance}`.replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
     const body: HancockTokenAllowanceRequest = {
       from,
       tokenOwner,

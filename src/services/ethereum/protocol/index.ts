@@ -23,7 +23,7 @@ export class HancockEthereumProtocolClient {
     this.adapterApiBaseUrl = `${config.adapter.host}:${config.adapter.port}${config.adapter.base}`;
   }
 
-  public async encodeProtocol(
+  public async encode(
     action: HancockProtocolAction, value: string, to: string, data: string, dlt: HancockProtocolDlt,
   ): Promise<HancockProtocolEncodeResponse> {
 
@@ -57,7 +57,7 @@ export class HancockEthereumProtocolClient {
     );
   }
 
-  public async decodeProtocol(code: string): Promise<HancockProtocolDecodeResponse> {
+  public async decode(code: string): Promise<HancockProtocolDecodeResponse> {
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.decode}`;
     const body: HancockProtocolDecodeRequest = {
