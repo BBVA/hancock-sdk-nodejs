@@ -3,7 +3,7 @@ export const __deploySubproviderInstance__ = {
   handleRequest: jest.fn().mockReturnThis(),
   addNonceAndSend: jest.fn().mockReturnThis(),
   subscribeToDeploy: jest.fn().mockReturnThis(),
-  subscribeToTransaction: jest.fn().mockReturnThis(),
+  subscribe: jest.fn().mockReturnThis(),
 };
 
 // tslint:disable-next-line:variable-name

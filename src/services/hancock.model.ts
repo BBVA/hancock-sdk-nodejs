@@ -191,21 +191,21 @@ export interface InitialHancockAdapterConfig {
   host: string;
   port: number;
   base: string;
-  resources: { [k: string]: string };
+  resources: any;
 }
 
 export interface InitialHancockWalletHubConfig {
   host: string;
   port: number;
   base: string;
-  resources: { [k: string]: string };
+  resources: any;
 }
 
 export interface InitialHancockBrokerConfig {
   host: string;
   port: number;
   base: string;
-  resources: { [k: string]: string };
+  resources: any;
 }
 
 export interface InitialHancockConfig {
@@ -271,30 +271,40 @@ export interface HancockEventEmitter extends EventEmitter {
 }
 
 export interface HancockClient {
-
-  invokeSmartContract(contractAddress: string, method: string, params: string[], from: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
-  callSmartContract(contractAddress: string, method: string, params: string[], from: string): Promise<HancockCallResponse>;
-  adaptInvokeSmartContract(contractAddress: string, method: string, params: string[], from: string): Promise<HancockAdaptInvokeResponse>;
-  sendTransaction(tx: any): Promise<HancockSendTxResponse>;
-  sendSignedTransaction(tx: any): Promise<HancockSendSignedTxResponse>;
-  sendTransactionToSign(rawTx: any, provider: string, callback?: HancockCallBackOptions): Promise<HancockSignResponse>;
-  signTransaction(rawTx: DltRawTransaction, privateKey: string): string;
-  generateWallet(): DltWallet;
-  subscribeToContract(contracts: string[]): HancockEthereumSocket;
-  subscribeToTransfer(addresses: string[]): HancockEthereumSocket;
-  subscribeToTransaction(addresses: string[]): HancockEthereumSocket;
-  getBalance(address: string): Promise<BigNumber>;
-  transfer(from: string, to: string, value: string, options?: HancockInvokeOptions, data?: string): Promise<HancockSignResponse>;
-  tokenTransfer(from: string, to: string, value: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
-  tokenApprove(from: string, spender: string, value: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
-  // tslint:disable-next-line:max-line-length
-  tokenTransferFrom(from: string, sender: string, to: string, value: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
-  tokenAllowance(from: string, tokenOwner: string, spender: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
-  encodeProtocol(action: HancockProtocolAction, dlt: HancockProtocolDlt, value: string, to: string, data: string): Promise<HancockProtocolEncodeResponse>;
-  decodeProtocol(code: string): Promise<HancockProtocolDecodeResponse>;
-  getTokenBalance(addressOrAlias: string, address: string): Promise<HancockTokenBalanceResponse>;
-  getTokenMetadata(addressOrAlias: string): Promise<HancockTokenMetadataResponse>;
-  tokenRegister(alias: string, address: DltAddress): Promise<HancockTokenRegisterResponse>;
+  transaction: {
+    send(tx: any): Promise<HancockSendTxResponse>;
+    sendSigned(tx: any): Promise<HancockSendSignedTxResponse>;
+    sendToSignProvider(rawTx: any, provider: string, callback?: HancockCallBackOptions): Promise<HancockSignResponse>;
+    sign(rawTx: DltRawTransaction, privateKey: string): string;
+    subscribe(addresses: string[]): HancockEthereumSocket;
+  };
+  transfer: {
+    send(from: string, to: string, value: string, options?: HancockInvokeOptions, data?: string): Promise<HancockSignResponse>;
+    subscribe(addresses: string[]): HancockEthereumSocket;
+  };
+  protocol: {
+    encode(action: HancockProtocolAction, dlt: HancockProtocolDlt, value: string, to: string, data: string): Promise<HancockProtocolEncodeResponse>;
+    decode(code: string): Promise<HancockProtocolDecodeResponse>;
+  };
+  smartContract: {
+    invoke(contractAddress: string, method: string, params: string[], from: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
+    call(contractAddress: string, method: string, params: string[], from: string): Promise<HancockCallResponse>;
+    subscribe(contracts: string[]): HancockEthereumSocket;
+  };
+  token: {
+    getBalance(addressOrAlias: string, address: string): Promise<HancockTokenBalanceResponse>;
+    getMetadata(addressOrAlias: string): Promise<HancockTokenMetadataResponse>;
+    transfer(from: string, to: string, value: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
+    // tslint:disable-next-line:max-line-length
+    transferFrom(from: string, sender: string, to: string, value: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
+    register(alias: string, address: DltAddress): Promise<HancockTokenRegisterResponse>;
+    approve(from: string, spender: string, value: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
+    allowance(from: string, tokenOwner: string, spender: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
+  };
+  wallet: {
+    getBalance(address: string): Promise<BigNumber>;
+    generate(): DltWallet;
+  };
 }
 
 export type HancockInvokeAction = 'send' | 'call';

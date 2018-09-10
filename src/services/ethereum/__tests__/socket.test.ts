@@ -1,7 +1,8 @@
 import 'jest';
+
 import * as ws from 'isomorphic-ws';
-import { HancockEthereumSocket } from '../socket';
 import { HancockSocketMessage } from '../..';
+import { HancockEthereumSocket } from '../socket';
 
 jest.mock('isomorphic-ws');
 
@@ -78,7 +79,7 @@ describe('HancockEthereumSocket integration tests', () => {
       const expectedMessage: HancockSocketMessage = {
         kind: 'watch-transfers',
         body: normalizedAddresses,
-        consumer
+        consumer,
       };
 
       ethereumSocketInstance.addTransfer(addresses);
@@ -89,9 +90,9 @@ describe('HancockEthereumSocket integration tests', () => {
 
     it('should do nothing if the given list of addresses is empty', async () => {
 
-      const addresses: string[] = [];
+      const addrs: string[] = [];
 
-      ethereumSocketInstance.addTransfer(addresses);
+      ethereumSocketInstance.addTransfer(addrs);
 
       expect(socketSend).not.toHaveBeenCalled();
 
@@ -122,7 +123,7 @@ describe('HancockEthereumSocket integration tests', () => {
       const expectedMessage: HancockSocketMessage = {
         kind: 'watch-transactions',
         body: normalizedAddresses,
-        consumer
+        consumer,
       };
 
       ethereumSocketInstance.addTransaction(addresses);
@@ -133,9 +134,9 @@ describe('HancockEthereumSocket integration tests', () => {
 
     it('should do nothing if the given list of addresses is empty', async () => {
 
-      const addresses: string[] = [];
+      const addrs: string[] = [];
 
-      ethereumSocketInstance.addTransaction(addresses);
+      ethereumSocketInstance.addTransaction(addrs);
 
       expect(socketSend).not.toHaveBeenCalled();
 
@@ -166,7 +167,7 @@ describe('HancockEthereumSocket integration tests', () => {
       const expectedMessage: HancockSocketMessage = {
         kind: 'watch-contracts',
         body: normalizedAddressesOrAliases,
-        consumer
+        consumer,
       };
 
       ethereumSocketInstance.addContract(addressesOrAliases);
@@ -177,9 +178,9 @@ describe('HancockEthereumSocket integration tests', () => {
 
     it('should do nothing if the given list of addresses is empty', async () => {
 
-      const addressesOrAliases: string[] = [];
+      const addrsOrAliases: string[] = [];
 
-      ethereumSocketInstance.addContract(addressesOrAliases);
+      ethereumSocketInstance.addContract(addrsOrAliases);
 
       expect(socketSend).not.toHaveBeenCalled();
 
