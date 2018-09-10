@@ -33,6 +33,19 @@ export class HancockEthereumSmartContractClient {
     this.brokerBaseUrl = `${config.broker.host}:${config.broker.port}${config.broker.base}`;
   }
 
+  /**
+   * Makes an invocation to an smart contract method.
+   * Invocations are used to call smart contract methods that writes information in the blockchain consuming gas
+   * @param contractAddressOrAlias Address or alias of the smart contract registered in Hancock
+   * @param method The name of the method to call
+   * @param params An array of arguments passed to the method
+   * @param from The address of the account doing the call
+   * @param options Configuration of how the transaction will be send to the network
+   * @param options.privateKey The private key with which the raw transaction will be signed
+   * @param options.signProvider The sign provider alias which will receive the raw transaction
+   * @param options.callback Callback url to be notified once the transaction will be sent
+   * @returns The returned value from the smart contract method
+   */
   public async invoke(
     contractAddressOrAlias: string, method: string, params: string[], from: string, options: HancockInvokeOptions = {},
   ): Promise<HancockSignResponse> {
@@ -54,12 +67,20 @@ export class HancockEthereumSmartContractClient {
       .adaptInvoke(contractAddressOrAlias, method, params, from)
       .then((resBody: HancockAdaptInvokeResponse) => {
 
-        return this.transactionClient.signAndSend(resBody, options);
+        return this.transactionClient.signAndSend(resBody.data, options);
 
       });
 
   }
 
+  /**
+   * Makes a call to an smart contract method. Calls only fetch information from blockchain so it doesn't consume gas
+   * @param contractAddressOrAlias Address or alias of the smart contract registered in Hancock
+   * @param method The name of the method to call
+   * @param params An array of arguments passed to the method
+   * @param from The address of the account doing the call
+   * @returns The returned value from the smart contract method
+   */
   public async call(contractAddressOrAlias: string, method: string, params: string[], from: string): Promise<HancockCallResponse> {
 
     if (isEmptyAny(contractAddressOrAlias, from)) {
@@ -91,6 +112,13 @@ export class HancockEthereumSmartContractClient {
 
   }
 
+  /**
+   * Register a new smart contract instance in Hancock
+   * @param alias An alias for the smart contract
+   * @param address The address of the deployed smart contract instance
+   * @param abi The application binary interface (abi) of the deployed smart contract
+   * @returns The result of the request
+   */
   public async register(alias: string, address: DltAddress, abi: EthereumAbi): Promise<HancockRegisterResponse> {
 
     if (isEmptyAny(alias, address)) {
@@ -121,6 +149,12 @@ export class HancockEthereumSmartContractClient {
 
   }
 
+  /**
+   * Create a websocket subscription to watch transactions of type "smart contract events" in the network
+   * @param addresses An array of address of smart contracts that will be added to the watch list
+   * @param consumer A consumer plugin previously configured in hancock that will handle each received event
+   * @returns An event emmiter that will fire the watched "smart contract events" events
+   */
   public subscribe(contracts: string[] = [], consumer: string = ''): HancockEthereumSocket {
 
     const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`

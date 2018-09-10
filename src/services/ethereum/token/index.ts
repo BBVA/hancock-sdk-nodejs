@@ -38,6 +38,12 @@ export class HancockEthereumTokenClient {
     this.adapterApiBaseUrl = `${config.adapter.host}:${config.adapter.port}${config.adapter.base}`;
   }
 
+  /**
+   * Register a new ERC20 token instance in Hancock
+   * @param alias An alias for the token
+   * @param address The address of the deployed smart contract token instance
+   * @returns The result of the request
+   */
   public async register(alias: string, address: DltAddress): Promise<HancockTokenRegisterResponse> {
 
     if (isEmptyAny(alias, address)) {
@@ -67,6 +73,20 @@ export class HancockEthereumTokenClient {
 
   }
 
+  /**
+   * Transfer the balance from token owner's account to `to` account
+   * - Owner's account must have sufficient balance to transfer
+   * - 0 value transfers are allowed
+   * @param from The token sender's address
+   * @param to The token receiver's address
+   * @param value The amount of tokens to transfer (in weis)
+   * @param addressOrAlias Address or alias of the token smart contract registered in Hancock
+   * @param options Configuration of how the transaction will be send to the network
+   * @param options.privateKey The private key with which the raw transaction will be signed
+   * @param options.signProvider The sign provider alias which will receive the raw transaction
+   * @param options.callback Callback url to be notified once the transaction will be sent
+   * @returns The result of the request
+   */
   public async transfer(
     from: string, to: string, value: string, addressOrAlias: string, options: HancockInvokeOptions = {},
   ): Promise<HancockSignResponse> {
@@ -85,12 +105,29 @@ export class HancockEthereumTokenClient {
       .adaptSend(from, to, value, addressOrAlias)
       .then((resBody: HancockAdaptInvokeResponse) => {
 
-        return this.transactionClient.signAndSend(resBody, options);
+        return this.transactionClient.signAndSend(resBody.data, options);
 
       });
 
   }
 
+  /**
+   * Transfer `tokens` from the `sender` account to the `to` account
+   * The calling account must already have sufficient tokens approved for spending from the `sender` account and
+   * - Sender account must have sufficient balance to transfer
+   * - Spender must have sufficient allowance to transfer
+   * - 0 value transfers are allowed
+   * @param from The aproved spender's address
+   * @param sender The token sender's address
+   * @param to The token receiver's address
+   * @param value The amount of tokens to transfer (in weis)
+   * @param addressOrAlias Address or alias of the token smart contract registered in Hancock
+   * @param options Configuration of how the transaction will be send to the network
+   * @param options.privateKey The private key with which the raw transaction will be signed
+   * @param options.signProvider The sign provider alias which will receive the raw transaction
+   * @param options.callback Callback url to be notified once the transaction will be sent
+   * @returns The result of the request
+   */
   public async transferFrom(
     from: string, sender: string, to: string, value: string, addressOrAlias: string, options: HancockInvokeOptions = {},
   ): Promise<HancockSignResponse> {
@@ -109,12 +146,25 @@ export class HancockEthereumTokenClient {
       .adaptTransferFrom(from, sender, to, value, addressOrAlias)
       .then((resBody: HancockAdaptInvokeResponse) => {
 
-        return this.transactionClient.signAndSend(resBody, options);
+        return this.transactionClient.signAndSend(resBody.data, options);
 
       });
 
   }
 
+  /**
+   * Returns the amount of tokens approved by the owner that can be transferred to the spender's account
+   * @param from The caller's address
+   * @param tokenOwner The token owner's address
+   * @param spender The token spender's address
+   * @param value The amount of tokens to transfer (in weis)
+   * @param addressOrAlias Address or alias of the token smart contract registered in Hancock
+   * @param options Configuration of how the transaction will be send to the network
+   * @param options.privateKey The private key with which the raw transaction will be signed
+   * @param options.signProvider The sign provider alias which will receive the raw transaction
+   * @param options.callback Callback url to be notified once the transaction will be sent
+   * @returns The result of the request
+   */
   public async allowance(
     from: string, tokenOwner: string, spender: string, addressOrAlias: string, options: HancockInvokeOptions = {},
   ): Promise<HancockSignResponse> {
@@ -133,25 +183,31 @@ export class HancockEthereumTokenClient {
       .adaptAllowance(from, tokenOwner, spender, addressOrAlias)
       .then((resBody: HancockAdaptInvokeResponse) => {
 
-        return this.transactionClient.signAndSend(resBody, options);
+        return this.transactionClient.signAndSend(resBody.data, options);
 
       });
 
   }
 
-  public async getBalance(addresOrAlias: string, address: string): Promise<HancockTokenBalanceResponse> {
+  /**
+   * Get the token balance for account `tokenOwner`
+   * @param addressOrAlias Address or alias of the token smart contract registered in Hancock
+   * @param tokenOwner The token owner's address
+   * @returns The result of the request with the balance
+   */
+  public async getBalance(addressOrAlias: string, tokenOwner: string): Promise<HancockTokenBalanceResponse> {
 
-    if (isEmptyAny(address, addresOrAlias)) {
+    if (isEmptyAny(tokenOwner, addressOrAlias)) {
       return Promise.reject(error(hancockInvalidParameterError));
     }
-    if (!isAddress(address)) {
+    if (!isAddress(tokenOwner)) {
       return Promise.reject(error(hancockFormatParameterError));
     }
-    address = normalizeAddress(address);
-    addresOrAlias = normalizeAddressOrAlias(addresOrAlias);
+    tokenOwner = normalizeAddress(tokenOwner);
+    addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.balance}`
-      .replace(/__ADDRESS_OR_ALIAS__/, addresOrAlias)
-      .replace(/__ADDRESS__/, address);
+      .replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias)
+      .replace(/__ADDRESS__/, tokenOwner);
 
     return fetch(url)
       .then(
@@ -163,6 +219,18 @@ export class HancockEthereumTokenClient {
       });
   }
 
+  /**
+   * Token owner can approve for `spender` to transferFrom(...) `tokens` from the token owner's account
+   * @param from The token owner's address
+   * @param spender The token spender's address
+   * @param value The amount of tokens to transfer (in weis)
+   * @param addressOrAlias Address or alias of the token smart contract registered in Hancock
+   * @param options Configuration of how the transaction will be send to the network
+   * @param options.privateKey The private key with which the raw transaction will be signed
+   * @param options.signProvider The sign provider alias which will receive the raw transaction
+   * @param options.callback Callback url to be notified once the transaction will be sent
+   * @returns The result of the request
+   */
   public async approve(
     from: string, spender: string, value: string, addressOrAlias: string, options: HancockInvokeOptions = {},
   ): Promise<HancockSignResponse> {
@@ -181,12 +249,17 @@ export class HancockEthereumTokenClient {
       .adaptApprove(from, spender, value, addressOrAlias)
       .then((resBody: HancockAdaptInvokeResponse) => {
 
-        return this.transactionClient.signAndSend(resBody, options);
+        return this.transactionClient.signAndSend(resBody.data, options);
 
       });
 
   }
 
+  /**
+   * Retrieves the metadata of the token
+   * @param addressOrAlias Address or alias of the token smart contract registered in Hancock
+   * @returns name, symbol, decimals, and totalSupply of the token
+   */
   public async getMetadata(addressOrAlias: string): Promise<HancockTokenMetadataResponse> {
 
     if (isEmpty(addressOrAlias)) {

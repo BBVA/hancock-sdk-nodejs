@@ -18,6 +18,11 @@ export class HancockEthereumWalletClient {
     this.adapterApiBaseUrl = `${config.adapter.host}:${config.adapter.port}${config.adapter.base}`;
   }
 
+  /**
+   * Retrieves the ethers balance of an account
+   * @param address The token owner's address
+   * @returns The account balance (in weis)
+   */
   public async getBalance(address: string): Promise<BigNumber> {
 
     if (isEmpty(address)) {
@@ -39,6 +44,10 @@ export class HancockEthereumWalletClient {
       });
   }
 
+  /**
+   * Generates a new wallet
+   * @returns address, publicKey, and privateKey of the new wallet
+   */
   public generate(): EthereumWallet {
 
     try {

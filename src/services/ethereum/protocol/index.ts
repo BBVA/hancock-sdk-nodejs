@@ -23,6 +23,11 @@ export class HancockEthereumProtocolClient {
     this.adapterApiBaseUrl = `${config.adapter.host}:${config.adapter.port}${config.adapter.base}`;
   }
 
+  /**
+   * Encode an operation over the blockchain (a static predefined transaction for example) using Hancock's protocol
+   * @param code The sender address
+   * @returns The content successfully encoded
+   */
   public async encode(
     action: HancockProtocolAction, value: string, to: string, data: string, dlt: HancockProtocolDlt,
   ): Promise<HancockProtocolEncodeResponse> {
@@ -57,6 +62,11 @@ export class HancockEthereumProtocolClient {
     );
   }
 
+  /**
+   * Decode content (a static predefined transaction for example) encoded Hancock's protocol
+   * @param code The encoded content
+   * @returns The encoded content successfully decoded
+   */
   public async decode(code: string): Promise<HancockProtocolDecodeResponse> {
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.decode}`;
