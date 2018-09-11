@@ -25,6 +25,10 @@ export class HancockEthereumClient implements HancockClient {
 
   private config: InitialHancockConfig;
 
+  /**
+   * Main interface to interact with Hancock
+   * @param cfg Initial configuration of the client
+   */
   constructor(cfg: HancockConfig = {}) {
 
     this.config = merge(config, cfg) as InitialHancockConfig;

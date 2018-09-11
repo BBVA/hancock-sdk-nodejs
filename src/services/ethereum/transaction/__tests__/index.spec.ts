@@ -125,7 +125,7 @@ describe('ethereum client', async () => {
     const checkStatusSpy = checkStatusMock
       .mockImplementation((res) => Promise.resolve(res.json()));
 
-    const result = await client.sendSigned({ whatever: 'whatevervalue' });
+    const result = await client.sendSigned('whatever');
 
     expect(fetch).toHaveBeenCalledWith(
       'genericHost:1genericBase/mockSendSignedTx',
@@ -145,7 +145,7 @@ describe('ethereum client', async () => {
       .mockImplementation(() => { throw new HancockError(hancockErrorType.Api, '001', 500, 'testError'); });
 
     try {
-      await client.sendSigned({ whatever: 'whatevervalue' });
+      await client.sendSigned('whatever');
       fail('it should fail');
     } catch (error) {
       expect(fetch).toHaveBeenCalledWith(
@@ -225,7 +225,7 @@ describe('ethereum client', async () => {
       .mockImplementation(() => Promise.resolve('response'));
 
     options.signProvider = 'providerTest';
-    const result = await client.signAndSend(hancockAdaptInvokeResponse, options);
+    const result = await client.signAndSend(hancockAdaptInvokeResponse.data, options);
 
     expect(sendTransactionToSignProviderSpy).toHaveBeenCalledTimes(1);
     expect(sendTransactionToSignProviderSpy).toHaveBeenCalledWith(hancockAdaptInvokeResponse.data, options.signProvider);
@@ -240,7 +240,7 @@ describe('ethereum client', async () => {
     const sendSignedTransactionSpy = jest.spyOn((HancockEthereumTransactionClient.prototype as any), 'sendSigned')
       .mockImplementation(() => Promise.resolve('response'));
 
-    const result = await client.signAndSend(hancockAdaptInvokeResponse, options);
+    const result = await client.signAndSend(hancockAdaptInvokeResponse.data, options);
 
     expect(signTransactionSpy).toHaveBeenCalledTimes(1);
     expect(signTransactionSpy).toHaveBeenCalledWith(hancockAdaptInvokeResponse.data, options.privateKey);
@@ -255,7 +255,7 @@ describe('ethereum client', async () => {
     const sendTransactionSpy = jest.spyOn((HancockEthereumTransactionClient.prototype as any), 'send')
       .mockImplementation(() => Promise.resolve('response'));
 
-    const result = await (client as any).signAndSend(hancockAdaptInvokeResponse, {});
+    const result = await (client as any).signAndSend(hancockAdaptInvokeResponse.data, {});
 
     expect(sendTransactionSpy).toHaveBeenCalledTimes(1);
     expect(sendTransactionSpy).toHaveBeenCalledWith(hancockAdaptInvokeResponse.data);

@@ -26,6 +26,13 @@ nodePipeline{
       sh "npm run coverage"
     }
   }
+
+  stage("Docs"){
+    container("node"){
+      sh "npm run docs"
+      upload_doc_shuttle_stage(docName: "hancock-sdk-client-javascript", docPath: "./typedocs")
+    }
+  }
   
   // TODO: Do a generic publish_npm_package stage in shuttle
   stage("Publish Package"){

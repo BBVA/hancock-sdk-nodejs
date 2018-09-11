@@ -21,6 +21,7 @@ export interface HancockGenericResponse {
   };
 }
 
+/** @hidden */
 export interface HancockInvokeRequest {
   method: string;
   from: string;
@@ -28,10 +29,12 @@ export interface HancockInvokeRequest {
   action?: HancockInvokeAction;
 }
 
+/** @hidden */
 export interface HancockAdaptInvokeRequest extends HancockInvokeRequest {
   action: 'send';
 }
 
+/** @hidden */
 export interface HancockCallRequest extends HancockInvokeRequest {
   action: 'call';
 }
@@ -46,6 +49,7 @@ export interface HancockCallResponse extends HancockGenericResponse {
 
 // Send to sign
 
+/** @hidden */
 export interface HancockSignRequest {
   rawTx: any;
   provider: string;
@@ -58,6 +62,7 @@ export interface HancockSignResponse {
 
 // Send Tx
 
+/** @hidden */
 export interface HancockSendTxRequest {
   tx: DltRawTransaction;
 }
@@ -68,6 +73,7 @@ export interface HancockSendTxResponse {
 
 // Send signedTx
 
+/** @hidden */
 export interface HancockSendSignedTxRequest {
   tx: DltSignedTransaction;
 }
@@ -78,6 +84,7 @@ export interface HancockSendSignedTxResponse {
 
 // Register
 
+/** @hidden */
 export interface HancockRegisterRequest {
   alias: string;
   address: DltAddress;
@@ -90,6 +97,7 @@ export interface HancockRegisterResponse extends HancockGenericResponse {
 
 // Transfer
 
+/** @hidden */
 export interface HancockTransferRequest {
   from: string;
   to: string;
@@ -99,6 +107,7 @@ export interface HancockTransferRequest {
 
 // TokenTransfer
 
+/** @hidden */
 export interface HancockTokenTransferRequest {
   from: string;
   to: string;
@@ -111,6 +120,7 @@ export interface HancockTokenTransferResponse extends HancockGenericResponse {
 
 // TokenTransferFrom
 
+/** @hidden */
 export interface HancockTokenTransferFromRequest {
   from: string;
   sender: string;
@@ -124,6 +134,7 @@ export interface HancockTokenTransferFromResponse extends HancockGenericResponse
 
 // TokenAllowance
 
+/** @hidden */
 export interface HancockTokenAllowanceRequest {
   from: string;
   tokenOwner: string;
@@ -132,6 +143,7 @@ export interface HancockTokenAllowanceRequest {
 
 // Token Register
 
+/** @hidden */
 export interface HancockTokenRegisterRequest {
   alias: string;
   address: DltAddress;
@@ -152,6 +164,7 @@ export interface HancockTokenMetadataResponse {
 
 // Token approve
 
+/** @hidden */
 export interface HancockTokenApproveRequest {
   from: string;
   spender: string;
@@ -160,54 +173,47 @@ export interface HancockTokenApproveRequest {
 
 // CONFIG
 
-export interface HancockAdapterConfig {
+export interface HancockServiceBaseConfig {
+  /** The hostname where the server is accessible */
   host?: string;
+  /** The port where the server is listening */
   port?: number;
+  /**
+   * A base endpoint of the api
+   * @default /
+   */
   base?: string;
-  resources?: { [k: string]: string };
 }
 
-export interface HancockWalletHubConfig {
-  host?: string;
-  port?: number;
-  base?: string;
-  resources?: { [k: string]: string };
-}
-
-export interface HancockBrokerConfig {
-  host?: string;
-  port?: number;
-  base?: string;
-  resources?: { [k: string]: string };
-}
+export type HancockAdapterConfig = HancockServiceBaseConfig;
+export type HancockWalletHubConfig = HancockServiceBaseConfig;
+export type HancockBrokerConfig = HancockServiceBaseConfig;
 
 export interface HancockConfig {
+  /** Hancock's adapter service configuration */
   adapter?: HancockAdapterConfig;
+  /** Hancock's wallet service configuration */
   wallet?: HancockWalletHubConfig;
+  /** Hancock's broker service configuration */
   broker?: HancockBrokerConfig;
 }
 
-export interface InitialHancockAdapterConfig {
+/** @hidden */
+export interface InitialHancockServiceBaseConfig {
   host: string;
   port: number;
   base: string;
   resources: any;
 }
 
-export interface InitialHancockWalletHubConfig {
-  host: string;
-  port: number;
-  base: string;
-  resources: any;
-}
+/** @ignored */
+export type InitialHancockAdapterConfig = InitialHancockServiceBaseConfig;
+/** @ignored */
+export type InitialHancockWalletHubConfig = InitialHancockServiceBaseConfig;
+/** @ignored */
+export type InitialHancockBrokerConfig = InitialHancockServiceBaseConfig;
 
-export interface InitialHancockBrokerConfig {
-  host: string;
-  port: number;
-  base: string;
-  resources: any;
-}
-
+/** @ignored */
 export interface InitialHancockConfig {
   adapter: InitialHancockAdapterConfig;
   wallet: InitialHancockWalletHubConfig;
@@ -231,10 +237,13 @@ export interface HancockProtocolEncode {
   dlt: HancockProtocolDlt;
 }
 
-export interface HancockProtocolEncodeResponse {
-  qrEncode: HancockProtocolAction;
+export interface HancockProtocolEncodeResponse extends HancockGenericResponse {
+  data: {
+    qrEncode: string;
+  };
 }
 
+/** @hidden */
 export interface HancockProtocolDecodeRequest {
   code: string;
 }
@@ -250,6 +259,7 @@ export interface HancockProtocolDecodeResponse extends HancockGenericResponse {
 
 // ERROR
 
+/** @hidden */
 export interface IHancockError extends Error {
   internalError: string;
   error: number;
@@ -270,6 +280,7 @@ export interface HancockEventEmitter extends EventEmitter {
   on(event: HancockEventKind, fn: (payload: HancockEvent) => void, context?: any): this;
 }
 
+/** @hidden */
 export interface HancockClient {
   transaction: {
     send(tx: any): Promise<HancockSendTxResponse>;
@@ -310,8 +321,11 @@ export interface HancockClient {
 export type HancockInvokeAction = 'send' | 'call';
 
 export interface HancockInvokeOptions {
+  /** The private key with which the raw transaction will be signed */
   privateKey?: string;
+  /** The sign provider alias which will receive the raw transaction */
   signProvider?: string;
+  /** Callback url to be notified once the transaction will be sent */
   callback?: HancockCallBackOptions;
 }
 

@@ -10,18 +10,20 @@ import {
   HancockCallBackOptions,
 } from '../../hancock.model';
 import {
-  HancockAdaptInvokeResponse,
   HancockInvokeOptions,
   HancockSendTxRequest,
   HancockSendTxResponse,
 } from '../../hancock.model';
 import { checkStatus, errorHandler } from '../common';
 import {
-  signTx,
+  EthereumSignedTransaction, signTx,
 } from '../signer';
 import { EthereumRawTransaction } from '../signer';
 import { HancockEthereumSocket } from '../socket';
 
+/**
+ * [[include:HancockEthereumTransactionClient.md]]
+ */
 export class HancockEthereumTransactionClient {
 
   private walletApiBaseUrl: string;
@@ -32,7 +34,12 @@ export class HancockEthereumTransactionClient {
     this.brokerBaseUrl = `${config.broker.host}:${config.broker.port}${config.broker.base}`;
   }
 
-  public async send(tx: any): Promise<HancockSendTxResponse> {
+  /**
+   * Send a raw transaction to the ethereum network (It is assumed that the "from" address which will sign the transaction is stored in the node)
+   * @param tx A raw transaction which will be sent to the network
+   * @returns The result of the transaction
+   */
+  public async send(tx: EthereumRawTransaction): Promise<HancockSendTxResponse> {
 
     const url: string = `${this.walletApiBaseUrl + this.config.wallet.resources.sendTx}`;
     const body: HancockSendTxRequest = {
@@ -47,11 +54,17 @@ export class HancockEthereumTransactionClient {
       .then(
         (res: any) => checkStatus(res),
         (err: any) => errorHandler(err),
-    );
+      );
 
   }
 
-  public async sendSigned(tx: any, requestId?: string): Promise<HancockSendSignedTxResponse> {
+  /**
+   * Send a signed transaction to the ethereum network
+   * @param tx A signed transaction which will be send to the network
+   * @param requestId An uuid to trace the request in hancock
+   * @returns The result of the transaction
+   */
+  public async sendSigned(tx: EthereumSignedTransaction, requestId?: string): Promise<HancockSendSignedTxResponse> {
 
     const url: string = `${this.walletApiBaseUrl + this.config.wallet.resources.sendSignedTx}`;
     const body: HancockSendSignedTxRequest = {
@@ -75,11 +88,18 @@ export class HancockEthereumTransactionClient {
       .then(
         (res: any) => checkStatus(res),
         (err: any) => errorHandler(err),
-    );
+      );
 
   }
 
-  public async sendToSignProvider(rawTx: any, provider: string, callback?: HancockCallBackOptions): Promise<HancockSignResponse> {
+  /**
+   * Send a raw transaction to one of the sign providers registered in hancock
+   * @param rawTx A raw transaction which will be signed by the sign provider
+   * @param provider The sign provider alias which will receive the raw transaction
+   * @param callback Information about callback url to get feedback of the transaction status
+   * @returns The result of the request
+   */
+  public async sendToSignProvider(rawTx: EthereumRawTransaction, provider: string, callback?: HancockCallBackOptions): Promise<HancockSignResponse> {
 
     const url: string = `${this.walletApiBaseUrl + this.config.wallet.resources.signTx}`;
     let body: HancockSignRequest = {
@@ -94,11 +114,11 @@ export class HancockEthereumTransactionClient {
     if (callback) {
       headers = {
         ...headers,
-        'vnd-hancock-request-id' : callback.requestId,
+        'vnd-hancock-request-id': callback.requestId,
       };
       body = {
         ...body,
-        backUrl : callback.backUrl,
+        backUrl: callback.backUrl,
       };
     }
 
@@ -110,10 +130,16 @@ export class HancockEthereumTransactionClient {
       .then(
         (res: any) => checkStatus(res),
         (err: any) => errorHandler(err),
-    );
+      );
 
   }
 
+  /**
+   * Sign a raw transaction with a given private key
+   * @param rawTx A raw transaction which will be signed by the sign provider
+   * @param privateKey The private key with which the raw transaction will be signed
+   * @returns The signed transaction
+   */
   public sign(rawTx: EthereumRawTransaction | string, privateKey: string): string {
 
     if (typeof rawTx === 'string') {
@@ -123,27 +149,39 @@ export class HancockEthereumTransactionClient {
     return signTx(rawTx, privateKey);
   }
 
-  public async signAndSend(resBody: HancockAdaptInvokeResponse, options: HancockInvokeOptions): Promise<HancockSignResponse> {
+  /**
+   * Sign a raw transaction with a given private key
+   * @param rawTx A raw transaction which will be signed and sent to the network
+   * @param options Configuration of how the transaction will be send to the network
+   * @returns The result of the transaction
+   */
+  public async signAndSend(rawTx: EthereumRawTransaction, options: HancockInvokeOptions): Promise<HancockSignResponse> {
 
     if (options.signProvider) {
 
       return options.callback ?
-        this.sendToSignProvider(resBody.data, options.signProvider, options.callback) :
-        this.sendToSignProvider(resBody.data, options.signProvider);
+        this.sendToSignProvider(rawTx, options.signProvider, options.callback) :
+        this.sendToSignProvider(rawTx, options.signProvider);
 
     }
 
     if (options.privateKey) {
 
-      const tx: string = this.sign(resBody.data, options.privateKey);
+      const tx: string = this.sign(rawTx, options.privateKey);
       return this.sendSigned(tx);
 
     }
 
-    return this.send(resBody.data);
+    return this.send(rawTx);
 
   }
 
+  /**
+   * Create a websocket subscription to watch transactions in the network
+   * @param addresses An array of address that will be added to the watch list
+   * @param consumer A consumer plugin previously configured in hancock that will handle each received event
+   * @returns An event emmiter that will fire the watched transaction events
+   */
   public subscribe(addresses: string[] = [], consumer: string = ''): HancockEthereumSocket {
 
     const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`

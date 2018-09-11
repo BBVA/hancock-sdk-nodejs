@@ -18,6 +18,9 @@ import { HancockEthereumSocket } from '../socket';
 import { HancockEthereumTransactionClient } from '../transaction';
 import { error, isAddressAny, isEmptyAny, normalizeAddress } from '../utils';
 
+/**
+ * [[include:HancockEthereumTransferClient.md]]
+ */
 export class HancockEthereumTransferClient {
 
   private adapterApiBaseUrl: string;
@@ -28,6 +31,15 @@ export class HancockEthereumTransferClient {
     this.brokerBaseUrl = `${config.broker.host}:${config.broker.port}${config.broker.base}`;
   }
 
+  /**
+   * Send ethers between two accounts
+   * @param from The sender address
+   * @param to The receiver address
+   * @param value The amount of ether to transfer (in weis)
+   * @param options Configuration of how the transaction will be send to the network
+   * @param data Extra information that will be sent with the transfer (a remark for example)
+   * @returns An event emmiter that will fire the watched "transfers" events
+   */
   public async send(from: string, to: string, value: string, options: HancockInvokeOptions = {}, data: string = ''): Promise<HancockSignResponse> {
 
     if (isEmptyAny(to, from)) {
@@ -44,12 +56,18 @@ export class HancockEthereumTransferClient {
       .adaptSend(from, to, value, data)
       .then((resBody: HancockAdaptInvokeResponse) => {
 
-        return this.transactionClient.signAndSend(resBody, options);
+        return this.transactionClient.signAndSend(resBody.data, options);
 
       });
 
   }
 
+  /**
+   * Create a websocket subscription to watch transactions of type "transfers" in the network
+   * @param addresses An array of address that will be added to the watch list
+   * @param consumer A consumer plugin previously configured in hancock that will handle each received event
+   * @returns An event emmiter that will fire the watched "transfers" events
+   */
   public subscribe(addresses: string[] = [], consumer: string = ''): HancockEthereumSocket {
 
     const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`

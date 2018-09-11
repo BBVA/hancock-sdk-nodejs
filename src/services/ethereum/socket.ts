@@ -3,6 +3,9 @@ import WebSocket from 'isomorphic-ws';
 import { HancockSocketBody, HancockSocketKind, HancockSocketMessage } from '..';
 import { normalizeAddress, normalizeAddressOrAlias } from './utils';
 
+/**
+ * Manages events emmited by the Ethereum network
+ */
 export class HancockEthereumSocket extends EventEmitter {
 
   private ws: WebSocket;
@@ -16,14 +19,18 @@ export class HancockEthereumSocket extends EventEmitter {
     this.init();
   }
 
+  /**
+   * Closes the subscriptions to the network events
+   */
   public closeSocket() {
     this.ws.close();
   }
 
-  public send(data: any) {
-    this.ws.send(data);
-  }
-
+  /**
+   * Add a list of addresses to the watch lists of transfers
+   * An event will be received each time that some of the given addresses appears as 'from' or 'to' in some transfer transaction
+   * @param addresses addresses to watch
+   */
   public addTransfer(addresses: string[]) {
     if (addresses.length > 0) {
       const normalizedAddresses: string[] = addresses.map((addr: string) => normalizeAddress(addr));
@@ -31,6 +38,11 @@ export class HancockEthereumSocket extends EventEmitter {
     }
   }
 
+  /**
+   * Add a list of addresses to the watch lists of transactions
+   * An event will be received each time that some of the given addresses appears as 'from' or 'to' in some transaction of any kind
+   * @param addresses addresses to watch
+   */
   public addTransaction(addresses: string[]) {
     if (addresses.length > 0) {
       const normalizedAddresses: string[] = addresses.map((addr: string) => normalizeAddress(addr));
@@ -38,6 +50,11 @@ export class HancockEthereumSocket extends EventEmitter {
     }
   }
 
+  /**
+   * Add a list of smart contract addresses to the watch lists of smart contract events
+   * An event will be received each time that some smart contract identified by one of the given addresses emits an event
+   * @param addresses addresses of smart contracts to watch
+   */
   public addContract(contracts: string[]) {
     if (contracts.length > 0) {
       const normalizedAddressesOrAliases: string[] = contracts.map((addrOrAlias: string) => normalizeAddressOrAlias(addrOrAlias));
