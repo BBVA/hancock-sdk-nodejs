@@ -1,5 +1,8 @@
 import Subprovider from 'web3-provider-engine/subproviders/subprovider';
 
+/**
+ * @hidden
+ */
 export class DeploySubprovider extends Subprovider {
 
   public provider: string;

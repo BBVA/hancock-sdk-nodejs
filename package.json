@@ -17,7 +17,7 @@
     "coverage": "jest --coverage",
     "lint": "tslint --project .",
     "lint:fix": "npm run lint -- --fix",
-    "docs:clean": "rimraf docs",
+    "docs:clean": "rimraf typedocs",
     "docs": "npm run docs:clean && typedoc --options ./typedoc.js ./src"
   },
   "repository": {

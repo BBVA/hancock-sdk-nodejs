@@ -30,7 +30,7 @@ nodePipeline{
   stage("Docs"){
     container("node"){
       sh "npm run docs"
-      upload_doc_shuttle_stage(docName: "hancock-sdk-client-javascript", docPath: "./docs")
+      upload_doc_shuttle_stage(docName: "hancock-sdk-client-javascript", docPath: "./typedocs")
     }
   }
   

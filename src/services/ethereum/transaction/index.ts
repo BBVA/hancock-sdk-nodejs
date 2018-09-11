@@ -21,6 +21,9 @@ import {
 import { EthereumRawTransaction } from '../signer';
 import { HancockEthereumSocket } from '../socket';
 
+/**
+ * [[include:HancockEthereumTransactionClient.md]]
+ */
 export class HancockEthereumTransactionClient {
 
   private walletApiBaseUrl: string;
@@ -150,9 +153,6 @@ export class HancockEthereumTransactionClient {
    * Sign a raw transaction with a given private key
    * @param rawTx A raw transaction which will be signed and sent to the network
    * @param options Configuration of how the transaction will be send to the network
-   * @param options.privateKey The private key with which the raw transaction will be signed
-   * @param options.signProvider The sign provider alias which will receive the raw transaction
-   * @param options.callback Callback url to be notified once the transaction will be sent
    * @returns The result of the transaction
    */
   public async signAndSend(rawTx: EthereumRawTransaction, options: HancockInvokeOptions): Promise<HancockSignResponse> {

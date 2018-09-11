@@ -2,10 +2,16 @@ import { HancockError } from './error';
 
 const addressPattern = new RegExp(/^(0x)?([a-fA-F0-9]{40})$/i);
 
+/**
+ * @hidden
+ */
 export const isEmpty = (param: string): boolean => {
   return !param.trim();
 };
 
+/**
+ * @hidden
+ */
 export const isEmptyAny = (...param: string[]): boolean => {
   param.forEach((element) => {
     if (isEmpty(element)) {
@@ -15,6 +21,9 @@ export const isEmptyAny = (...param: string[]): boolean => {
   return false;
 };
 
+/**
+ * @hidden
+ */
 export const isAddressAny = (...addressOrAlias: string[]): boolean => {
   addressOrAlias.forEach((element) => {
     if (!addressPattern.test(element)) {
@@ -24,14 +33,23 @@ export const isAddressAny = (...addressOrAlias: string[]): boolean => {
   return true;
 };
 
+/**
+ * @hidden
+ */
 export const isAddress = (addressOrAlias: string): boolean => {
   return addressPattern.test(addressOrAlias);
 };
 
+/**
+ * @hidden
+ */
 export const isAlias = (addressOrAlias: string): boolean => {
   return !addressPattern.test(addressOrAlias);
 };
 
+/**
+ * @hidden
+ */
 export const normalizeAddress = (address: string): string => {
   address = address.toLowerCase();
   return address.indexOf('0x') !== 0
@@ -39,16 +57,25 @@ export const normalizeAddress = (address: string): string => {
     : address;
 };
 
+/**
+ * @hidden
+ */
 export const normalizeAlias = (alias: string): string => {
   return alias.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
 };
 
+/**
+ * @hidden
+ */
 export const normalizeAddressOrAlias = (addressOrAlias: string) => {
   return isAddress(addressOrAlias)
     ? normalizeAddress(addressOrAlias)
     : normalizeAlias(addressOrAlias);
 };
 
+/**
+ * @hidden
+ */
 export function error(hancockError: HancockError, originalError?: HancockError | Error): HancockError {
 
   let retError: HancockError = hancockError;

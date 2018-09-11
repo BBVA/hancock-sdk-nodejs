@@ -23,6 +23,9 @@ import { HancockEthereumSocket } from '../socket';
 import { HancockEthereumTransactionClient } from '../transaction';
 import { error, isAddress, isEmptyAny, normalizeAddress, normalizeAddressOrAlias, normalizeAlias } from '../utils';
 
+/**
+ * [[include:HancockEthereumSmartContractClient.md]]
+ */
 export class HancockEthereumSmartContractClient {
 
   private adapterApiBaseUrl: string;
@@ -41,9 +44,6 @@ export class HancockEthereumSmartContractClient {
    * @param params An array of arguments passed to the method
    * @param from The address of the account doing the call
    * @param options Configuration of how the transaction will be send to the network
-   * @param options.privateKey The private key with which the raw transaction will be signed
-   * @param options.signProvider The sign provider alias which will receive the raw transaction
-   * @param options.callback Callback url to be notified once the transaction will be sent
    * @returns The returned value from the smart contract method
    */
   public async invoke(

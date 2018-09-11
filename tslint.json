@@ -11,7 +11,8 @@
         "max-line-length": [true, 160],
         "interface-name": false,
         "variable-name": [true, "allow-leading-underscore"],
-        "no-unused-variable": [true, {"ignore-pattern": "^_"}]
+        "no-unused-variable": [true, {"ignore-pattern": "^_"}],
+        "no-empty-interface": false
     },
     "rulesDirectory": []
 }

@@ -10,6 +10,9 @@ import {
 import { EthereumWallet, generateWallet } from '../signer';
 import { error, isAddress, isEmpty, normalizeAddress } from '../utils';
 
+/**
+ * [[include:HancockEthereumWalletClient.md]]
+ */
 export class HancockEthereumWalletClient {
 
   private adapterApiBaseUrl: string;

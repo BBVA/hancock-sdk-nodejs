@@ -30,6 +30,9 @@ import {
 import { HancockEthereumTransactionClient } from '../transaction';
 import { error, isAddress, isAddressAny, isEmpty, isEmptyAny, normalizeAddress, normalizeAddressOrAlias, normalizeAlias } from '../utils';
 
+/**
+ * [[include:HancockEthereumTokenClient.md]]
+ */
 export class HancockEthereumTokenClient {
 
   private adapterApiBaseUrl: string;
@@ -82,9 +85,6 @@ export class HancockEthereumTokenClient {
    * @param value The amount of tokens to transfer (in weis)
    * @param addressOrAlias Address or alias of the token smart contract registered in Hancock
    * @param options Configuration of how the transaction will be send to the network
-   * @param options.privateKey The private key with which the raw transaction will be signed
-   * @param options.signProvider The sign provider alias which will receive the raw transaction
-   * @param options.callback Callback url to be notified once the transaction will be sent
    * @returns The result of the request
    */
   public async transfer(
@@ -123,9 +123,6 @@ export class HancockEthereumTokenClient {
    * @param value The amount of tokens to transfer (in weis)
    * @param addressOrAlias Address or alias of the token smart contract registered in Hancock
    * @param options Configuration of how the transaction will be send to the network
-   * @param options.privateKey The private key with which the raw transaction will be signed
-   * @param options.signProvider The sign provider alias which will receive the raw transaction
-   * @param options.callback Callback url to be notified once the transaction will be sent
    * @returns The result of the request
    */
   public async transferFrom(
@@ -160,9 +157,6 @@ export class HancockEthereumTokenClient {
    * @param value The amount of tokens to transfer (in weis)
    * @param addressOrAlias Address or alias of the token smart contract registered in Hancock
    * @param options Configuration of how the transaction will be send to the network
-   * @param options.privateKey The private key with which the raw transaction will be signed
-   * @param options.signProvider The sign provider alias which will receive the raw transaction
-   * @param options.callback Callback url to be notified once the transaction will be sent
    * @returns The result of the request
    */
   public async allowance(
@@ -226,9 +220,6 @@ export class HancockEthereumTokenClient {
    * @param value The amount of tokens to transfer (in weis)
    * @param addressOrAlias Address or alias of the token smart contract registered in Hancock
    * @param options Configuration of how the transaction will be send to the network
-   * @param options.privateKey The private key with which the raw transaction will be signed
-   * @param options.signProvider The sign provider alias which will receive the raw transaction
-   * @param options.callback Callback url to be notified once the transaction will be sent
    * @returns The result of the request
    */
   public async approve(

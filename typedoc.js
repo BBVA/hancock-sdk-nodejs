@@ -1,14 +1,16 @@
 module.exports = {
-  out: './docs',
+  out: './typedocs',
 
   // readme: 'none',
-  includes: './src',
+  // includes: './src',
   exclude: [
     '**/__tests__/**/*',
     '**/__mocks__/**/*',
     '**/node_modules/**/*'
   ],
 
+  includes: './docs',
+  // media: './docs/',
   mode: 'file',
   excludeExternals: true,
   excludeNotExported: true,

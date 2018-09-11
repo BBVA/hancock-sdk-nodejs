@@ -15,6 +15,9 @@ import { hancockFormatParameterError,
    hancockInvalidParameterError } from '../error';
 import { error, isAddress, isEmpty, normalizeAddress } from '../utils';
 
+/**
+ * [[include:HancockEthereumProtocolClient.md]]
+ */
 export class HancockEthereumProtocolClient {
 
   private adapterApiBaseUrl: string;

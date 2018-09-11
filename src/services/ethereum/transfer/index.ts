@@ -18,6 +18,9 @@ import { HancockEthereumSocket } from '../socket';
 import { HancockEthereumTransactionClient } from '../transaction';
 import { error, isAddressAny, isEmptyAny, normalizeAddress } from '../utils';
 
+/**
+ * [[include:HancockEthereumTransferClient.md]]
+ */
 export class HancockEthereumTransferClient {
 
   private adapterApiBaseUrl: string;
@@ -34,9 +37,6 @@ export class HancockEthereumTransferClient {
    * @param to The receiver address
    * @param value The amount of ether to transfer (in weis)
    * @param options Configuration of how the transaction will be send to the network
-   * @param options.privateKey The private key with which the raw transaction will be signed
-   * @param options.signProvider The sign provider alias which will receive the raw transaction
-   * @param options.callback Callback url to be notified once the transaction will be sent
    * @param data Extra information that will be sent with the transfer (a remark for example)
    * @returns An event emmiter that will fire the watched "transfers" events
    */

@@ -15,6 +15,9 @@ export interface EthereumWallet extends DltWallet {
 export type EthereumRawTransaction = DltRawTransaction;
 export type EthereumSignedTransaction = DltSignedTransaction;
 
+/**
+ * @hidden
+ */
 export function generateWallet(): EthereumWallet {
 
   const wallet: any = _etherWallet.generate();
@@ -27,6 +30,9 @@ export function generateWallet(): EthereumWallet {
 
 }
 
+/**
+ * @hidden
+ */
 export function signTx(rawTx: EthereumRawTransaction, privateKey: string): string {
 
   const key = Buffer.from(privateKey.substr(2), 'hex');

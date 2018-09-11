@@ -21,10 +21,39 @@ This lib depends on ES6 Promises that are native in node. But you have to polyfi
 Once you have access to the kst registry:
 
 ```bash
-npm install --save es6-promise @kst-hancock/sdk-client
+  # with npm
+  npm install --save es6-promise @kst-hancock/sdk-client
+
+  # or using yarn
+  yarn add es6-promise @kst-hancock/sdk-client
 ```
 
 ### Using all together
+
+The main client is the [[HancockEthereumClient]] class. You have to instantiate it passing an [[HancockConfig]] configuration object
+to indicate the client which hancock service it has to use.
+
+Configuration object example:
+
+```javascript
+const config = {
+  adapter: {
+    host: 'http://localhost',
+    port: '3000',
+    base: '/'
+  },
+  wallet: {
+    host: 'http://localhost',
+    port: '3000',
+    base: '/'
+  },
+  broker: {
+    host: 'ws://localhost',
+    port: '3000',
+    base: '/'
+  }
+}
+```
 
 In node:
 
@@ -32,15 +61,27 @@ In node:
 require('es6-promise').polyfill();
 const HancockEthereumClient = require('@kst-hancock/sdk-client').HancockEthereumClient
 
-new HancockEthereumClient(cfg);
+new HancockEthereumClient(config);
 ```
 
 In browser ES7 + some bundler:
 
 ```javascript
 import * as es6Promise from 'es6-promise';
-require('es6-promise').polyfill();
+es6Promise.polyfill();
 
 import { HancockEthereumClient } from '@kst-hancock/sdk-client';
-new HancockEthereumClient(cfg);
+new HancockEthereumClient(config);
 ```
+
+### Introduction and examples
+
+[[HancockEthereumClient]] provides interfaces to interact with the blockchain 
+allowing common operation like transfers, balance consulting or smart contract interactions. Take a look at the diferent sections of the [docs](docs.kickstartteam.es/blockchainhub/hancock-sdk-client-javascript/typedocs) to see examples of use:
+
+- [[HancockEthereumWalletClient]]
+- [[HancockEthereumTransferClient]]
+- [[HancockEthereumTransactionClient]]
+- [[HancockEthereumSmartContractClient]]
+- [[HancockEthereumTokenClient]]
+- [[HancockEthereumProtocolClient]]
