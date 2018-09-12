@@ -210,7 +210,7 @@ describe('ethereum client', async () => {
     it('should call transfer correctly', async () => {
 
       const adaptTransferSpy = jest.spyOn((HancockEthereumTokenClient.prototype as any), 'adaptSend')
-        .mockImplementation(() => Promise.resolve({ test: 'test' }));
+        .mockImplementation(() => Promise.resolve({data: { test: 'test' }}));
       const signTransactionAndSendSpy = jest.spyOn((transactionClient as any), 'signAndSend')
         .mockImplementation(() => Promise.resolve('ok!'));
 
@@ -306,7 +306,7 @@ describe('ethereum client', async () => {
     it('should call transferFrom correctly', async () => {
 
       const adaptTransferFromSpy = jest.spyOn((HancockEthereumTokenClient.prototype as any), 'adaptTransferFrom')
-        .mockImplementation(() => Promise.resolve({ test: 'test' }));
+        .mockImplementation(() => Promise.resolve({data: { test: 'test' }}));
 
       const signTransactionAndSendSpy = jest.spyOn((transactionClient as any), 'signAndSend')
         .mockImplementation(() => Promise.resolve('ok!'));
@@ -423,7 +423,7 @@ describe('ethereum client', async () => {
     it('should call allowance correctly', async () => {
 
       const adaptAllowanceSpy = jest.spyOn((HancockEthereumTokenClient.prototype as any), 'adaptAllowance')
-        .mockImplementation(() => Promise.resolve({ test: 'test' }));
+        .mockImplementation(() => Promise.resolve({data: { test: 'test' }}));
       const signTransactionAndSendSpy = jest.spyOn((transactionClient as any), 'signAndSend')
         .mockImplementation(() => Promise.resolve('ok!'));
 
@@ -518,7 +518,7 @@ describe('ethereum client', async () => {
     it('should call approve correctly', async () => {
 
       const adaptApproveSpy = jest.spyOn((HancockEthereumTokenClient.prototype as any), 'adaptApprove')
-        .mockImplementation(() => Promise.resolve({ test: 'test' }));
+        .mockImplementation(() => Promise.resolve({data: { test: 'test' }}));
       const signTransactionAndSendSpy = jest.spyOn((transactionClient as any), 'signAndSend')
         .mockImplementation(() => Promise.resolve('ok!'));
 

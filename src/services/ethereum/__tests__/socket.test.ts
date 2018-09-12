@@ -53,20 +53,20 @@ describe('HancockEthereumSocket integration tests', () => {
 
   });
 
-  describe('::send', () => {
+  // describe('::send', () => {
 
-    it('should send a message throught websocket connection', async () => {
+  //   it('should send a message throught websocket connection', async () => {
 
-      const message: any = { whatever: 'whatever' };
-      const socketSend: jest.Mock = socketInstance.send;
+  //     const message: any = { whatever: 'whatever' };
+  //     const socketSend: jest.Mock = socketInstance.send;
 
-      ethereumSocketInstance.send(message);
+  //     ethereumSocketInstance.send(message);
 
-      expect(socketSend).toHaveBeenCalledWith(message);
+  //     expect(socketSend).toHaveBeenCalledWith(message);
 
-    });
+  //   });
 
-  });
+  // });
 
   describe('::addTransfer', () => {
 

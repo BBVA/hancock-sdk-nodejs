@@ -75,7 +75,7 @@ describe('ethereum client', async () => {
 
     const adaptTransferSpy = jest
       .spyOn((HancockEthereumTransferClient.prototype as any), 'adaptSend')
-      .mockImplementation(() => Promise.resolve({ test: 'test' }));
+      .mockImplementation(() => Promise.resolve({data: { test: 'test' }}));
 
     const signAndSendSpy = jest
       .spyOn(transactionClient as any, 'signAndSend')

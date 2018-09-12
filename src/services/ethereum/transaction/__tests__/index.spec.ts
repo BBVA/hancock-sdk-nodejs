@@ -120,7 +120,7 @@ describe('ethereum client', async () => {
   it('should call sendSigned correctly', async () => {
 
     (fetch as any).once(JSON.stringify(response.SC_INVOKE_ADAPT_RESPONSE));
-    callParamFetch.body = JSON.stringify({ tx: { whatever: 'whatevervalue' } });
+    callParamFetch.body = JSON.stringify({ tx: 'whatever' });
 
     const checkStatusSpy = checkStatusMock
       .mockImplementation((res) => Promise.resolve(res.json()));
@@ -139,7 +139,7 @@ describe('ethereum client', async () => {
   it('should call sendSigned and throw error', async () => {
 
     (fetch as any).mockRejectOnce(JSON.stringify(response.ERROR));
-    callParamFetch.body = JSON.stringify({ tx: { whatever: 'whatevervalue' } });
+    callParamFetch.body = JSON.stringify({ tx: 'whatever' });
 
     const checkStatusSpy = errorHandlerMock
       .mockImplementation(() => { throw new HancockError(hancockErrorType.Api, '001', 500, 'testError'); });
