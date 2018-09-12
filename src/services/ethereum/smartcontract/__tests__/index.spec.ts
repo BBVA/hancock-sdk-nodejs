@@ -29,7 +29,7 @@ describe('HancockEthereumSmartContractClient', async () => {
       invoke: '/mockInvoke/__ADDRESS_OR_ALIAS__',
       register: '/mockRegister',
       events: '/mockEvents',
-     },
+    },
   };
   let config: any;
   const configAdapter: any = genericConfig;
@@ -77,7 +77,7 @@ describe('HancockEthereumSmartContractClient', async () => {
 
     const adaptSpy = jest
       .spyOn((HancockEthereumSmartContractClient.prototype as any), 'adaptInvoke')
-      .mockImplementation(() => Promise.resolve('whatever'));
+      .mockImplementation(() => Promise.resolve({ data: 'whatever' }));
 
     const signTransactionAndSendSpy = jest
       .spyOn(transactionClient as any, 'signAndSend')
