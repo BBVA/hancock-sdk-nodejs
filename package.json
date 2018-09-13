@@ -7,6 +7,9 @@
   "jsnext:main": "main.mjs",
   "browser": "dist/index.browser.js",
   "typings": "dist/src/index.d.ts",
+  "files": [
+    "dist/**/*.{d.ts,js,js.map}"
+  ],
   "scripts": {
     "clean": "rimraf dist",
     "build:dev": "npm run clean && webpack --mode development --config webpack.config.js",
@@ -75,6 +78,7 @@
     "eventemitter3": "^3.0.1",
     "isomorphic-fetch": "^2.2.1",
     "isomorphic-ws": "^4.0.0",
+    "tslib": "^1.9.3",
     "web3": "^0.18.2",
     "web3-provider-engine": "^14.0.5",
     "ws": "^5.0.0"
