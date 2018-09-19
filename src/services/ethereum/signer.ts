@@ -1,5 +1,6 @@
 import * as etherTx from 'ethereumjs-tx';
 import * as etherWallet from 'ethereumjs-wallet';
+import { Buffer } from 'safe-buffer';
 import { DltRawTransaction, DltSignedTransaction, DltWallet } from '../hancock.model';
 
 // TODO: Resolve this situation in webpack, not here

@@ -1,4 +1,4 @@
-import { IHancockError } from './../hancock.model';
+import { IHancockError } from './hancock.model';
 
 export class HancockError extends Error implements IHancockError {
 

@@ -1,4 +1,4 @@
-const addressPattern = new RegExp(/^(0x)?([a-fA-F0-9]{40})$/i);
+const addressPattern = new RegExp(/^(1|3)([a-zA-Z0-9]{25,34})$/i);
 
 /**
  * @hidden
@@ -49,10 +49,7 @@ export const isAlias = (addressOrAlias: string): boolean => {
  * @hidden
  */
 export const normalizeAddress = (address: string): string => {
-  address = address.toLowerCase();
-  return address.indexOf('0x') !== 0
-    ? '0x' + address
-    : address;
+  return address;
 };
 
 /**

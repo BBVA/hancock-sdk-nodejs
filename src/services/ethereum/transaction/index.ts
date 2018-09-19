@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch';
+import { checkStatus, errorHandler } from '../../common';
 import {
   HancockSendSignedTxRequest,
   HancockSendSignedTxResponse,
@@ -14,7 +15,6 @@ import {
   HancockSendTxRequest,
   HancockSendTxResponse,
 } from '../../hancock.model';
-import { checkStatus, errorHandler } from '../common';
 import {
   EthereumSignedTransaction, signTx,
 } from '../signer';
@@ -41,7 +41,7 @@ export class HancockEthereumTransactionClient {
    */
   public async send(tx: EthereumRawTransaction): Promise<HancockSendTxResponse> {
 
-    const url: string = `${this.walletApiBaseUrl + this.config.wallet.resources.sendTx}`;
+    const url: string = `${this.walletApiBaseUrl + this.config.wallet.resources.sendTx}`.replace(/__DLT__/, 'ethereum');
     const body: HancockSendTxRequest = {
       tx,
     };
@@ -66,7 +66,7 @@ export class HancockEthereumTransactionClient {
    */
   public async sendSigned(tx: EthereumSignedTransaction, requestId?: string): Promise<HancockSendSignedTxResponse> {
 
-    const url: string = `${this.walletApiBaseUrl + this.config.wallet.resources.sendSignedTx}`;
+    const url: string = `${this.walletApiBaseUrl + this.config.wallet.resources.sendSignedTx}`.replace(/__DLT__/, 'ethereum');
     const body: HancockSendSignedTxRequest = {
       tx,
     };
@@ -101,7 +101,7 @@ export class HancockEthereumTransactionClient {
    */
   public async sendToSignProvider(rawTx: EthereumRawTransaction, provider: string, callback?: HancockCallBackOptions): Promise<HancockSignResponse> {
 
-    const url: string = `${this.walletApiBaseUrl + this.config.wallet.resources.signTx}`;
+    const url: string = `${this.walletApiBaseUrl + this.config.wallet.resources.signTx}`.replace(/__DLT__/, 'ethereum');
     let body: HancockSignRequest = {
       rawTx,
       provider,
@@ -185,6 +185,7 @@ export class HancockEthereumTransactionClient {
   public subscribe(addresses: string[] = [], consumer: string = ''): HancockEthereumSocket {
 
     const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`
+      .replace(/__DLT__/, 'ethereum')
       .replace(/__ADDRESS__/, '')
       .replace(/__SENDER__/, '')
       .replace(/__CONSUMER__/, consumer);

@@ -7,13 +7,13 @@ import {
   hancockWalletError,
 } from '../../error';
 import { InitialHancockConfig } from '../../hancock.model';
-import { EthereumWallet, generateWallet } from '../signer';
+import { BitcoinWallet, generateWallet } from '../signer';
 import { isAddress, isEmpty, normalizeAddress } from '../utils';
 
 /**
- * [[include:HancockEthereumWalletClient.md]]
+ * [[include:HancockBitcoinWalletClient.md]]
  */
-export class HancockEthereumWalletClient {
+export class HancockBitcoinWalletClient {
 
   private adapterApiBaseUrl: string;
 
@@ -35,9 +35,7 @@ export class HancockEthereumWalletClient {
       return Promise.reject(error(hancockFormatParameterError));
     }
     address = normalizeAddress(address);
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.balance}`
-    .replace(/__DLT__/, 'ethereum')
-    .replace(/__ADDRESS__/, address);
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.balance}`.replace(/__DLT__/, 'bitcoin').replace(/__ADDRESS__/, address);
 
     return fetch(url)
       .then(
@@ -45,6 +43,7 @@ export class HancockEthereumWalletClient {
         (err: any) => errorHandler(err),
       )
       .then((resBody: any) => {
+        console.log(resBody);
         return new BigNumber(resBody.data.balance);
       });
   }
@@ -53,7 +52,7 @@ export class HancockEthereumWalletClient {
    * Generates a new wallet
    * @returns address, publicKey, and privateKey of the new wallet
    */
-  public generate(): EthereumWallet {
+  public generate(): BitcoinWallet {
 
     try {
 

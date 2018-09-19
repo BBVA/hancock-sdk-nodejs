@@ -1,8 +1,6 @@
 import * as common from '../common';
 import { HancockError, hancockErrorType } from '../error';
 
-jest.mock('../utils');
-
 describe('common', async () => {
 
   beforeEach(() => {

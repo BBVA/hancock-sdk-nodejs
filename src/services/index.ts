@@ -1,5 +1,6 @@
-export * from './ethereum/client';
-export * from './hancock.model';
+export * from './bitcoin/client';
 
-export * from './ethereum/signer';
 export * from './ethereum/provider';
+export * from './ethereum/client';
+
+export * from './hancock.model';
