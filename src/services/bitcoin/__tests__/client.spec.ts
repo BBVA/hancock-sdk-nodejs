@@ -5,7 +5,7 @@ import { HancockBitcoinClient } from '../client';
 jest.mock('isomorphic-fetch');
 jest.mock('../utils');
 
-describe('ethereum client constructor', async () => {
+describe('bitcoin client constructor', async () => {
 
   const genericConfig = {
     host: 'genericHost',

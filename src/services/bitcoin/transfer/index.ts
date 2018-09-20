@@ -14,28 +14,28 @@ import {
   HancockAdaptInvokeResponse,
   HancockInvokeOptions,
 } from '../../hancock.model';
-import { HancockEthereumSocket } from '../socket';
-import { HancockEthereumTransactionClient } from '../transaction';
+import { HancockBitcoinSocket } from '../socket';
+import { HancockBitcoinTransactionClient } from '../transaction';
 import { isAddressAny, isEmptyAny, normalizeAddress } from '../utils';
 
 /**
- * [[include:HancockEthereumTransferClient.md]]
+ * [[include:HancockBitcoinTransferClient.md]]
  */
-export class HancockEthereumTransferClient {
+export class HancockBitcoinTransferClient {
 
   private adapterApiBaseUrl: string;
   private brokerBaseUrl: string;
 
-  constructor(private config: InitialHancockConfig, private transactionClient: HancockEthereumTransactionClient) {
+  constructor(private config: InitialHancockConfig, private transactionClient: HancockBitcoinTransactionClient) {
     this.adapterApiBaseUrl = `${config.adapter.host}:${config.adapter.port}${config.adapter.base}`;
     this.brokerBaseUrl = `${config.broker.host}:${config.broker.port}${config.broker.base}`;
   }
 
   /**
-   * Send ethers between two accounts
+   * Send bitcoins between two accounts
    * @param from The sender address
    * @param to The receiver address
-   * @param value The amount of ether to transfer (in weis)
+   * @param value The amount of bitcoins to transfer (in shatoshis)
    * @param options Configuration of how the transaction will be send to the network
    * @param data Extra information that will be sent with the transfer (a remark for example)
    * @returns An event emmiter that will fire the watched "transfers" events
@@ -68,15 +68,15 @@ export class HancockEthereumTransferClient {
    * @param consumer A consumer plugin previously configured in hancock that will handle each received event
    * @returns An event emmiter that will fire the watched "transfers" events
    */
-  public subscribe(addresses: string[] = [], consumer: string = ''): HancockEthereumSocket {
+  public subscribe(addresses: string[] = [], consumer: string = ''): HancockBitcoinSocket {
 
     const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`
-      .replace(/__DLT__/, SupportedPlatforms.ethereum)
+      .replace(/__DLT__/, SupportedPlatforms.bitcoin)
       .replace(/__ADDRESS__/, '')
       .replace(/__SENDER__/, '')
       .replace(/__CONSUMER__/, consumer);
 
-    const hancockSocket = new HancockEthereumSocket(url, consumer);
+    const hancockSocket = new HancockBitcoinSocket(url, consumer);
     hancockSocket.on('ready', () => {
       hancockSocket.addTransfer(addresses);
     });
@@ -97,7 +97,7 @@ export class HancockEthereumTransferClient {
     to = normalizeAddress(to);
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.transfer}`
-      .replace(/__DLT__/, SupportedPlatforms.ethereum);
+      .replace(/__DLT__/, SupportedPlatforms.bitcoin);
 
     const body: HancockTransferRequest = {
       from,

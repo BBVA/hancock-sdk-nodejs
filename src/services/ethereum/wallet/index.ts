@@ -1,6 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 import fetch from 'isomorphic-fetch';
-import { checkStatus, error, errorHandler } from '../../common';
+import { checkStatus, error, errorHandler, SupportedPlatforms } from '../../common';
 import { isEmpty } from '../../common/utils';
 import {
   hancockFormatParameterError,
@@ -37,7 +37,7 @@ export class HancockEthereumWalletClient {
     }
     address = normalizeAddress(address);
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.balance}`
-    .replace(/__DLT__/, 'ethereum')
+    .replace(/__DLT__/, SupportedPlatforms.ethereum)
     .replace(/__ADDRESS__/, address);
 
     return fetch(url)
