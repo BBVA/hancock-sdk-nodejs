@@ -84,4 +84,4 @@ allowing common operation like transfers, balance consulting or smart contract i
 - [[HancockEthereumTransactionClient]]
 - [[HancockEthereumSmartContractClient]]
 - [[HancockEthereumTokenClient]]
-- [[HancockEthereumProtocolClient]]
+- [[HancockProtocolClient]]

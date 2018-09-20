@@ -1,4 +1,4 @@
-## HancockEthereumProtocolClient
+## HancockProtocolClient
 
 ### Introduction
 

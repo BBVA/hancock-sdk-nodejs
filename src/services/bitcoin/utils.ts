@@ -1,11 +1,6 @@
-const addressPattern = new RegExp(/^(1|3)([a-zA-Z0-9]{25,34})$/i);
+import { isEmpty, normalizeAlias } from '../common/utils';
 
-/**
- * @hidden
- */
-export const isEmpty = (param: string): boolean => {
-  return !param.trim();
-};
+const addressPattern = new RegExp(/^(1|3)([a-zA-Z0-9]{25,34})$/i);
 
 /**
  * @hidden
@@ -50,13 +45,6 @@ export const isAlias = (addressOrAlias: string): boolean => {
  */
 export const normalizeAddress = (address: string): string => {
   return address;
-};
-
-/**
- * @hidden
- */
-export const normalizeAlias = (alias: string): string => {
-  return alias.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
 };
 
 /**
