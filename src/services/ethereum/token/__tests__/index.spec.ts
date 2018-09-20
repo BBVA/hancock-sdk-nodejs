@@ -1,23 +1,22 @@
 import fetch from 'isomorphic-fetch';
 import 'jest';
 import { HancockEthereumTokenClient } from '..';
+import * as common from '../../../common';
+import { HancockError, hancockErrorType } from '../../../error';
 import * as response from '../../__mocks__/responses';
-import * as common from '../../common';
-import { HancockError, hancockErrorType } from '../../error';
 import { HancockEthereumTransactionClient } from '../../transaction';
-import * as errorUtils from '../../utils';
 
 jest.mock('isomorphic-fetch');
 jest.mock('../../socket');
 jest.mock('../../utils');
 jest.mock('../../signer');
-jest.mock('../../common');
+jest.mock('../../../common');
 
 describe('ethereum client', async () => {
 
   let transactionClient: HancockEthereumTransactionClient;
   let client: HancockEthereumTokenClient;
-  const errorFnMock = errorUtils.error as jest.Mock;
+  const errorFnMock = common.error as jest.Mock;
   const genericConfig = {
     host: 'genericHost',
     port: 1,

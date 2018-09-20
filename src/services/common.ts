@@ -1,5 +1,4 @@
 import { HancockError, hancockErrorType, hancockGenericApiError } from './error';
-import { error } from './utils';
 
 /**
  * @hidden
@@ -26,3 +25,25 @@ export const checkStatus = async (response: any): Promise<any> => {
 
   return response.json();
 };
+
+/**
+ * @hidden
+ */
+export function error(hancockError: HancockError, originalError?: HancockError | Error): HancockError {
+
+  let retError: HancockError = hancockError;
+
+  if (originalError instanceof HancockError) {
+
+    retError = originalError;
+    retError.errorStack.push(hancockError);
+
+  } else {
+
+    retError.extendedError = originalError;
+
+  }
+
+  return retError;
+
+}

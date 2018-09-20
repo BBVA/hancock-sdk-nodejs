@@ -5,15 +5,15 @@ import {
   HancockProtocolEncode,
   HancockProtocolEncodeResponse,
 } from '../..';
+import { checkStatus, error, errorHandler } from '../../common';
+import { hancockFormatParameterError,
+   hancockInvalidParameterError } from '../../error';
 import {
   HancockProtocolAction,
   HancockProtocolDecodeResponse,
   InitialHancockConfig,
 } from '../../hancock.model';
-import { checkStatus, errorHandler } from '../common';
-import { hancockFormatParameterError,
-   hancockInvalidParameterError } from '../error';
-import { error, isAddress, isEmpty, normalizeAddress } from '../utils';
+import { isAddress, isEmpty, normalizeAddress } from '../utils';
 
 /**
  * [[include:HancockEthereumProtocolClient.md]]

@@ -1,4 +1,10 @@
 import fetch from 'isomorphic-fetch';
+import { checkStatus, error, errorHandler } from '../../common';
+import {
+  hancockFormatParameterError,
+  hancockInvalidParameterError,
+  hancockNoKeyNorProviderError,
+} from '../../error';
 import {
   HancockSignResponse,
   HancockTransferRequest,
@@ -8,15 +14,9 @@ import {
   HancockAdaptInvokeResponse,
   HancockInvokeOptions,
 } from '../../hancock.model';
-import { checkStatus, errorHandler } from '../common';
-import {
-  hancockFormatParameterError,
-  hancockInvalidParameterError,
-  hancockNoKeyNorProviderError,
-} from '../error';
 import { HancockEthereumSocket } from '../socket';
 import { HancockEthereumTransactionClient } from '../transaction';
-import { error, isAddressAny, isEmptyAny, normalizeAddress } from '../utils';
+import { isAddressAny, isEmptyAny, normalizeAddress } from '../utils';
 
 /**
  * [[include:HancockEthereumTransferClient.md]]
@@ -71,6 +71,7 @@ export class HancockEthereumTransferClient {
   public subscribe(addresses: string[] = [], consumer: string = ''): HancockEthereumSocket {
 
     const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`
+      .replace(/__DLT__/, 'ethereum')
       .replace(/__ADDRESS__/, '')
       .replace(/__SENDER__/, '')
       .replace(/__CONSUMER__/, consumer);
@@ -95,7 +96,7 @@ export class HancockEthereumTransferClient {
     from = normalizeAddress(from);
     to = normalizeAddress(to);
 
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.transfer}`;
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.transfer}`.replace(/__DLT__/, 'ethereum');
     const body: HancockTransferRequest = {
       from,
       to,

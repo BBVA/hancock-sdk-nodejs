@@ -2,15 +2,15 @@ import fetch from 'isomorphic-fetch';
 import 'jest';
 import { HancockEthereumTransactionClient } from '..';
 import { HancockAdaptInvokeResponse } from '../../..';
+import * as common from '../../../common';
+import { HancockError, hancockErrorType } from '../../../error';
 import * as response from '../../__mocks__/responses';
-import * as common from '../../common';
-import { HancockError, hancockErrorType } from '../../error';
 import * as signer from '../../signer';
 import * as socket from '../../socket';
 
 jest.mock('isomorphic-fetch');
 jest.mock('../../signer');
-jest.mock('../../common');
+jest.mock('../../../common');
 jest.mock('../../socket');
 
 describe('ethereum client', async () => {

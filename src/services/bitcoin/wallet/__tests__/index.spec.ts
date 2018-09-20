@@ -1,10 +1,10 @@
-import 'jest';
-
 import { BigNumber } from 'bignumber.js';
 import fetch from 'isomorphic-fetch';
-import { HancockEthereumWalletClient } from '..';
+import 'jest';
+import { HancockBitcoinWalletClient } from '..';
 import * as common from '../../../common';
-import { HancockError, hancockErrorType, hancockWalletError } from '../../../error';
+import { HancockError, hancockErrorType } from '../../../error';
+import { hancockWalletError } from '../../../error';
 import * as response from '../../__mocks__/responses';
 import * as signer from '../../signer';
 
@@ -13,9 +13,9 @@ jest.mock('../../utils');
 jest.mock('../../../common');
 jest.mock('../../signer');
 
-describe('HancockEthereumWalletClient', async () => {
+describe('HancockBitcoinWalletClient', async () => {
 
-  let client: HancockEthereumWalletClient;
+  let client: HancockBitcoinWalletClient;
   const genericConfig = {
     host: 'genericHost',
     port: 1,
@@ -43,7 +43,7 @@ describe('HancockEthereumWalletClient', async () => {
       broker: configBroker,
     };
 
-    client = new HancockEthereumWalletClient(config);
+    client = new HancockBitcoinWalletClient(config);
 
     callParamFetch = {
       method: 'POST',
@@ -63,7 +63,7 @@ describe('HancockEthereumWalletClient', async () => {
         to: '0xde8e772f0350e992ddef81bf8f51d94a8ea92123',
         data: 'dataTest',
       },
-      dlt: 'ethereum',
+      dlt: 'bitcoin',
     };
 
     jest.restoreAllMocks();
