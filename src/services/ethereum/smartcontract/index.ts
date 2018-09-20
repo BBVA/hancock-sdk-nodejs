@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-fetch';
-import { checkStatus, error, errorHandler } from '../../common';
+import { checkStatus, error, errorHandler, SupportedPlatforms } from '../../common';
 import { normalizeAlias } from '../../common/utils';
 import {
   hancockFormatParameterError,
@@ -93,7 +93,7 @@ export class HancockEthereumSmartContractClient {
     const normalizedContractAddressOrAlias: string = normalizeAddressOrAlias(contractAddressOrAlias);
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invoke}`
-      .replace(/__DLT__/, 'ethereum')
+      .replace(/__DLT__/, SupportedPlatforms.ethereum)
       .replace(/__ADDRESS_OR_ALIAS__/, normalizedContractAddressOrAlias);
 
     const body: HancockCallRequest = {
@@ -133,7 +133,9 @@ export class HancockEthereumSmartContractClient {
     alias = normalizeAlias(alias);
     address = normalizeAddress(address);
 
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.register}`.replace(/__DLT__/, 'ethereum');
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.register}`
+      .replace(/__DLT__/, SupportedPlatforms.ethereum);
+
     const body: HancockRegisterRequest = {
       address,
       alias,
@@ -179,7 +181,7 @@ export class HancockEthereumSmartContractClient {
     const normalizedContractAddressOrAlias: string = normalizeAddressOrAlias(contractAddressOrAlias);
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invoke}`
-    .replace(/__DLT__/, 'ethereum')
+    .replace(/__DLT__/, SupportedPlatforms.ethereum)
     .replace(/__ADDRESS_OR_ALIAS__/, normalizedContractAddressOrAlias);
 
     const body: HancockAdaptInvokeRequest = {

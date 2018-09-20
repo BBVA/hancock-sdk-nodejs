@@ -1,53 +1,13 @@
-import { EventEmitter } from 'events';
-import WebSocket from 'isomorphic-ws';
-import { HancockSocketBody, HancockSocketKind, HancockSocketMessage } from '..';
-import { normalizeAddress, normalizeAddressOrAlias } from './utils';
+import { HancockSocket } from './../common/socket';
+import { normalizeAddressOrAlias } from './utils';
 
 /**
- * Manages events emmited by the Ethereum network
+ * Manages events emmited by the ethereum blockchain network
  */
-export class HancockEthereumSocket extends EventEmitter {
-
-  private ws: WebSocket;
-  private consumer: string | undefined;
+export class HancockEthereumSocket extends HancockSocket {
 
   constructor(url: string, consumer?: string) {
-    super();
-    this.ws = new WebSocket(url);
-    this.consumer = consumer;
-
-    this.init();
-  }
-
-  /**
-   * Closes the subscriptions to the network events
-   */
-  public closeSocket() {
-    this.ws.close();
-  }
-
-  /**
-   * Add a list of addresses to the watch lists of transfers
-   * An event will be received each time that some of the given addresses appears as 'from' or 'to' in some transfer transaction
-   * @param addresses addresses to watch
-   */
-  public addTransfer(addresses: string[]) {
-    if (addresses.length > 0) {
-      const normalizedAddresses: string[] = addresses.map((addr: string) => normalizeAddress(addr));
-      this.sendMessage('watch-transfers', normalizedAddresses);
-    }
-  }
-
-  /**
-   * Add a list of addresses to the watch lists of transactions
-   * An event will be received each time that some of the given addresses appears as 'from' or 'to' in some transaction of any kind
-   * @param addresses addresses to watch
-   */
-  public addTransaction(addresses: string[]) {
-    if (addresses.length > 0) {
-      const normalizedAddresses: string[] = addresses.map((addr: string) => normalizeAddress(addr));
-      this.sendMessage('watch-transactions', normalizedAddresses);
-    }
+    super(url, consumer);
   }
 
   /**
@@ -60,81 +20,6 @@ export class HancockEthereumSocket extends EventEmitter {
       const normalizedAddressesOrAliases: string[] = contracts.map((addrOrAlias: string) => normalizeAddressOrAlias(addrOrAlias));
       this.sendMessage('watch-contracts', normalizedAddressesOrAliases);
     }
-  }
-
-  private onWebSocketOpen() {
-
-    console.log('Hancock socket open');
-    this.emit('opened');
-
-  }
-
-  private onWebSocketMessage(msg: any) {
-
-    try {
-
-      const rawData: string = msg.data ? msg.data : msg;
-      const data: any = JSON.parse(rawData);
-
-      this.emit(data.kind, data);
-
-    } catch (e) {
-
-      console.log('Hancock socket message error', e);
-
-    }
-
-  }
-
-  private onWebSocketError(e: any) {
-
-    this.emit('error', e);
-
-  }
-
-  private init() {
-
-    try {
-
-      if (process.browser) {
-
-        this.ws.addEventListener('open', () => this.onWebSocketOpen());
-        this.ws.addEventListener('error', (e: any) => this.onWebSocketError(e));
-        this.ws.addEventListener('message', (msg: any) => this.onWebSocketMessage(msg));
-
-      } else {
-
-        this.ws.on('open', () => this.onWebSocketOpen());
-        this.ws.on('error', (e: any) => this.onWebSocketError(e));
-        this.ws.on('message', (msg: any) => this.onWebSocketMessage(msg));
-
-      }
-
-    } catch (e) {
-
-      Promise.resolve().then(() => { this.emit('error', '' + e); });
-
-    }
-  }
-
-  private sendMessage(kind: HancockSocketKind, body: HancockSocketBody[]) {
-    const dataFormated = this.getMessageFormat(kind, body);
-    if (this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify(dataFormated));
-    }
-  }
-
-  private getMessageFormat(kind: HancockSocketKind, body: HancockSocketBody): HancockSocketMessage {
-    const message: HancockSocketMessage = {
-      kind,
-      body,
-    };
-
-    if (this.consumer) {
-      message.consumer = this.consumer;
-    }
-
-    return message;
   }
 
 }
