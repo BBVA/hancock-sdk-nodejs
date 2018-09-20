@@ -1,5 +1,6 @@
 import fetch from 'isomorphic-fetch';
 import { checkStatus, error, errorHandler } from '../../common';
+import { normalizeAlias } from '../../common/utils';
 import {
   hancockFormatParameterError,
   hancockInvalidParameterError, hancockNoKeyNorProviderError,
@@ -21,7 +22,7 @@ import {
 import { EthereumAbi } from '../model';
 import { HancockEthereumSocket } from '../socket';
 import { HancockEthereumTransactionClient } from '../transaction';
-import { isAddress, isEmptyAny, normalizeAddress, normalizeAddressOrAlias, normalizeAlias } from '../utils';
+import { isAddress, isEmptyAny, normalizeAddress, normalizeAddressOrAlias } from '../utils';
 
 /**
  * [[include:HancockEthereumSmartContractClient.md]]

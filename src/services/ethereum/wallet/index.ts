@@ -1,6 +1,7 @@
 import { BigNumber } from 'bignumber.js';
 import fetch from 'isomorphic-fetch';
 import { checkStatus, error, errorHandler } from '../../common';
+import { isEmpty } from '../../common/utils';
 import {
   hancockFormatParameterError,
   hancockInvalidParameterError,
@@ -8,7 +9,7 @@ import {
 } from '../../error';
 import { InitialHancockConfig } from '../../hancock.model';
 import { EthereumWallet, generateWallet } from '../signer';
-import { isAddress, isEmpty, normalizeAddress } from '../utils';
+import { isAddress, normalizeAddress } from '../utils';
 
 /**
  * [[include:HancockEthereumWalletClient.md]]

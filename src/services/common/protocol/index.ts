@@ -6,19 +6,18 @@ import {
   HancockProtocolEncodeResponse,
 } from '../..';
 import { checkStatus, error, errorHandler } from '../../common';
-import { hancockFormatParameterError,
-   hancockInvalidParameterError } from '../../error';
+import { hancockInvalidParameterError } from '../../error';
 import {
   HancockProtocolAction,
   HancockProtocolDecodeResponse,
   InitialHancockConfig,
 } from '../../hancock.model';
-import { isAddress, isEmpty, normalizeAddress } from '../utils';
+import { isEmpty } from '../utils';
 
 /**
- * [[include:HancockEthereumProtocolClient.md]]
+ * [[include:HancockProtocolClient.md]]
  */
-export class HancockEthereumProtocolClient {
+export class HancockProtocolClient {
 
   private adapterApiBaseUrl: string;
 
@@ -38,10 +37,10 @@ export class HancockEthereumProtocolClient {
     if (isEmpty(to)) {
       return Promise.reject(error(hancockInvalidParameterError));
     }
-    if (!isAddress(to)) {
-      return Promise.reject(error(hancockFormatParameterError));
-    }
-    to = normalizeAddress(to);
+    // if (!isAddress(to)) {
+    //   return Promise.reject(error(hancockFormatParameterError));
+    // }
+    // to = normalizeAddress(to);
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.encode}`;
     const body: HancockProtocolEncode = {

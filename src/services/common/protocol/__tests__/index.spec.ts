@@ -1,17 +1,17 @@
 import fetch from 'isomorphic-fetch';
 import 'jest';
-import { HancockEthereumProtocolClient } from '..';
+import { HancockProtocolClient } from '..';
 import * as common from '../../../common';
 import { HancockError, hancockErrorType } from '../../../error';
-import * as response from '../../__mocks__/responses';
+import * as response from '../__mocks__/responses';
 
 jest.mock('isomorphic-fetch');
 jest.mock('../../utils');
 jest.mock('../../../common');
 
-describe('HancockEthereumProtocolClient', async () => {
+describe('HancockProtocolClient', async () => {
 
-  let client: HancockEthereumProtocolClient;
+  let client: HancockProtocolClient;
   const genericConfig = {
     host: 'genericHost',
     port: 1,
@@ -38,7 +38,7 @@ describe('HancockEthereumProtocolClient', async () => {
       broker: configBroker,
     };
 
-    client = new HancockEthereumProtocolClient(config);
+    client = new HancockProtocolClient(config);
 
     callParamFetch = {
       method: 'POST',
@@ -71,7 +71,7 @@ describe('HancockEthereumProtocolClient', async () => {
 
   it('should call encode correctly', async () => {
 
-    (fetch as any).once(JSON.stringify(response.SC_INVOKE_ADAPT_RESPONSE));
+    (fetch as any).once(JSON.stringify(response.PROTOCOL_RESPONSE));
     callParamFetch.body = JSON.stringify(encodeBody);
 
     const checkStatusSpy = checkStatusMock
@@ -84,7 +84,7 @@ describe('HancockEthereumProtocolClient', async () => {
       callParamFetch,
     );
     expect(checkStatusSpy).toHaveBeenCalledTimes(1);
-    expect(result).toEqual(response.SC_INVOKE_ADAPT_RESPONSE);
+    expect(result).toEqual(response.PROTOCOL_RESPONSE);
 
   });
 
@@ -111,7 +111,7 @@ describe('HancockEthereumProtocolClient', async () => {
 
   it('should call decode correctly', async () => {
 
-    (fetch as any).once(JSON.stringify(response.SC_INVOKE_ADAPT_RESPONSE));
+    (fetch as any).once(JSON.stringify(response.PROTOCOL_RESPONSE));
     callParamFetch.body = JSON.stringify({ code: 'testCode' });
 
     const checkStatusSpy = checkStatusMock
@@ -124,7 +124,7 @@ describe('HancockEthereumProtocolClient', async () => {
       callParamFetch,
     );
     expect(checkStatusSpy).toHaveBeenCalledTimes(1);
-    expect(result).toEqual(response.SC_INVOKE_ADAPT_RESPONSE);
+    expect(result).toEqual(response.PROTOCOL_RESPONSE);
 
   });
 
