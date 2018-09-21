@@ -7,6 +7,7 @@ import {
   HancockTokenTransferRequest,
 } from '../..';
 import { checkStatus, error, errorHandler } from '../../common';
+import { isEmpty, normalizeAlias } from '../../common/utils';
 import {
   hancockFormatParameterError,
   hancockInvalidParameterError,
@@ -28,7 +29,7 @@ import {
   InitialHancockConfig,
 } from '../../hancock.model';
 import { HancockEthereumTransactionClient } from '../transaction';
-import { isAddress, isAddressAny, isEmpty, isEmptyAny, normalizeAddress, normalizeAddressOrAlias, normalizeAlias } from '../utils';
+import { isAddress, isAddressAny, isEmptyAny, normalizeAddress, normalizeAddressOrAlias } from '../utils';
 
 /**
  * [[include:HancockEthereumTokenClient.md]]

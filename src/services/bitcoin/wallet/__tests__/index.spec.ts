@@ -10,6 +10,7 @@ import * as signer from '../../signer';
 
 jest.mock('isomorphic-fetch');
 jest.mock('../../utils');
+jest.mock('../../../common/utils');
 jest.mock('../../../common');
 jest.mock('../../signer');
 

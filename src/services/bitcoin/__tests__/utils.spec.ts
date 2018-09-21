@@ -12,16 +12,13 @@ describe('utils', async () => {
     const response = utils.isEmptyAny('address', 'address');
     expect(response).toBeFalsy();
   });
-  it('should call isEmpty correctly', async () => {
 
-    const response = utils.isEmpty('address');
-    expect(response).toBeFalsy();
-  });
   it('should call isAddressAny correctly', async () => {
 
     const response = utils.isAddressAny('142kXJP52FjqVVBev7vi2YqK7pgwWuBCRx', '142kXJP52FjqVVBev7vi2YqK7pgwWuBCRx');
     expect(response).toBeTruthy();
   });
+
   it('should call isAddress correctly', async () => {
 
     const response = utils.isAddress('142kXJP52FjqVVBev7vi2YqK7pgwWuBCRx');
@@ -56,12 +53,6 @@ describe('utils', async () => {
 
     const response = utils.normalizeAddress('17MpqPGHrEcUqHdwtyViwrWgLvFGho7mdh');
     expect(response).toBe('17MpqPGHrEcUqHdwtyViwrWgLvFGho7mdh');
-  });
-
-  it('should call normalizeAlias correctly', async () => {
-
-    const response = utils.normalizeAlias('ContractAddress');
-    expect(response).toBe('contract-address');
   });
 
   it('should call normalizeAddressOrAlias correctly and call normalizeAddress', async () => {

@@ -366,7 +366,7 @@ describe('HancockEthereumClient integration tests', () => {
 
     describe('::encode', () => {
 
-      const to: string = '187ACE2D9051D74296A8E4E154D652B8B6EC4738';
+      const to: string = '0x187ace2d9051d74296a8e4e154d652b8b6ec4738';
       const normalizedTo: string = '0x187ace2d9051d74296a8e4e154d652b8b6ec4738';
       const action: HancockProtocolAction = 'transfer';
       const value: string = 'mockedValue';
