@@ -1,4 +1,9 @@
 import fetch from 'isomorphic-fetch';
+import { checkStatus, error, errorHandler } from '../../common';
+import {
+  hancockFormatParameterError,
+  hancockInvalidParameterError, hancockNoKeyNorProviderError,
+} from '../../error';
 import {
   HancockSignResponse,
   InitialHancockConfig,
@@ -13,15 +18,10 @@ import {
   HancockRegisterRequest,
   HancockRegisterResponse,
 } from '../../hancock.model';
-import { checkStatus, errorHandler } from '../common';
-import {
-  hancockFormatParameterError,
-  hancockInvalidParameterError, hancockNoKeyNorProviderError,
-} from '../error';
 import { EthereumAbi } from '../model';
 import { HancockEthereumSocket } from '../socket';
 import { HancockEthereumTransactionClient } from '../transaction';
-import { error, isAddress, isEmptyAny, normalizeAddress, normalizeAddressOrAlias, normalizeAlias } from '../utils';
+import { isAddress, isEmptyAny, normalizeAddress, normalizeAddressOrAlias, normalizeAlias } from '../utils';
 
 /**
  * [[include:HancockEthereumSmartContractClient.md]]
@@ -91,7 +91,9 @@ export class HancockEthereumSmartContractClient {
     }
     const normalizedContractAddressOrAlias: string = normalizeAddressOrAlias(contractAddressOrAlias);
 
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invoke}`.replace(/__ADDRESS_OR_ALIAS__/, normalizedContractAddressOrAlias);
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invoke}`
+      .replace(/__DLT__/, 'ethereum')
+      .replace(/__ADDRESS_OR_ALIAS__/, normalizedContractAddressOrAlias);
 
     const body: HancockCallRequest = {
       method,
@@ -130,7 +132,7 @@ export class HancockEthereumSmartContractClient {
     alias = normalizeAlias(alias);
     address = normalizeAddress(address);
 
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.register}`;
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.register}`.replace(/__DLT__/, 'ethereum');
     const body: HancockRegisterRequest = {
       address,
       alias,
@@ -175,7 +177,10 @@ export class HancockEthereumSmartContractClient {
 
     const normalizedContractAddressOrAlias: string = normalizeAddressOrAlias(contractAddressOrAlias);
 
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invoke}`.replace(/__ADDRESS_OR_ALIAS__/, normalizedContractAddressOrAlias);
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invoke}`
+    .replace(/__DLT__/, 'ethereum')
+    .replace(/__ADDRESS_OR_ALIAS__/, normalizedContractAddressOrAlias);
+
     const body: HancockAdaptInvokeRequest = {
       method,
       from,

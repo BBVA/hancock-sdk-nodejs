@@ -3,18 +3,18 @@ adapter:
   port: 3004
   base: ''
   resources:
-    invoke: '/ethereum/smartcontracts/invoke/__ADDRESS_OR_ALIAS__'
-    register: '/ethereum/smartcontracts/register'
-    balance: '/ethereum/balance/__ADDRESS__'
-    transfer: '/ethereum/transfers'
+    invoke: '/__DLT__/smartcontracts/invoke/__ADDRESS_OR_ALIAS__'
+    register: '/__DLT__/smartcontracts/register'
+    balance: '/__DLT__/balance/__ADDRESS__'
+    transfer: '/__DLT__/transfers'
     token:
-      register: '/ethereum/token/register'
-      transfer: '/ethereum/token/__ADDRESS_OR_ALIAS__/transfer'
-      transferFrom: '/ethereum/token/__ADDRESS_OR_ALIAS__/transferFrom'
-      balance: '/ethereum/token/__ADDRESS_OR_ALIAS__/balanceOf/__ADDRESS__'
-      metadata: '/ethereum/token/__ADDRESS_OR_ALIAS__/metadata'
-      approve: '/ethereum/token/__ADDRESS_OR_ALIAS__/approve'
-      allowance: '/ethereum/token/__ADDRESS_OR_ALIAS__/allowance'
+      register: '/__DLT__/token/register'
+      transfer: '/__DLT__/token/__ADDRESS_OR_ALIAS__/transfer'
+      transferFrom: '/__DLT__/token/__ADDRESS_OR_ALIAS__/transferFrom'
+      balance: '/__DLT__/token/__ADDRESS_OR_ALIAS__/balanceOf/__ADDRESS__'
+      metadata: '/__DLT__/token/__ADDRESS_OR_ALIAS__/metadata'
+      approve: '/__DLT__/token/__ADDRESS_OR_ALIAS__/approve'
+      allowance: '/__DLT__/token/__ADDRESS_OR_ALIAS__/allowance'    
     encode: '/protocol/encode'
     decode: '/protocol/decode'
 wallet:
@@ -22,12 +22,12 @@ wallet:
   port: 3002
   base: ''
   resources:
-    signTx: '/ethereum/sign-tx'
-    sendTx: '/ethereum/send-tx'
-    sendSignedTx: '/ethereum/send-signed-tx'
+    signTx: '/__DLT__/sign-tx'
+    sendTx: '/__DLT__/send-tx'
+    sendSignedTx: '/__DLT__/send-signed-tx'
 broker:
   host: ws://localhost
   port: 3001
   base: ''
   resources:
-    events: '/ethereum/subscribe?address=__ADDRESS__&sender=__SENDER__&consumer=__CONSUMER__'
+    events: '/__DLT__/subscribe?address=__ADDRESS__&sender=__SENDER__&consumer=__CONSUMER__'

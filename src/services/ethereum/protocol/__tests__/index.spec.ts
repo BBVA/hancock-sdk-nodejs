@@ -1,13 +1,13 @@
 import fetch from 'isomorphic-fetch';
 import 'jest';
 import { HancockEthereumProtocolClient } from '..';
+import * as common from '../../../common';
+import { HancockError, hancockErrorType } from '../../../error';
 import * as response from '../../__mocks__/responses';
-import * as common from '../../common';
-import { HancockError, hancockErrorType } from '../../error';
 
 jest.mock('isomorphic-fetch');
 jest.mock('../../utils');
-jest.mock('../../common');
+jest.mock('../../../common');
 
 describe('HancockEthereumProtocolClient', async () => {
 

@@ -6,6 +6,12 @@ import {
   HancockTokenMetadataResponse,
   HancockTokenTransferRequest,
 } from '../..';
+import { checkStatus, error, errorHandler } from '../../common';
+import {
+  hancockFormatParameterError,
+  hancockInvalidParameterError,
+  hancockNoKeyNorProviderError,
+} from '../../error';
 import {
   HancockTokenTransferFromRequest,
 } from '../../hancock.model';
@@ -21,14 +27,8 @@ import {
   HancockTokenRegisterResponse,
   InitialHancockConfig,
 } from '../../hancock.model';
-import { checkStatus, errorHandler } from '../common';
-import {
-  hancockFormatParameterError,
-  hancockInvalidParameterError,
-  hancockNoKeyNorProviderError,
-} from '../error';
 import { HancockEthereumTransactionClient } from '../transaction';
-import { error, isAddress, isAddressAny, isEmpty, isEmptyAny, normalizeAddress, normalizeAddressOrAlias, normalizeAlias } from '../utils';
+import { isAddress, isAddressAny, isEmpty, isEmptyAny, normalizeAddress, normalizeAddressOrAlias, normalizeAlias } from '../utils';
 
 /**
  * [[include:HancockEthereumTokenClient.md]]
@@ -58,7 +58,7 @@ export class HancockEthereumTokenClient {
     alias = normalizeAlias(alias);
     address = normalizeAddress(address);
 
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.register}`;
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.register}`.replace(/__DLT__/, 'ethereum');
     const body: HancockTokenRegisterRequest = {
       address,
       alias,
@@ -200,6 +200,7 @@ export class HancockEthereumTokenClient {
     tokenOwner = normalizeAddress(tokenOwner);
     addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.balance}`
+      .replace(/__DLT__/, 'ethereum')
       .replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias)
       .replace(/__ADDRESS__/, tokenOwner);
 
@@ -257,7 +258,9 @@ export class HancockEthereumTokenClient {
       return Promise.reject(error(hancockInvalidParameterError));
     }
     addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.metadata}`.replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.metadata}`
+      .replace(/__DLT__/, 'ethereum')
+      .replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
 
     return fetch(url)
       .then(
@@ -281,7 +284,10 @@ export class HancockEthereumTokenClient {
     spender = normalizeAddress(spender);
     addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
 
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.approve}`.replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.approve}`
+      .replace(/__DLT__/, 'ethereum')
+      .replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
+
     const body: HancockTokenApproveRequest = {
       from,
       spender,
@@ -312,7 +318,10 @@ export class HancockEthereumTokenClient {
     to = normalizeAddress(to);
     addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
 
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.transferFrom}`.replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.transferFrom}`
+      .replace(/__DLT__/, 'ethereum')
+      .replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
+
     const body: HancockTokenTransferFromRequest = {
       from,
       sender,
@@ -343,7 +352,10 @@ export class HancockEthereumTokenClient {
     to = normalizeAddress(to);
     addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
 
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.transfer}`.replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.transfer}`
+      .replace(/__DLT__/, 'ethereum')
+      .replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
+
     const body: HancockTokenTransferRequest = {
       from,
       to,
@@ -374,7 +386,10 @@ export class HancockEthereumTokenClient {
     spender = normalizeAddress(spender);
     addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
 
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.allowance}`.replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.allowance}`
+      .replace(/__DLT__/, 'ethereum')
+      .replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
+
     const body: HancockTokenAllowanceRequest = {
       from,
       tokenOwner,
