@@ -1,10 +1,11 @@
 import * as etherTx from 'ethereumjs-tx';
 import * as etherWallet from 'ethereumjs-wallet';
-import { DltWallet, DltRawTransaction } from '../hancock.model';
+import { Buffer } from 'safe-buffer';
+import { DltRawTransaction, DltSignedTransaction, DltWallet } from '../hancock.model';
 
 // TODO: Resolve this situation in webpack, not here
 const _etherTx: any = process.browser ? etherTx.Tx : (etherTx.default || etherTx);
-const _etherWallet: any = process.browser ? etherWallet.Wallet : (etherWallet.default || etherTx);
+const _etherWallet: any = process.browser ? etherWallet.Wallet : (etherWallet.default || etherWallet);
 
 export interface EthereumWallet extends DltWallet {
   privateKey: string;
@@ -13,8 +14,11 @@ export interface EthereumWallet extends DltWallet {
 }
 
 export type EthereumRawTransaction = DltRawTransaction;
+export type EthereumSignedTransaction = DltSignedTransaction;
 
-
+/**
+ * @hidden
+ */
 export function generateWallet(): EthereumWallet {
 
   const wallet: any = _etherWallet.generate();
@@ -27,6 +31,9 @@ export function generateWallet(): EthereumWallet {
 
 }
 
+/**
+ * @hidden
+ */
 export function signTx(rawTx: EthereumRawTransaction, privateKey: string): string {
 
   const key = Buffer.from(privateKey.substr(2), 'hex');

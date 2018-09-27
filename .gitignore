@@ -16,3 +16,5 @@ yarn-error.log*
 *.sln
 
 config/config.json
+tests/reports
+/typedocs

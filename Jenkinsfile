@@ -1,10 +1,14 @@
-nodePipeline{
-
-  stage("Unit Tests"){
-    container("node"){
-      sh "node --version"
+def lint() {
+  stage('Linter'){
+    container('node'){
+      sh """
+        yarn run lint
+      """
     }
   }
+}
+
+nodePipeline{
 
   stage("Build Package"){
     container("node"){
@@ -14,7 +18,21 @@ nodePipeline{
       """
     }
   }
-  
+
+  lint()
+
+  stage("Unit Tests"){
+    container("node"){
+      sh "npm run coverage"
+    }
+  }
+
+  stage("Docs"){
+    container("node"){
+      sh "npm run docs"
+      upload_doc_shuttle_stage(docName: "docs", docPath: "./typedocs")
+    }
+  }  
   // TODO: Do a generic publish_npm_package stage in shuttle
   stage("Publish Package"){
     input "Publish package?"

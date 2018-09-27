@@ -1,12 +1,33 @@
 adapter:
-  host: http://mocked
-  port: 3000
-  base: '/mock'
+  host: http://mockAdapter
+  port: 6666
+  base: '/mockBase'
+  resources:
+    invoke: '/mockInvoke/__ADDRESS_OR_ALIAS__'
+    register: '/mockRegister'
+    balance: '/mockBalance/__ADDRESS__'
+    transfer: '/mockTransfer'
+    token:
+      register: '/mockToken/mockRegister'
+      transfer: '/mockToken/__ADDRESS_OR_ALIAS__/mockTransfer'
+      transferFrom: '/mockToken/__ADDRESS_OR_ALIAS__/mockTransferFrom'
+      balance: '/mockToken/__ADDRESS_OR_ALIAS__/mockBalance/__ADDRESS__'
+      metadata: '/mockToken/__ADDRESS_OR_ALIAS__/mockMetadata'
+      approve: '/mockToken/__ADDRESS_OR_ALIAS__/mockApprove'
+      allowance: '/mockToken/__ADDRESS_OR_ALIAS__/mockAllowance'
+    encode: '/mockEncode'
+    decode: '/mockDecode'
 wallet:
-  host: http://mocked
-  port: 3000
-  base: '/mock'
+  host: http://mockWallet
+  port: 6666
+  base: '/mockBase'
+  resources:
+    signTx: '/mockSignTx'
+    sendTx: '/mockSendTx'
+    sendSignedTx: '/mockSendSignedTx'
 broker:
-  host: ws://mocked
-  port: 3000
-  base: '/mock'
+  host: ws://mockBroker
+  port: 6666
+  base: '/mockBase'
+  resources:
+    events: '/mockEvents?address=__ADDRESS__&sender=__SENDER__&consumer=__CONSUMER__'
