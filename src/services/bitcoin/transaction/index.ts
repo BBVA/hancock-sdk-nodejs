@@ -1,14 +1,13 @@
-import { HancockSignResponse } from '../../hancock.model';
+import { SupportedPlatforms } from '../../common';
+import { HancockTransactionService } from '../../common/transaction';
+import { InitialHancockConfig } from '../../hancock.model';
+import { signTx } from '../signer';
+import { HancockBitcoinSocket } from './../socket';
 
-// TODO: WIP - Implement it
-export class HancockBitcoinTransactionService {
+export class HancockBitcoinTransactionService extends HancockTransactionService {
 
-  constructor(config: any) {
-    console.log('Not implemented');
-  }
-
-  public signAndSend(...args: any[]): HancockSignResponse {
-    throw new Error('Not implemented');
+  constructor(config: InitialHancockConfig) {
+    super(config, SupportedPlatforms.bitcoin, signTx, HancockBitcoinSocket);
   }
 
 }

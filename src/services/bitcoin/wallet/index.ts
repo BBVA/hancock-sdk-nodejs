@@ -46,10 +46,7 @@ export class HancockBitcoinWalletService {
         (res: any) => checkStatus(res),
         (err: any) => errorHandler(err),
       )
-      .then((resBody: any) => {
-        console.log(resBody);
-        return new BigNumber(resBody.data.balance);
-      });
+      .then((resBody: any) => new BigNumber(resBody.data.balance));
   }
 
   /**

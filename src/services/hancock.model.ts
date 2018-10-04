@@ -12,6 +12,8 @@ export interface DltWallet {
   address: string;
 }
 
+export type HancockSignerFn = (rawTx: DltRawTransaction, privateKey: string) => DltSignedTransaction;
+
 // API
 
 export interface HancockGenericResponse {

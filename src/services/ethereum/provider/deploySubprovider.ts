@@ -18,7 +18,7 @@ export class DeploySubprovider extends Subprovider {
 
     switch (payload.method) {
       case 'eth_sendTransaction':
-        console.log('Intercepted Ethereum Send Transaction');
+        console.info('Intercepted Ethereum Send Transaction');
         this.emitPayload({ method: 'eth_getTransactionCount', params: [payload.params[0].from, 'pending'] },
           (error: any, data: any) => {
             if (error) {

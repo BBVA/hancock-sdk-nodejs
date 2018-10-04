@@ -71,7 +71,7 @@ export class HancockSocket extends EventEmitter {
 
   private onWebSocketOpen() {
 
-    console.log('Hancock socket open');
+    console.info('Hancock socket open');
     this.emit('opened');
 
   }
@@ -87,7 +87,7 @@ export class HancockSocket extends EventEmitter {
 
     } catch (e) {
 
-      console.log('Hancock socket message error', e);
+      console.info('Hancock socket message error', e);
 
     }
 

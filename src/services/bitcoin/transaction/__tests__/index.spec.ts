@@ -1,23 +1,23 @@
 import 'jest';
 
-import { HancockEthereumTransactionService } from '..';
+import { HancockBitcoinTransactionService } from '..';
+import { SupportedPlatforms } from '../../../common';
 import { HancockTransactionService } from '../../../common/transaction';
 import { signTx } from '../../signer';
-import { HancockEthereumSocket } from '../../socket';
-import { SupportedPlatforms } from './../../../common';
+import { HancockBitcoinSocket } from '../../socket';
 
 jest.mock('../../signer');
 jest.mock('../../socket');
 jest.mock('../../../common/transaction');
 
-describe('HancockEthereumTransactionService', async () => {
+describe('HancockBitcoinTransactionService', async () => {
 
-  let client: HancockEthereumTransactionService;
+  let client: HancockBitcoinTransactionService;
   const genericConfig = {};
   let config: any;
   const constructorMock: jest.Mock = HancockTransactionService as any;
   const signTxMock: jest.Mock = signTx as any;
-  const socketMock: typeof HancockEthereumSocket = HancockEthereumSocket;
+  const socketMock: typeof HancockBitcoinSocket = HancockBitcoinSocket;
 
   beforeEach(() => {
     jest.restoreAllMocks();
@@ -32,9 +32,9 @@ describe('HancockEthereumTransactionService', async () => {
       broker: {...genericConfig},
     };
 
-    client = new HancockEthereumTransactionService(config);
+    client = new HancockBitcoinTransactionService(config);
 
-    expect(constructorMock).toHaveBeenCalledWith(config, SupportedPlatforms.ethereum, signTxMock, socketMock);
+    expect(constructorMock).toHaveBeenCalledWith(config, SupportedPlatforms.bitcoin, signTxMock, socketMock);
 
   });
 
