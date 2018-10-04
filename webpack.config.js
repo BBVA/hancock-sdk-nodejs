@@ -29,11 +29,16 @@ const commonWebpackConfig = {
   }
 };
 
-var serverWebpackConfig = merge(commonWebpackConfig, {
+var nodeWebpackConfig = merge(commonWebpackConfig, {
   target: 'node',
-  externals: [nodeExternals({
-    whitelist: ['config']
-  })],
+  externals: [
+    nodeExternals({
+      whitelist: ['config']
+    }),
+    {
+      'ethereumjs-tx': 'ethereumjs-tx'
+    }
+  ],
   output: {
     libraryTarget: 'commonjs2',
     filename: 'index.node.js',
@@ -45,7 +50,7 @@ var serverWebpackConfig = merge(commonWebpackConfig, {
   ]
 });
 
-var clientWebpackConfig = merge(commonWebpackConfig, {
+var browserWebpackConfig = merge(commonWebpackConfig, {
   target: 'web',
   output: {
     libraryTarget: 'umd',
@@ -58,10 +63,10 @@ var clientWebpackConfig = merge(commonWebpackConfig, {
   ],
   resolve: {
     alias: {
-      'ethereumjs-tx': path.resolve(__dirname, './lib/ethereumjs-tx.js'),
+      // 'ethereumjs-tx': path.resolve(__dirname, './lib/ethereumjs-tx.js'),
       'ethereumjs-wallet': path.resolve(__dirname, './lib/ethereumjs-wallet.js'),
     }
   }
 });
 
-module.exports = [serverWebpackConfig, clientWebpackConfig];
+module.exports = [nodeWebpackConfig, browserWebpackConfig];
