@@ -1,4 +1,4 @@
-## HancockEthereumTokenClient
+## HancockEthereumTokenService
 
 ### Introduction
 

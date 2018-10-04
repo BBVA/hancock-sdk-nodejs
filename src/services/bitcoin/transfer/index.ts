@@ -15,18 +15,18 @@ import {
   HancockInvokeOptions,
 } from '../../hancock.model';
 import { HancockBitcoinSocket } from '../socket';
-import { HancockBitcoinTransactionClient } from '../transaction';
+import { HancockBitcoinTransactionService } from '../transaction';
 import { isAddressAny, isEmptyAny, normalizeAddress } from '../utils';
 
 /**
- * [[include:HancockBitcoinTransferClient.md]]
+ * [[include:HancockBitcoinTransferService.md]]
  */
-export class HancockBitcoinTransferClient {
+export class HancockBitcoinTransferService {
 
   private adapterApiBaseUrl: string;
   private brokerBaseUrl: string;
 
-  constructor(private config: InitialHancockConfig, private transactionClient: HancockBitcoinTransactionClient) {
+  constructor(private config: InitialHancockConfig, private transactionService: HancockBitcoinTransactionService) {
     this.adapterApiBaseUrl = `${config.adapter.host}:${config.adapter.port}${config.adapter.base}`;
     this.brokerBaseUrl = `${config.broker.host}:${config.broker.port}${config.broker.base}`;
   }
@@ -56,7 +56,7 @@ export class HancockBitcoinTransferClient {
       .adaptSend(from, to, value, data)
       .then((resBody: HancockAdaptInvokeResponse) => {
 
-        return this.transactionClient.signAndSend(resBody.data, options);
+        return this.transactionService.signAndSend(resBody.data, options);
 
       });
 

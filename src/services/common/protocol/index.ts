@@ -15,9 +15,9 @@ import {
 import { isEmpty } from '../utils';
 
 /**
- * [[include:HancockProtocolClient.md]]
+ * [[include:HancockProtocolService.md]]
  */
-export class HancockProtocolClient {
+export class HancockProtocolService {
 
   private adapterApiBaseUrl: string;
 

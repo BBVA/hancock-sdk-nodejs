@@ -1,6 +1,6 @@
 import fetch from 'isomorphic-fetch';
 import 'jest';
-import { HancockEthereumTransactionClient } from '..';
+import { HancockEthereumTransactionService } from '..';
 import { HancockAdaptInvokeResponse } from '../../..';
 import * as common from '../../../common';
 import { HancockError, hancockErrorType } from '../../../error';
@@ -15,7 +15,7 @@ jest.mock('../../socket');
 
 describe('ethereum client', async () => {
 
-  let client: HancockEthereumTransactionClient;
+  let client: HancockEthereumTransactionService;
   const genericConfig = {
     host: 'genericHost',
     port: 1,
@@ -44,7 +44,7 @@ describe('ethereum client', async () => {
       wallet: configWallet,
       broker: configBroker,
     };
-    client = new HancockEthereumTransactionClient(config);
+    client = new HancockEthereumTransactionService(config);
 
     callParamFetch = {
       method: 'POST',
@@ -221,7 +221,7 @@ describe('ethereum client', async () => {
 
   it('should call signAndSend and sendToSignProvider with signProvider correctly', async () => {
 
-    const sendTransactionToSignProviderSpy = jest.spyOn((HancockEthereumTransactionClient.prototype as any), 'sendToSignProvider')
+    const sendTransactionToSignProviderSpy = jest.spyOn((HancockEthereumTransactionService.prototype as any), 'sendToSignProvider')
       .mockImplementation(() => Promise.resolve('response'));
 
     options.signProvider = 'providerTest';
@@ -235,9 +235,9 @@ describe('ethereum client', async () => {
 
   it('should call signAndSend and sign and sendSigned with privateKey correctly', async () => {
 
-    const signTransactionSpy = jest.spyOn((HancockEthereumTransactionClient.prototype as any), 'sign')
+    const signTransactionSpy = jest.spyOn((HancockEthereumTransactionService.prototype as any), 'sign')
       .mockImplementation(() => 'responseSignTransaction');
-    const sendSignedTransactionSpy = jest.spyOn((HancockEthereumTransactionClient.prototype as any), 'sendSigned')
+    const sendSignedTransactionSpy = jest.spyOn((HancockEthereumTransactionService.prototype as any), 'sendSigned')
       .mockImplementation(() => Promise.resolve('response'));
 
     const result = await client.signAndSend(hancockAdaptInvokeResponse.data, options);
@@ -252,7 +252,7 @@ describe('ethereum client', async () => {
 
   it('should call signAndSend without options correctly', async () => {
 
-    const sendTransactionSpy = jest.spyOn((HancockEthereumTransactionClient.prototype as any), 'send')
+    const sendTransactionSpy = jest.spyOn((HancockEthereumTransactionService.prototype as any), 'send')
       .mockImplementation(() => Promise.resolve('response'));
 
     const result = await (client as any).signAndSend(hancockAdaptInvokeResponse.data, {});

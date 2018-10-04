@@ -1,10 +1,10 @@
 import fetch from 'isomorphic-fetch';
 import 'jest';
-import { HancockEthereumTokenClient } from '..';
+import { HancockEthereumTokenService } from '..';
 import * as common from '../../../common';
 import { HancockError, hancockErrorType } from '../../../error';
 import * as response from '../../__mocks__/responses';
-import { HancockEthereumTransactionClient } from '../../transaction';
+import { HancockEthereumTransactionService } from '../../transaction';
 
 jest.mock('isomorphic-fetch');
 jest.mock('../../socket');
@@ -14,8 +14,8 @@ jest.mock('../../../common');
 
 describe('ethereum client', async () => {
 
-  let transactionClient: HancockEthereumTransactionClient;
-  let client: HancockEthereumTokenClient;
+  let transactionService: HancockEthereumTransactionService;
+  let client: HancockEthereumTokenService;
   const errorFnMock = common.error as jest.Mock;
   const genericConfig = {
     host: 'genericHost',
@@ -49,8 +49,8 @@ describe('ethereum client', async () => {
       wallet: configWallet,
       broker: configBroker,
     };
-    transactionClient = new HancockEthereumTransactionClient(config);
-    client = new HancockEthereumTokenClient(config, transactionClient);
+    transactionService = new HancockEthereumTransactionService(config);
+    client = new HancockEthereumTokenService(config, transactionService);
 
     callParamFetch = {
       method: 'POST',
@@ -208,9 +208,9 @@ describe('ethereum client', async () => {
 
     it('should call transfer correctly', async () => {
 
-      const adaptTransferSpy = jest.spyOn((HancockEthereumTokenClient.prototype as any), 'adaptSend')
+      const adaptTransferSpy = jest.spyOn((HancockEthereumTokenService.prototype as any), 'adaptSend')
         .mockImplementation(() => Promise.resolve({data: { test: 'test' }}));
-      const signTransactionAndSendSpy = jest.spyOn((transactionClient as any), 'signAndSend')
+      const signTransactionAndSendSpy = jest.spyOn((transactionService as any), 'signAndSend')
         .mockImplementation(() => Promise.resolve('ok!'));
 
       const result = await client.transfer('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
@@ -304,10 +304,10 @@ describe('ethereum client', async () => {
 
     it('should call transferFrom correctly', async () => {
 
-      const adaptTransferFromSpy = jest.spyOn((HancockEthereumTokenClient.prototype as any), 'adaptTransferFrom')
+      const adaptTransferFromSpy = jest.spyOn((HancockEthereumTokenService.prototype as any), 'adaptTransferFrom')
         .mockImplementation(() => Promise.resolve({data: { test: 'test' }}));
 
-      const signTransactionAndSendSpy = jest.spyOn((transactionClient as any), 'signAndSend')
+      const signTransactionAndSendSpy = jest.spyOn((transactionService as any), 'signAndSend')
         .mockImplementation(() => Promise.resolve('ok!'));
 
       const result = await client.transferFrom(
@@ -421,9 +421,9 @@ describe('ethereum client', async () => {
 
     it('should call allowance correctly', async () => {
 
-      const adaptAllowanceSpy = jest.spyOn((HancockEthereumTokenClient.prototype as any), 'adaptAllowance')
+      const adaptAllowanceSpy = jest.spyOn((HancockEthereumTokenService.prototype as any), 'adaptAllowance')
         .mockImplementation(() => Promise.resolve({data: { test: 'test' }}));
-      const signTransactionAndSendSpy = jest.spyOn((transactionClient as any), 'signAndSend')
+      const signTransactionAndSendSpy = jest.spyOn((transactionService as any), 'signAndSend')
         .mockImplementation(() => Promise.resolve('ok!'));
 
       const result = await client.allowance('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
@@ -516,9 +516,9 @@ describe('ethereum client', async () => {
 
     it('should call approve correctly', async () => {
 
-      const adaptApproveSpy = jest.spyOn((HancockEthereumTokenClient.prototype as any), 'adaptApprove')
+      const adaptApproveSpy = jest.spyOn((HancockEthereumTokenService.prototype as any), 'adaptApprove')
         .mockImplementation(() => Promise.resolve({data: { test: 'test' }}));
-      const signTransactionAndSendSpy = jest.spyOn((transactionClient as any), 'signAndSend')
+      const signTransactionAndSendSpy = jest.spyOn((transactionService as any), 'signAndSend')
         .mockImplementation(() => Promise.resolve('ok!'));
 
       const result = await client.approve('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',

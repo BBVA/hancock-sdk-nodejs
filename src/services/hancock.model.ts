@@ -297,12 +297,12 @@ export interface HancockClient {
     encode(action: HancockProtocolAction, dlt: HancockProtocolDlt, value: string, to: string, data: string): Promise<HancockProtocolEncodeResponse>;
     decode(code: string): Promise<HancockProtocolDecodeResponse>;
   };
-  smartContract: {
+  smartContract?: {
     invoke(contractAddress: string, method: string, params: string[], from: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
     call(contractAddress: string, method: string, params: string[], from: string): Promise<HancockCallResponse>;
     subscribe(contracts: string[]): HancockEthereumSocket;
   };
-  token: {
+  token?: {
     getBalance(addressOrAlias: string, address: string): Promise<HancockTokenBalanceResponse>;
     getMetadata(addressOrAlias: string): Promise<HancockTokenMetadataResponse>;
     transfer(from: string, to: string, value: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;

@@ -1,12 +1,12 @@
 import 'jest';
 
 import fetch from 'isomorphic-fetch';
-import { HancockBitcoinTransferClient } from '..';
+import { HancockBitcoinTransferService } from '..';
 import * as common from '../../../common';
 import { HancockError, hancockErrorType } from '../../../error';
 import * as response from '../../__mocks__/responses';
 import * as socket from '../../socket';
-import { HancockBitcoinTransactionClient } from '../../transaction';
+import { HancockBitcoinTransactionService } from '../../transaction';
 
 jest.mock('isomorphic-fetch');
 jest.mock('../../socket');
@@ -16,8 +16,8 @@ jest.mock('../../../common');
 
 describe('bitcoin client', async () => {
 
-  let transactionClient: HancockBitcoinTransactionClient;
-  let client: HancockBitcoinTransferClient;
+  let transactionService: HancockBitcoinTransactionService;
+  let client: HancockBitcoinTransferService;
   const genericConfig = {
     host: 'genericHost',
     port: 1,
@@ -45,8 +45,8 @@ describe('bitcoin client', async () => {
       broker: configBroker,
     };
 
-    transactionClient = new HancockBitcoinTransactionClient(config);
-    client = new HancockBitcoinTransferClient(config, transactionClient);
+    transactionService = new HancockBitcoinTransactionService(config);
+    client = new HancockBitcoinTransferService(config, transactionService);
 
     callParamFetch = {
       method: 'POST',
@@ -74,11 +74,11 @@ describe('bitcoin client', async () => {
   it('should call transfer correctly', async () => {
 
     const adaptTransferSpy = jest
-      .spyOn((HancockBitcoinTransferClient.prototype as any), 'adaptSend')
+      .spyOn((HancockBitcoinTransferService.prototype as any), 'adaptSend')
       .mockImplementation(() => Promise.resolve({data: { test: 'test' }}));
 
     const signAndSendSpy = jest
-      .spyOn(transactionClient as any, 'signAndSend')
+      .spyOn(transactionService as any, 'signAndSend')
       .mockImplementation(() => Promise.resolve('ok!'));
 
     // tslint:disable-next-line:max-line-length

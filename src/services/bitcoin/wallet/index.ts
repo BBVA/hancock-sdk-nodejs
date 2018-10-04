@@ -12,9 +12,9 @@ import { BitcoinWallet, generateWallet } from '../signer';
 import { isAddress, normalizeAddress } from '../utils';
 
 /**
- * [[include:HancockBitcoinWalletClient.md]]
+ * [[include:HancockBitcoinWalletService.md]]
  */
-export class HancockBitcoinWalletClient {
+export class HancockBitcoinWalletService {
 
   private adapterApiBaseUrl: string;
 

@@ -1,4 +1,4 @@
-## HancockEthereumTransactionClient
+## HancockEthereumTransactionService
 
 ### Introduction
 

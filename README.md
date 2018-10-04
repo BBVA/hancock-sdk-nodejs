@@ -79,9 +79,9 @@ new HancockEthereumClient(config);
 [[HancockEthereumClient]] provides interfaces to interact with the blockchain 
 allowing common operation like transfers, balance consulting or smart contract interactions. Take a look at the diferent sections of the [docs](https://docs.kickstartteam.es/blockchainhub/kst-hancock-sdk-client/docs/index.html) to see examples of use:
 
-- [[HancockEthereumWalletClient]]
-- [[HancockEthereumTransferClient]]
-- [[HancockEthereumTransactionClient]]
-- [[HancockEthereumSmartContractClient]]
-- [[HancockEthereumTokenClient]]
-- [[HancockProtocolClient]]
+- [[HancockEthereumWalletService]]
+- [[HancockEthereumTransferService]]
+- [[HancockEthereumTransactionService]]
+- [[HancockEthereumSmartContractService]]
+- [[HancockEthereumTokenService]]
+- [[HancockProtocolService]]

@@ -22,9 +22,9 @@ import { EthereumRawTransaction } from '../signer';
 import { HancockEthereumSocket } from '../socket';
 
 /**
- * [[include:HancockEthereumTransactionClient.md]]
+ * [[include:HancockEthereumTransactionService.md]]
  */
-export class HancockEthereumTransactionClient {
+export class HancockEthereumTransactionService {
 
   private walletApiBaseUrl: string;
   private brokerBaseUrl: string;

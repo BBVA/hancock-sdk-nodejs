@@ -1,4 +1,4 @@
-## HancockEthereumTransferClient
+## HancockEthereumTransferService
 
 ### Introduction
 

@@ -1,4 +1,4 @@
-## HancockEthereumSmartContractClient
+## HancockEthereumSmartContractService
 
 ### Introduction
 

@@ -1,11 +1,11 @@
 import fetch from 'isomorphic-fetch';
 import 'jest';
-import { HancockEthereumSmartContractClient } from '..';
+import { HancockEthereumSmartContractService } from '..';
 import * as common from '../../../common';
 import { HancockError, hancockErrorType } from '../../../error';
 import * as response from '../../__mocks__/responses';
 import * as socket from '../../socket';
-import { HancockEthereumTransactionClient } from '../../transaction';
+import { HancockEthereumTransactionService } from '../../transaction';
 
 jest.mock('isomorphic-fetch');
 jest.mock('../../socket');
@@ -14,10 +14,10 @@ jest.mock('../../signer');
 jest.mock('../../../common');
 jest.mock('../../transaction');
 
-describe('HancockEthereumSmartContractClient', async () => {
+describe('HancockEthereumSmartContractService', async () => {
 
-  let transactionClient: HancockEthereumTransactionClient;
-  let client: HancockEthereumSmartContractClient;
+  let transactionService: HancockEthereumTransactionService;
+  let client: HancockEthereumSmartContractService;
 
   const errorFnMock = common.error as jest.Mock;
   const genericConfig = {
@@ -46,8 +46,8 @@ describe('HancockEthereumSmartContractClient', async () => {
       wallet: configWallet,
       broker: configBroker,
     };
-    transactionClient = new HancockEthereumTransactionClient(config);
-    client = new HancockEthereumSmartContractClient(config, transactionClient);
+    transactionService = new HancockEthereumTransactionService(config);
+    client = new HancockEthereumSmartContractService(config, transactionService);
 
     callParamFetch = {
       method: 'POST',
@@ -75,11 +75,11 @@ describe('HancockEthereumSmartContractClient', async () => {
   it('should call invoke correctly', async () => {
 
     const adaptSpy = jest
-      .spyOn((HancockEthereumSmartContractClient.prototype as any), 'adaptInvoke')
+      .spyOn((HancockEthereumSmartContractService.prototype as any), 'adaptInvoke')
       .mockImplementation(() => Promise.resolve({ data: 'whatever' }));
 
     const signTransactionAndSendSpy = jest
-      .spyOn(transactionClient as any, 'signAndSend')
+      .spyOn(transactionService as any, 'signAndSend')
       .mockImplementation(() => Promise.resolve('whatever'));
 
     await client.invoke('contractAddressOrAlias', 'method', ['params'], 'from', options);

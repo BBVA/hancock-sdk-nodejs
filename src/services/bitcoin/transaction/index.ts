@@ -1,7 +1,7 @@
 import { HancockSignResponse } from '../../hancock.model';
 
 // TODO: WIP - Implement it
-export class HancockBitcoinTransactionClient {
+export class HancockBitcoinTransactionService {
 
   constructor(config: any) {
     console.log('Not implemented');
