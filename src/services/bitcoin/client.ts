@@ -1,24 +1,22 @@
 import config from 'config';
 import merge from 'deepmerge';
-import { HancockProtocolClient } from '../common/protocol';
+import { HancockProtocolService } from '../common/protocol';
 import {
   HancockClient,
   HancockConfig,
   InitialHancockConfig,
 
 } from '../hancock.model';
-import { HancockBitcoinWalletClient } from './wallet';
+import { HancockBitcoinWalletService } from './wallet';
 
 export class HancockBitcoinClient implements HancockClient {
 
-  public wallet: HancockBitcoinWalletClient;
-  public protocol: HancockProtocolClient;
+  public wallet: HancockBitcoinWalletService;
+  public protocol: HancockProtocolService;
 
   // TODO: Work in progress integrating bitcoin
   public transaction: any;
   public transfer: any;
-  public smartContract: any;
-  public token: any;
 
   private config: InitialHancockConfig;
 
@@ -30,14 +28,12 @@ export class HancockBitcoinClient implements HancockClient {
 
     this.config = merge(config, cfg) as InitialHancockConfig;
 
-    this.wallet = new HancockBitcoinWalletClient(this.config);
-    this.protocol = new HancockProtocolClient(this.config);
+    this.wallet = new HancockBitcoinWalletService(this.config);
+    this.protocol = new HancockProtocolService(this.config);
 
     // TODO: Work in progress integrating bitcoin
-    // this.transaction = new HancockBitcoinTransactionClient(this.config);
-    // this.transfer = new HancockBitcoinTransferClient(this.config, this.transaction);
-    // this.smartContract = new HancockBitcoinSmartContractClient(this.config, this.transaction);
-    // this.token = new HancockBitcoinTokenClient(this.config, this.transaction);
+    // this.transaction = new HancockBitcoinTransactionService(this.config);
+    // this.transfer = new HancockBitcoinTransferService(this.config, this.transaction);
 
   }
 

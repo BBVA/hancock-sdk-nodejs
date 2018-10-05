@@ -55,7 +55,7 @@ const config = {
 }
 ```
 
-In node:
+- In node:
 
 ```javascript
 require('es6-promise').polyfill();
@@ -64,7 +64,15 @@ const HancockEthereumClient = require('@kst-hancock/sdk-client').HancockEthereum
 new HancockEthereumClient(config);
 ```
 
-In browser ES7 + some bundler:
+- In browser:
+
+We need to include the ethereumjs-tx module as an external deependency before the sdk:
+
+```html
+<script src="https://raw.githubusercontent.com/ethereumjs/browser-builds/master/dist/ethereumjs-tx/ethereumjs-tx-1.3.3.min.js"></script>
+```
+
+And then use the sdk as an ES6 module (or in module bundlers like webpack)
 
 ```javascript
 import * as es6Promise from 'es6-promise';
@@ -79,9 +87,9 @@ new HancockEthereumClient(config);
 [[HancockEthereumClient]] provides interfaces to interact with the blockchain 
 allowing common operation like transfers, balance consulting or smart contract interactions. Take a look at the diferent sections of the [docs](https://docs.kickstartteam.es/blockchainhub/kst-hancock-sdk-client/docs/index.html) to see examples of use:
 
-- [[HancockEthereumWalletClient]]
-- [[HancockEthereumTransferClient]]
-- [[HancockEthereumTransactionClient]]
-- [[HancockEthereumSmartContractClient]]
-- [[HancockEthereumTokenClient]]
-- [[HancockProtocolClient]]
+- [[HancockEthereumWalletService]]
+- [[HancockEthereumTransferService]]
+- [[HancockEthereumTransactionService]]
+- [[HancockEthereumSmartContractService]]
+- [[HancockEthereumTokenService]]
+- [[HancockProtocolService]]

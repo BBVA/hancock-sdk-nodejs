@@ -21,18 +21,18 @@ import {
 } from '../../hancock.model';
 import { EthereumAbi } from '../model';
 import { HancockEthereumSocket } from '../socket';
-import { HancockEthereumTransactionClient } from '../transaction';
+import { HancockEthereumTransactionService } from '../transaction';
 import { isAddress, isEmptyAny, normalizeAddress, normalizeAddressOrAlias } from '../utils';
 
 /**
- * [[include:HancockEthereumSmartContractClient.md]]
+ * [[include:HancockEthereumSmartContractService.md]]
  */
-export class HancockEthereumSmartContractClient {
+export class HancockEthereumSmartContractService {
 
   private adapterApiBaseUrl: string;
   private brokerBaseUrl: string;
 
-  constructor(private config: InitialHancockConfig, private transactionClient: HancockEthereumTransactionClient) {
+  constructor(private config: InitialHancockConfig, private transactionService: HancockEthereumTransactionService) {
     this.adapterApiBaseUrl = `${config.adapter.host}:${config.adapter.port}${config.adapter.base}`;
     this.brokerBaseUrl = `${config.broker.host}:${config.broker.port}${config.broker.base}`;
   }
@@ -68,7 +68,7 @@ export class HancockEthereumSmartContractClient {
       .adaptInvoke(contractAddressOrAlias, method, params, from)
       .then((resBody: HancockAdaptInvokeResponse) => {
 
-        return this.transactionClient.signAndSend(resBody.data, options);
+        return this.transactionService.signAndSend(resBody.data, options);
 
       });
 

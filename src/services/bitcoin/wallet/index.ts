@@ -12,9 +12,9 @@ import { BitcoinWallet, generateWallet } from '../signer';
 import { isAddress, normalizeAddress } from '../utils';
 
 /**
- * [[include:HancockBitcoinWalletClient.md]]
+ * [[include:HancockBitcoinWalletService.md]]
  */
-export class HancockBitcoinWalletClient {
+export class HancockBitcoinWalletService {
 
   private adapterApiBaseUrl: string;
 
@@ -46,10 +46,7 @@ export class HancockBitcoinWalletClient {
         (res: any) => checkStatus(res),
         (err: any) => errorHandler(err),
       )
-      .then((resBody: any) => {
-        console.log(resBody);
-        return new BigNumber(resBody.data.balance);
-      });
+      .then((resBody: any) => new BigNumber(resBody.data.balance));
   }
 
   /**

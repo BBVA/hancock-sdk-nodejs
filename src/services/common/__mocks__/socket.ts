@@ -9,4 +9,4 @@ export const __socketInstance__ = {
 };
 
 // tslint:disable-next-line:variable-name
-export const HancockEthereumSocket = jest.fn().mockImplementation(() => __socketInstance__);
+export const HancockSocket = jest.fn().mockImplementation(() => __socketInstance__);

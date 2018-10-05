@@ -1,4 +1,4 @@
-## HancockEthereumWalletClient
+## HancockEthereumWalletService
 
 ### Introduction
 

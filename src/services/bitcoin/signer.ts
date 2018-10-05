@@ -42,8 +42,6 @@ export function signTx(rawTx: BitcoinRawTransaction, privateKey: string): string
     txb.sign(index, keyPair);
   });
 
-  console.log(JSON.stringify(tx, null, 4));
-
   return txb.build().toHex();
 
 }

@@ -1,6 +1,6 @@
 import fetch from 'isomorphic-fetch';
 import 'jest';
-import { HancockProtocolClient } from '..';
+import { HancockProtocolService } from '..';
 import * as common from '../../../common';
 import { HancockError, hancockErrorType } from '../../../error';
 import * as response from '../__mocks__/responses';
@@ -9,9 +9,9 @@ jest.mock('isomorphic-fetch');
 jest.mock('../../utils');
 jest.mock('../../../common');
 
-describe('HancockProtocolClient', async () => {
+describe('HancockProtocolService', async () => {
 
-  let client: HancockProtocolClient;
+  let client: HancockProtocolService;
   const genericConfig = {
     host: 'genericHost',
     port: 1,
@@ -38,7 +38,7 @@ describe('HancockProtocolClient', async () => {
       broker: configBroker,
     };
 
-    client = new HancockProtocolClient(config);
+    client = new HancockProtocolService(config);
 
     callParamFetch = {
       method: 'POST',

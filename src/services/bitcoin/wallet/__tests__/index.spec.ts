@@ -1,7 +1,7 @@
 import { BigNumber } from 'bignumber.js';
 import fetch from 'isomorphic-fetch';
 import 'jest';
-import { HancockBitcoinWalletClient } from '..';
+import { HancockBitcoinWalletService } from '..';
 import * as common from '../../../common';
 import { HancockError, hancockErrorType } from '../../../error';
 import { hancockWalletError } from '../../../error';
@@ -14,9 +14,9 @@ jest.mock('../../../common/utils');
 jest.mock('../../../common');
 jest.mock('../../signer');
 
-describe('HancockBitcoinWalletClient', async () => {
+describe('HancockBitcoinWalletService', async () => {
 
-  let client: HancockBitcoinWalletClient;
+  let client: HancockBitcoinWalletService;
   const genericConfig = {
     host: 'genericHost',
     port: 1,
@@ -44,7 +44,7 @@ describe('HancockBitcoinWalletClient', async () => {
       broker: configBroker,
     };
 
-    client = new HancockBitcoinWalletClient(config);
+    client = new HancockBitcoinWalletService(config);
 
     callParamFetch = {
       method: 'POST',

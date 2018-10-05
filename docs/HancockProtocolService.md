@@ -1,4 +1,4 @@
-## HancockProtocolClient
+## HancockProtocolService
 
 ### Introduction
 

@@ -1,12 +1,12 @@
 import 'jest';
 
 import fetch from 'isomorphic-fetch';
-import { HancockEthereumTransferClient } from '..';
+import { HancockEthereumTransferService } from '..';
 import * as common from '../../../common';
 import { HancockError, hancockErrorType } from '../../../error';
 import * as response from '../../__mocks__/responses';
 import * as socket from '../../socket';
-import { HancockEthereumTransactionClient } from '../../transaction';
+import { HancockEthereumTransactionService } from '../../transaction';
 
 jest.mock('isomorphic-fetch');
 jest.mock('../../socket');
@@ -16,8 +16,8 @@ jest.mock('../../../common');
 
 describe('ethereum client', async () => {
 
-  let transactionClient: HancockEthereumTransactionClient;
-  let client: HancockEthereumTransferClient;
+  let transactionService: HancockEthereumTransactionService;
+  let client: HancockEthereumTransferService;
   const genericConfig = {
     host: 'genericHost',
     port: 1,
@@ -45,8 +45,8 @@ describe('ethereum client', async () => {
       broker: configBroker,
     };
 
-    transactionClient = new HancockEthereumTransactionClient(config);
-    client = new HancockEthereumTransferClient(config, transactionClient);
+    transactionService = new HancockEthereumTransactionService(config);
+    client = new HancockEthereumTransferService(config, transactionService);
 
     callParamFetch = {
       method: 'POST',
@@ -74,11 +74,11 @@ describe('ethereum client', async () => {
   it('should call transfer correctly', async () => {
 
     const adaptTransferSpy = jest
-      .spyOn((HancockEthereumTransferClient.prototype as any), 'adaptSend')
+      .spyOn((HancockEthereumTransferService.prototype as any), 'adaptSend')
       .mockImplementation(() => Promise.resolve({data: { test: 'test' }}));
 
     const signAndSendSpy = jest
-      .spyOn(transactionClient as any, 'signAndSend')
+      .spyOn(transactionService as any, 'signAndSend')
       .mockImplementation(() => Promise.resolve('ok!'));
 
     // tslint:disable-next-line:max-line-length

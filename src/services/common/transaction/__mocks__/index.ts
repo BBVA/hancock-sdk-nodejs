@@ -1,5 +1,5 @@
 // tslint:disable-next-line:variable-name
-export const __HancockEthereumTransactionServiceInstance__ = {
+export const __HancockTransactionServiceInstance__ = {
   send: jest.fn(),
   sendSigned: jest.fn(),
   sendToSignProvider: jest.fn(),
@@ -9,4 +9,4 @@ export const __HancockEthereumTransactionServiceInstance__ = {
 };
 
 // tslint:disable-next-line:variable-name
-export const HancockEthereumTransactionService = jest.fn().mockImplementation(() => __HancockEthereumTransactionServiceInstance__);
+export const HancockTransactionService = jest.fn().mockImplementation(() => __HancockTransactionServiceInstance__);

@@ -28,17 +28,17 @@ import {
   HancockTokenRegisterResponse,
   InitialHancockConfig,
 } from '../../hancock.model';
-import { HancockEthereumTransactionClient } from '../transaction';
+import { HancockEthereumTransactionService } from '../transaction';
 import { isAddress, isAddressAny, isEmptyAny, normalizeAddress, normalizeAddressOrAlias } from '../utils';
 
 /**
- * [[include:HancockEthereumTokenClient.md]]
+ * [[include:HancockEthereumTokenService.md]]
  */
-export class HancockEthereumTokenClient {
+export class HancockEthereumTokenService {
 
   private adapterApiBaseUrl: string;
 
-  constructor(private config: InitialHancockConfig, private transactionClient: HancockEthereumTransactionClient) {
+  constructor(private config: InitialHancockConfig, private transactionService: HancockEthereumTransactionService) {
     this.adapterApiBaseUrl = `${config.adapter.host}:${config.adapter.port}${config.adapter.base}`;
   }
 
@@ -108,7 +108,7 @@ export class HancockEthereumTokenClient {
       .adaptSend(from, to, value, addressOrAlias)
       .then((resBody: HancockAdaptInvokeResponse) => {
 
-        return this.transactionClient.signAndSend(resBody.data, options);
+        return this.transactionService.signAndSend(resBody.data, options);
 
       });
 
@@ -146,7 +146,7 @@ export class HancockEthereumTokenClient {
       .adaptTransferFrom(from, sender, to, value, addressOrAlias)
       .then((resBody: HancockAdaptInvokeResponse) => {
 
-        return this.transactionClient.signAndSend(resBody.data, options);
+        return this.transactionService.signAndSend(resBody.data, options);
 
       });
 
@@ -180,7 +180,7 @@ export class HancockEthereumTokenClient {
       .adaptAllowance(from, tokenOwner, spender, addressOrAlias)
       .then((resBody: HancockAdaptInvokeResponse) => {
 
-        return this.transactionClient.signAndSend(resBody.data, options);
+        return this.transactionService.signAndSend(resBody.data, options);
 
       });
 
@@ -244,7 +244,7 @@ export class HancockEthereumTokenClient {
       .adaptApprove(from, spender, value, addressOrAlias)
       .then((resBody: HancockAdaptInvokeResponse) => {
 
-        return this.transactionClient.signAndSend(resBody.data, options);
+        return this.transactionService.signAndSend(resBody.data, options);
 
       });
 
