@@ -10,6 +10,13 @@ def lint() {
 
 nodePipeline{
 
+  try {
+    sonar_shuttle_stage()
+  } catch (exc) {
+    echo 'Sonar shuttle stage crashed!'
+    echo 'Continue with the execution'
+  }
+
   stage("Build Package"){
     container("node"){
       sh """
