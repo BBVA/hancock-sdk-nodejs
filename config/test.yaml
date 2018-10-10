@@ -15,6 +15,7 @@ adapter:
       metadata: '/mockToken/__ADDRESS_OR_ALIAS__/mockMetadata'
       approve: '/mockToken/__ADDRESS_OR_ALIAS__/mockApprove'
       allowance: '/mockToken/__ADDRESS_OR_ALIAS__/mockAllowance'
+      findAll: '/mockToken'
     encode: '/mockEncode'
     decode: '/mockDecode'
 wallet:

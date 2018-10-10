@@ -5,6 +5,7 @@ import fetch from 'isomorphic-fetch';
 import * as ws from 'isomorphic-ws';
 import {
   HancockCallResponse,
+  HancockContractInstance,
   HancockInvokeOptions,
   HancockProtocolAction,
   HancockProtocolDecodeResponse,
@@ -1043,6 +1044,46 @@ describe('HancockEthereumClient integration tests', () => {
 
           const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
           expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockToken/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d/mockMetadata`);
+
+          expect(e).toEqual(new HancockError(hancockErrorType.Api, e.internalError, e.error, e.message));
+
+        }
+
+      });
+
+    });
+
+    describe('::findAllToken', () => {
+
+      it('should get all Tokens', async () => {
+
+        const dataResponse = { abiName: 'erc20', alias: 'tkn', address: 'mockedAddress' };
+
+        (fetch as any)
+          .once(JSON.stringify({ data: [dataResponse] }));
+
+        const result: HancockContractInstance[] = await clientInstance.token.getAllTokens();
+
+        const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
+        expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockToken`);
+
+        expect(result).toEqual([dataResponse]);
+
+      });
+
+      it('should try to get all tokens and fail if there is an error', async () => {
+
+        (fetch as any)
+          .mockRejectOnce(JSON.stringify(responses.GET_ALL_TOKENS_ERROR_RESPONSE), { status: 500 });
+
+        try {
+
+          await clientInstance.token.getAllTokens();
+
+        } catch (e) {
+
+          const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
+          expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockToken`);
 
           expect(e).toEqual(new HancockError(hancockErrorType.Api, e.internalError, e.error, e.message));
 

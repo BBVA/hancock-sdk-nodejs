@@ -93,6 +93,15 @@ export interface HancockRegisterRequest {
   abi: any;
 }
 
+// Retrieve
+
+/** @hidden */
+export interface HancockContractInstance {
+  alias: string;
+  address: DltAddress;
+  abiName: string;
+}
+
 // tslint:disable-next-line:no-empty-interface
 export interface HancockRegisterResponse extends HancockGenericResponse {
 }

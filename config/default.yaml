@@ -14,7 +14,8 @@ adapter:
       balance: '/__DLT__/token/__ADDRESS_OR_ALIAS__/balanceOf/__ADDRESS__'
       metadata: '/__DLT__/token/__ADDRESS_OR_ALIAS__/metadata'
       approve: '/__DLT__/token/__ADDRESS_OR_ALIAS__/approve'
-      allowance: '/__DLT__/token/__ADDRESS_OR_ALIAS__/allowance'    
+      allowance: '/__DLT__/token/__ADDRESS_OR_ALIAS__/allowance'   
+      findAll: '/__DLT__/token'    
     encode: '/protocol/encode'
     decode: '/protocol/decode'
 wallet:
