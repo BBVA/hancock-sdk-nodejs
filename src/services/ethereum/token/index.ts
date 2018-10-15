@@ -1,9 +1,9 @@
 
 import fetch from 'isomorphic-fetch';
 import {
-  HancockContractInstance,
   HancockTokenAllowanceRequest,
   HancockTokenApproveRequest,
+  HancockTokenInstance,
   HancockTokenMetadataResponse,
   HancockTokenTransferRequest,
 } from '../..';
@@ -280,7 +280,7 @@ export class HancockEthereumTokenService {
    * Get the list of all tokens registered in Hancock
    * @returns The list of all tokens registered in Hancock
    */
-  public async getAllTokens(): Promise<HancockContractInstance[]> {
+  public async getAllTokens(): Promise<HancockTokenInstance[]> {
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.findAll}`
     .replace(/__DLT__/, SupportedPlatforms.ethereum);

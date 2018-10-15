@@ -17,6 +17,7 @@ import {
   HancockSendTxResponse,
   HancockSignResponse,
   HancockSocketMessage,
+  HancockTokenInstance,
   HancockTokenMetadataResponse,
 } from '../..';
 import { HancockEthereumClient } from '../../..';
@@ -1062,7 +1063,7 @@ describe('HancockEthereumClient integration tests', () => {
         (fetch as any)
           .once(JSON.stringify({ data: [dataResponse] }));
 
-        const result: HancockContractInstance[] = await clientInstance.token.getAllTokens();
+        const result: HancockTokenInstance[] = await clientInstance.token.getAllTokens();
 
         const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
         expect(firstApiCall[0]).toEqual(`http://mockAdapter:6666/mockBase/mockToken`);

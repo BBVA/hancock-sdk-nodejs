@@ -102,6 +102,17 @@ export interface HancockContractInstance {
   abiName: string;
 }
 
+/** @hidden */
+export interface HancockTokenInstance {
+  alias: string;
+  address: DltAddress;
+  abiName: string;
+  name: string;
+  symbol: string;
+  decimals: number;
+  totalSupply: number;
+}
+
 // tslint:disable-next-line:no-empty-interface
 export interface HancockRegisterResponse extends HancockGenericResponse {
 }
