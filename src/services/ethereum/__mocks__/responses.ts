@@ -106,6 +106,25 @@ export const GET_TOKEN_METADATA_ERROR_RESPONSE = {
   },
 };
 
+export const GET_ALL_TOKENS_RESPONSE = {
+  result: {
+    code: 200,
+    description: 'Ethereum Token - Operation successfully requested',
+  },
+  data: [{
+    address: 'mockedAddress',
+    alias: 'mockedAlias',
+    abiName: 'erc20',
+  }],
+};
+
+export const GET_ALL_TOKENS_ERROR_RESPONSE = {
+  result: {
+    code: 500,
+    description: 'Ethereum Token - Blockchain request error',
+  },
+};
+
 export const COMMON_RESPONSE_ERROR = {
   code_internal: 'DC4000',
   code_http: 400,

@@ -30,6 +30,7 @@ describe('ethereum client', async () => {
         metadata: '/mockToken/__ADDRESS_OR_ALIAS__/mockMetadata',
         approve: '/mockToken/__ADDRESS_OR_ALIAS__/mockApprove',
         allowance: '/mockToken/__ADDRESS_OR_ALIAS__/mockAllowance',
+        findAll: '/mockToken',
       },
      },
   };
@@ -164,7 +165,46 @@ describe('ethereum client', async () => {
     });
   });
 
-  describe('::getMetadata', () => {
+  describe('::getAllTokens', () => {
+
+    it('should call getAllTokens correctly', async () => {
+
+      (fetch as any).once(JSON.stringify(response.GET_ALL_TOKENS_RESPONSE));
+
+      const checkStatusSpy = checkStatusMock
+        .mockImplementation((res) => Promise.resolve(res.json()));
+
+      const result = await client.getAllTokens();
+
+      expect(fetch).toHaveBeenCalledWith(
+        'genericHost:1genericBase/mockToken',
+      );
+      expect(checkStatusSpy).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(response.GET_ALL_TOKENS_RESPONSE.data);
+
+    });
+
+    it('should call getAllTokens and throw error', async () => {
+
+      (fetch as any).mockRejectOnce(JSON.stringify(response.GET_ALL_TOKENS_ERROR_RESPONSE), { status: 500 });
+
+      const checkStatusSpy = errorHandlerMock
+        .mockImplementation((res) => { throw new HancockError(hancockErrorType.Api, '002', JSON.parse(res).result.code, JSON.parse(res).result.description); });
+
+      try {
+        await client.getAllTokens();
+        fail('it should fail');
+      } catch (error) {
+        expect(fetch).toHaveBeenCalledWith(
+          'genericHost:1genericBase/mockToken',
+        );
+        expect(error).toEqual(new HancockError(hancockErrorType.Api, '002', 500, response.GET_ALL_TOKENS_ERROR_RESPONSE.result.description));
+      }
+
+    });
+  });
+
+  describe('::getBalance', () => {
 
     it('should call getBalance correctly', async () => {
 

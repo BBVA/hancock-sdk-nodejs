@@ -1,6 +1,7 @@
 
 import fetch from 'isomorphic-fetch';
 import {
+  HancockContractInstance,
   HancockTokenAllowanceRequest,
   HancockTokenApproveRequest,
   HancockTokenMetadataResponse,
@@ -264,6 +265,25 @@ export class HancockEthereumTokenService {
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.metadata}`
       .replace(/__DLT__/, SupportedPlatforms.ethereum)
       .replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
+
+    return fetch(url)
+      .then(
+        (res: any) => checkStatus(res),
+        (err: any) => errorHandler(err),
+      )
+      .then((resBody: any) => {
+        return resBody.data;
+      });
+  }
+
+  /**
+   * Get the list of all tokens registered in Hancock
+   * @returns The list of all tokens registered in Hancock
+   */
+  public async getAllTokens(): Promise<HancockContractInstance[]> {
+
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.findAll}`
+    .replace(/__DLT__/, SupportedPlatforms.ethereum);
 
     return fetch(url)
       .then(
