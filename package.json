@@ -32,7 +32,7 @@
     "sdk",
     "client"
   ],
-  "author": "Angel Manzano Alcaraz <angel.manzano.contractor@bbva.com>",
+  "author": "BBVA NDB - R&D Team",
   "license": "ISC",
   "publishConfig": {
     "registry": "https://dev.npm.kickstartteam.es"
