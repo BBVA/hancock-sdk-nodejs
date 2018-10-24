@@ -1,5 +1,4 @@
 import { HancockSocket } from './../common/socket';
-import { normalizeAddressOrAlias } from './utils';
 
 /**
  * Manages events emmited by the ethereum blockchain network
@@ -17,8 +16,7 @@ export class HancockEthereumSocket extends HancockSocket {
    */
   public addContract(contracts: string[]) {
     if (contracts.length > 0) {
-      const normalizedAddressesOrAliases: string[] = contracts.map((addrOrAlias: string) => normalizeAddressOrAlias(addrOrAlias));
-      this.sendMessage('watch-contracts', normalizedAddressesOrAliases);
+      this.sendMessage('watch-contracts', contracts);
     }
   }
 

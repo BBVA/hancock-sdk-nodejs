@@ -20,26 +20,26 @@ describe('common', async () => {
 
   });
 
-  it('should call checkStatus and throw error', async () => {
+  // it('should call checkStatus and throw error', async () => {
 
-    const checkstatusparam = {
-      ok: false,
-      json: () => 'response',
-    };
+  //   const checkstatusparam = {
+  //     ok: false,
+  //     json: () => 'response',
+  //   };
 
-    const answer = {
-      body: 'response',
-    };
+  //   const answer = {
+  //     body: 'response',
+  //   };
 
-    const checkStatusSpy = jest.spyOn(common, 'errorHandler')
-      .mockImplementation((res) => Promise.resolve(res));
+  //   const checkStatusSpy = jest.spyOn(common, 'errorHandler')
+  //     .mockImplementation((res) => Promise.resolve(res));
 
-    const result = await common.checkStatus(checkstatusparam);
+  //   const result = await common.checkStatus(checkstatusparam);
 
-    expect(checkStatusSpy).toHaveBeenCalledTimes(1);
-    expect(checkStatusSpy).toHaveBeenCalledWith(answer);
+  //   expect(checkStatusSpy).toHaveBeenCalledTimes(1);
+  //   expect(checkStatusSpy).toHaveBeenCalledWith(answer);
 
-  });
+  // });
 
   it('should call errorHandler with error correctly', async () => {
 

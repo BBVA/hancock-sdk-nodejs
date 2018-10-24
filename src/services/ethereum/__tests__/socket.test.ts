@@ -70,15 +70,14 @@ describe('HancockEthereumSocket integration tests', () => {
 
   describe('::addTransfer', () => {
 
-    const addresses: string[] = ['F01B3C2131FB5BD8D1D1E5D44F8AD14A2728EC91', '187ACE2D9051D74296A8E4E154D652B8B6EC4738'];
-    const normalizedAddresses: string[] = ['0xf01b3c2131fb5bd8d1d1e5d44f8ad14a2728ec91', '0x187ace2d9051d74296a8e4e154d652b8b6ec4738'];
+    const addresses: string[] = ['0xf01b3c2131fb5bd8d1d1e5d44f8ad14a2728ec91', '0x187ace2d9051d74296a8e4e154d652b8b6ec4738'];
     const socketSend: jest.Mock = socketInstance.send;
 
     it('should sent the given list of addresses to the transfers watch list of broker service', async () => {
 
       const expectedMessage: HancockSocketMessage = {
         kind: 'watch-transfers',
-        body: normalizedAddresses,
+        body: addresses,
         consumer,
       };
 
@@ -114,15 +113,14 @@ describe('HancockEthereumSocket integration tests', () => {
 
   describe('::addTransaction', () => {
 
-    const addresses: string[] = ['F01B3C2131FB5BD8D1D1E5D44F8AD14A2728EC91', '187ACE2D9051D74296A8E4E154D652B8B6EC4738'];
-    const normalizedAddresses: string[] = ['0xf01b3c2131fb5bd8d1d1e5d44f8ad14a2728ec91', '0x187ace2d9051d74296a8e4e154d652b8b6ec4738'];
+    const addresses: string[] = ['0xf01b3c2131fb5bd8d1d1e5d44f8ad14a2728ec91', '0x187ace2d9051d74296a8e4e154d652b8b6ec4738'];
     const socketSend: jest.Mock = socketInstance.send;
 
     it('should sent the given list of addresses to the transfers watch list of broker service', async () => {
 
       const expectedMessage: HancockSocketMessage = {
         kind: 'watch-transactions',
-        body: normalizedAddresses,
+        body: addresses,
         consumer,
       };
 
@@ -158,15 +156,14 @@ describe('HancockEthereumSocket integration tests', () => {
 
   describe('::addContract', () => {
 
-    const addressesOrAliases: string[] = ['mockedAlias', '187ACE2D9051D74296A8E4E154D652B8B6EC4738'];
-    const normalizedAddressesOrAliases: string[] = ['mocked-alias', '0x187ace2d9051d74296a8e4e154d652b8b6ec4738'];
+    const addressesOrAliases: string[] = ['mockedAlias', '0x187ace2d9051d74296a8e4e154d652b8b6ec4738'];
     const socketSend: jest.Mock = socketInstance.send;
 
     it('should sent the given list of addresses or aliases to the contract events watch list of broker service', async () => {
 
       const expectedMessage: HancockSocketMessage = {
         kind: 'watch-contracts',
-        body: normalizedAddressesOrAliases,
+        body: addressesOrAliases,
         consumer,
       };
 
