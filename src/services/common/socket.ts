@@ -1,7 +1,6 @@
 import { EventEmitter } from 'events';
 import WebSocket from 'isomorphic-ws';
 import { HancockSocketBody, HancockSocketKind, HancockSocketMessage } from '..';
-import { normalizeAddress, normalizeAddressOrAlias } from '../ethereum/utils';
 
 /**
  * Manages events emmited by the blockchain network
@@ -33,8 +32,7 @@ export class HancockSocket extends EventEmitter {
    */
   public addTransfer(addresses: string[]) {
     if (addresses.length > 0) {
-      const normalizedAddresses: string[] = addresses.map((addr: string) => normalizeAddress(addr));
-      this.sendMessage('watch-transfers', normalizedAddresses);
+      this.sendMessage('watch-transfers', addresses);
     }
   }
 
@@ -45,8 +43,7 @@ export class HancockSocket extends EventEmitter {
    */
   public addTransaction(addresses: string[]) {
     if (addresses.length > 0) {
-      const normalizedAddresses: string[] = addresses.map((addr: string) => normalizeAddress(addr));
-      this.sendMessage('watch-transactions', normalizedAddresses);
+      this.sendMessage('watch-transactions', addresses);
     }
   }
 
@@ -57,8 +54,7 @@ export class HancockSocket extends EventEmitter {
    */
   public addContract(contracts: string[]) {
     if (contracts.length > 0) {
-      const normalizedAddressesOrAliases: string[] = contracts.map((addrOrAlias: string) => normalizeAddressOrAlias(addrOrAlias));
-      this.sendMessage('watch-contracts', normalizedAddressesOrAliases);
+      this.sendMessage('watch-contracts', contracts);
     }
   }
 

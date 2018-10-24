@@ -12,7 +12,6 @@ import { isEmpty } from '../../common/utils';
 import {
   hancockFormatParameterError,
   hancockInvalidParameterError,
-  hancockNoKeyNorProviderError,
 } from '../../error';
 import {
   HancockTokenTransferFromRequest,
@@ -99,9 +98,6 @@ export class HancockEthereumTokenService {
     if (!isAddressAny(to, from)) {
       return Promise.reject(error(hancockFormatParameterError));
     }
-    if (!options.signProvider && !options.privateKey) {
-      return Promise.reject(error(hancockNoKeyNorProviderError));
-    }
 
     return this
       .adaptSend(from, to, value, addressOrAlias)
@@ -137,9 +133,6 @@ export class HancockEthereumTokenService {
     if (!isAddressAny(to, from)) {
       return Promise.reject(error(hancockFormatParameterError));
     }
-    if (!options.signProvider && !options.privateKey) {
-      return Promise.reject(error(hancockNoKeyNorProviderError));
-    }
 
     return this
       .adaptTransferFrom(from, sender, to, value, addressOrAlias)
@@ -170,9 +163,6 @@ export class HancockEthereumTokenService {
     }
     if (!isAddressAny(from, spender)) {
       return Promise.reject(error(hancockFormatParameterError));
-    }
-    if (!options.signProvider && !options.privateKey) {
-      return Promise.reject(error(hancockNoKeyNorProviderError));
     }
 
     return this
@@ -232,9 +222,6 @@ export class HancockEthereumTokenService {
     }
     if (!isAddressAny(from, spender)) {
       return Promise.reject(error(hancockFormatParameterError));
-    }
-    if (!options.signProvider && !options.privateKey) {
-      return Promise.reject(error(hancockNoKeyNorProviderError));
     }
 
     return this
