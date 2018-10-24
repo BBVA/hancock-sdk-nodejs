@@ -25,7 +25,7 @@ export const errorHandler = (err: any) => {
 export const checkStatus = async (response: any): Promise<any> => {
   // HTTP status code between 200 and 299
   if (!response.ok) {
-    module.exports.errorHandler({body: response.json()});
+    errorHandler({body: response.json()});
   }
 
   return response.json();

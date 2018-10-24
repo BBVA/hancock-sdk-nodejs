@@ -16,7 +16,7 @@ import {
 } from '../../hancock.model';
 import { HancockBitcoinSocket } from '../socket';
 import { HancockBitcoinTransactionService } from '../transaction';
-import { isAddressAny, isEmptyAny, normalizeAddress } from '../utils';
+import { isAddressAny, isEmptyAny } from '../utils';
 
 /**
  * [[include:HancockBitcoinTransferService.md]]
@@ -93,8 +93,6 @@ export class HancockBitcoinTransferService {
     if (!isAddressAny(from, to)) {
       return Promise.reject(error(hancockFormatParameterError));
     }
-    from = normalizeAddress(from);
-    to = normalizeAddress(to);
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.transfer}`
       .replace(/__DLT__/, SupportedPlatforms.bitcoin);

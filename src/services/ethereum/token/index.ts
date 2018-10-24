@@ -8,7 +8,7 @@ import {
   HancockTokenTransferRequest,
 } from '../..';
 import { checkStatus, error, errorHandler, SupportedPlatforms } from '../../common';
-import { isEmpty, normalizeAlias } from '../../common/utils';
+import { isEmpty } from '../../common/utils';
 import {
   hancockFormatParameterError,
   hancockInvalidParameterError,
@@ -30,7 +30,7 @@ import {
   InitialHancockConfig,
 } from '../../hancock.model';
 import { HancockEthereumTransactionService } from '../transaction';
-import { isAddress, isAddressAny, isEmptyAny, normalizeAddress, normalizeAddressOrAlias } from '../utils';
+import { isAddress, isAddressAny, isEmptyAny } from '../utils';
 
 /**
  * [[include:HancockEthereumTokenService.md]]
@@ -57,8 +57,6 @@ export class HancockEthereumTokenService {
     if (!isAddress(address)) {
       return Promise.reject(error(hancockFormatParameterError));
     }
-    alias = normalizeAlias(alias);
-    address = normalizeAddress(address);
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.register}`
       .replace(/__DLT__/, SupportedPlatforms.ethereum);
@@ -201,8 +199,6 @@ export class HancockEthereumTokenService {
     if (!isAddress(tokenOwner)) {
       return Promise.reject(error(hancockFormatParameterError));
     }
-    tokenOwner = normalizeAddress(tokenOwner);
-    addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.balance}`
       .replace(/__DLT__/, SupportedPlatforms.ethereum)
       .replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias)
@@ -261,7 +257,7 @@ export class HancockEthereumTokenService {
     if (isEmpty(addressOrAlias)) {
       return Promise.reject(error(hancockInvalidParameterError));
     }
-    addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
+
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.metadata}`
       .replace(/__DLT__/, SupportedPlatforms.ethereum)
       .replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
@@ -303,9 +299,6 @@ export class HancockEthereumTokenService {
     if (!isAddressAny(from, spender)) {
       return Promise.reject(error(hancockFormatParameterError));
     }
-    from = normalizeAddressOrAlias(from);
-    spender = normalizeAddress(spender);
-    addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.approve}`
       .replace(/__DLT__/, SupportedPlatforms.ethereum)
@@ -336,10 +329,6 @@ export class HancockEthereumTokenService {
     if (!isAddressAny(from, sender, to)) {
       return Promise.reject(error(hancockFormatParameterError));
     }
-    from = normalizeAddress(from);
-    sender = normalizeAddress(sender);
-    to = normalizeAddress(to);
-    addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.transferFrom}`
       .replace(/__DLT__/, SupportedPlatforms.ethereum)
@@ -371,9 +360,6 @@ export class HancockEthereumTokenService {
     if (!isAddressAny(from, to)) {
       return Promise.reject(error(hancockFormatParameterError));
     }
-    from = normalizeAddress(from);
-    to = normalizeAddress(to);
-    addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.transfer}`
       .replace(/__DLT__/, SupportedPlatforms.ethereum)
@@ -404,10 +390,6 @@ export class HancockEthereumTokenService {
     if (!isAddressAny(from, spender, tokenOwner)) {
       return Promise.reject(error(hancockFormatParameterError));
     }
-    from = normalizeAddress(from);
-    tokenOwner = normalizeAddress(tokenOwner);
-    spender = normalizeAddress(spender);
-    addressOrAlias = normalizeAddressOrAlias(addressOrAlias);
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.allowance}`
       .replace(/__DLT__/, SupportedPlatforms.ethereum)

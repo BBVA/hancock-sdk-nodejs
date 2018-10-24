@@ -1,6 +1,5 @@
 import fetch from 'isomorphic-fetch';
 import { checkStatus, error, errorHandler, SupportedPlatforms } from '../../common';
-import { normalizeAlias } from '../../common/utils';
 import {
   hancockFormatParameterError,
   hancockInvalidParameterError, hancockNoKeyNorProviderError,
@@ -22,7 +21,7 @@ import {
 import { EthereumAbi } from '../model';
 import { HancockEthereumSocket } from '../socket';
 import { HancockEthereumTransactionService } from '../transaction';
-import { isAddress, isEmptyAny, normalizeAddress, normalizeAddressOrAlias } from '../utils';
+import { isAddress, isEmptyAny } from '../utils';
 
 /**
  * [[include:HancockEthereumSmartContractService.md]]
@@ -90,11 +89,10 @@ export class HancockEthereumSmartContractService {
     if (!isAddress(from)) {
       return Promise.reject(error(hancockFormatParameterError));
     }
-    const normalizedContractAddressOrAlias: string = normalizeAddressOrAlias(contractAddressOrAlias);
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invoke}`
       .replace(/__DLT__/, SupportedPlatforms.ethereum)
-      .replace(/__ADDRESS_OR_ALIAS__/, normalizedContractAddressOrAlias);
+      .replace(/__ADDRESS_OR_ALIAS__/, contractAddressOrAlias);
 
     const body: HancockCallRequest = {
       method,
@@ -130,8 +128,6 @@ export class HancockEthereumSmartContractService {
     if (!isAddress(address)) {
       return Promise.reject(error(hancockFormatParameterError));
     }
-    alias = normalizeAlias(alias);
-    address = normalizeAddress(address);
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.register}`
       .replace(/__DLT__/, SupportedPlatforms.ethereum);
@@ -178,11 +174,9 @@ export class HancockEthereumSmartContractService {
 
   private async adaptInvoke(contractAddressOrAlias: string, method: string, params: string[], from: string): Promise<HancockAdaptInvokeResponse> {
 
-    const normalizedContractAddressOrAlias: string = normalizeAddressOrAlias(contractAddressOrAlias);
-
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invoke}`
     .replace(/__DLT__/, SupportedPlatforms.ethereum)
-    .replace(/__ADDRESS_OR_ALIAS__/, normalizedContractAddressOrAlias);
+    .replace(/__ADDRESS_OR_ALIAS__/, contractAddressOrAlias);
 
     const body: HancockAdaptInvokeRequest = {
       method,

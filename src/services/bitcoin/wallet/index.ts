@@ -9,7 +9,7 @@ import {
 } from '../../error';
 import { InitialHancockConfig } from '../../hancock.model';
 import { BitcoinWallet, generateWallet } from '../signer';
-import { isAddress, normalizeAddress } from '../utils';
+import { isAddress } from '../utils';
 
 /**
  * [[include:HancockBitcoinWalletService.md]]
@@ -35,7 +35,6 @@ export class HancockBitcoinWalletService {
     if (!isAddress(address)) {
       return Promise.reject(error(hancockFormatParameterError));
     }
-    address = normalizeAddress(address);
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.balance}`
       .replace(/__DLT__/, SupportedPlatforms.bitcoin)
