@@ -26,6 +26,7 @@ describe('HancockEthereumSmartContractService', async () => {
     base: 'genericBase',
     resources: {
       invoke: '/mockInvoke/__ADDRESS_OR_ALIAS__',
+      invokeAbi: '/mockInvoke/abi',
       register: '/mockRegister',
       events: '/mockEvents',
     },
@@ -35,7 +36,9 @@ describe('HancockEthereumSmartContractService', async () => {
   const configWallet: any = genericConfig;
   const configBroker: any = genericConfig;
   let callParamFetch: any;
+  let callParamAbiFetch: any;
   let options: any;
+  let abi: any;
 
   const checkStatusMock: jest.Mock = common.checkStatus as any;
   const errorHandlerMock: jest.Mock = common.errorHandler as any;
@@ -57,6 +60,19 @@ describe('HancockEthereumSmartContractService', async () => {
         from: 'from',
         params: ['params'],
         action: 'send',
+      }),
+    };
+
+    callParamAbiFetch = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        method: 'method',
+        from: 'from',
+        params: ['params'],
+        action: 'send',
+        to: 'contractAddressOrAlias',
+        abi: ['abi'],
       }),
     };
 
@@ -101,6 +117,58 @@ describe('HancockEthereumSmartContractService', async () => {
 
   });
 
+  it('should call invokeAbi correctly', async () => {
+
+    const adaptSpy = jest
+      .spyOn((HancockEthereumSmartContractService.prototype as any), 'adaptInvokeAbi')
+      .mockImplementation(() => Promise.resolve({ data: 'whatever' }));
+
+    const signTransactionAndSendSpy = jest
+      .spyOn(transactionService as any, 'signAndSend')
+      .mockImplementation(() => Promise.resolve('whatever'));
+
+    await client.invokeAbi('contractAddressOrAlias', 'method', ['params'], 'from', options, abi);
+
+    expect(adaptSpy).toHaveBeenCalledWith('contractAddressOrAlias', 'method', ['params'], 'from', 'send', abi);
+    expect(signTransactionAndSendSpy).toHaveBeenCalledWith('whatever', options);
+
+  });
+
+  it('should call invokeAbi and throw reject', async () => {
+
+    try {
+      await client.invokeAbi('contractAddressOrAlias', 'method', ['params'], 'from', {} , abi);
+      fail('it should fail');
+    } catch (error) {
+      expect(errorFnMock).toHaveBeenCalledWith(new HancockError(hancockErrorType.Internal, '002', 500, 'No key nor provider'));
+      expect(error).toEqual(new HancockError(hancockErrorType.Internal, '002', 500, 'No key nor provider'));
+    }
+
+  });
+
+  it('should call callAbi correctly', async () => {
+
+    const adaptSpy = jest
+      .spyOn((HancockEthereumSmartContractService.prototype as any), 'adaptInvokeAbi')
+      .mockImplementation(() => Promise.resolve({ data: 'whatever' }));
+
+    await client.callAbi('contractAddressOrAlias', 'method', ['params'], 'from', options, abi);
+
+    expect(adaptSpy).toHaveBeenCalledWith('contractAddressOrAlias', 'method', ['params'], 'from', 'call', abi);
+
+  });
+
+  it('should call callAbi and throw reject', async () => {
+
+    try {
+      await client.callAbi('contractAddressOrAlias', 'method', ['params'], 'from', {} , abi);
+      fail('it should fail');
+    } catch (error) {
+      expect(errorFnMock).toHaveBeenCalledWith(new HancockError(hancockErrorType.Internal, '002', 500, 'No key nor provider'));
+      expect(error).toEqual(new HancockError(hancockErrorType.Internal, '002', 500, 'No key nor provider'));
+    }
+
+  });
   it('should call call correctly', async () => {
 
     (fetch as any).once(JSON.stringify(response.SC_INVOKE_ADAPT_RESPONSE));
@@ -183,6 +251,44 @@ describe('HancockEthereumSmartContractService', async () => {
       expect(fetch).toHaveBeenCalledWith(
         'genericHost:1genericBase/mockInvoke/contractAddressOrAlias',
         callParamFetch,
+      );
+      expect(error).toEqual(new HancockError(hancockErrorType.Api, '001', 500, 'testError'));
+    }
+
+  });
+
+  it('should call adaptInvokeAbi correctly', async () => {
+
+    (fetch as any).once(JSON.stringify(response.SC_INVOKE_ADAPT_RESPONSE));
+
+    const checkStatusSpy = checkStatusMock
+      .mockImplementation((res) => Promise.resolve(res.json()));
+
+    const result = await (client as any).adaptInvokeAbi('contractAddressOrAlias', 'method', ['params'], 'from', 'send', ['abi']);
+
+    expect(fetch).toHaveBeenCalledWith(
+      'genericHost:1genericBase/mockInvoke/abi',
+      callParamAbiFetch,
+    );
+    expect(checkStatusSpy).toHaveBeenCalledTimes(1);
+    expect(result).toEqual(response.SC_INVOKE_ADAPT_RESPONSE);
+
+  });
+
+  it('should call adaptInvokeAbi and throw error', async () => {
+
+    (fetch as any).mockRejectOnce(JSON.stringify(response.ERROR));
+
+    const checkStatusSpy = errorHandlerMock
+      .mockImplementation(() => { throw new HancockError(hancockErrorType.Api, '001', 500, 'testError'); });
+
+    try {
+      await (client as any).adaptInvokeAbi('contractAddressOrAlias', 'method', ['params'], 'from', 'send', ['abi']);
+      fail('it should fail');
+    } catch (error) {
+      expect(fetch).toHaveBeenCalledWith(
+        'genericHost:1genericBase/mockInvoke/abi',
+        callParamAbiFetch,
       );
       expect(error).toEqual(new HancockError(hancockErrorType.Api, '001', 500, 'testError'));
     }

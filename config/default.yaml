@@ -4,6 +4,7 @@ adapter:
   base: ''
   resources:
     invoke: '/__DLT__/smartcontracts/invoke/__ADDRESS_OR_ALIAS__'
+    invokeAbi: '/__DLT__/smartcontracts/invoke/abi'
     register: '/__DLT__/smartcontracts/register'
     balance: '/__DLT__/balance/__ADDRESS__'
     transfer: '/__DLT__/transfers'

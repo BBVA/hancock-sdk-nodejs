@@ -41,6 +41,12 @@ export interface HancockCallRequest extends HancockInvokeRequest {
   action: 'call';
 }
 
+/** @hidden */
+export interface HancockAdaptInvokeAbiRequest extends HancockInvokeRequest {
+  abi : any;
+  to : string;
+}
+
 export interface HancockAdaptInvokeResponse extends HancockGenericResponse {
   data: DltRawTransaction;
 }
