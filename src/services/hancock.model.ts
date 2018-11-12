@@ -327,7 +327,11 @@ export interface HancockClient {
   };
   smartContract?: {
     invoke(contractAddress: string, method: string, params: string[], from: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
+    invokeAbi(contractAddressOrAlias: string, method: string, params: string[], from: string, options: HancockInvokeOptions , abi: any)
+    : Promise<HancockSignResponse>;
     call(contractAddress: string, method: string, params: string[], from: string): Promise<HancockCallResponse>;
+    callAbi(contractAddressOrAlias: string, method: string, params: string[], from: string, options: HancockInvokeOptions, abi: any)
+    : Promise<HancockCallResponse>;
     subscribe(contracts: string[]): HancockEthereumSocket;
   };
   token?: {

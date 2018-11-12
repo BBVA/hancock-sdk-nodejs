@@ -155,7 +155,7 @@ export class HancockEthereumSmartContractService {
 
   }
 
-    /**
+  /**
    * Makes an invocation to an smart contract method with abi.
    * Invocations are used to call smart contract methods that writes information in the blockchain consuming gas
    * @param contractAddressOrAlias Address or alias of the smart contract registered in Hancock
