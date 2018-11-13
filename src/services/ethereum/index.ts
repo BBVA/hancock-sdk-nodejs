@@ -7,3 +7,5 @@ export { HancockEthereumTokenService } from './token';
 export { HancockEthereumTransactionService } from './transaction';
 export { HancockEthereumTransferService } from './transfer';
 export { HancockEthereumWalletService } from './wallet';
+
+export { isAddress, isAddressAny, isEmptyAny } from './utils';

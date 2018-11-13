@@ -167,15 +167,9 @@ export class HancockEthereumSmartContractService {
    * @returns The returned value from the smart contract method
    */
   public async callAbi(
-    contractAddressOrAlias: string, method: string, params: string[], from: string, options: HancockInvokeOptions = {}, abi: any
+    contractAddressOrAlias: string, method: string, params: string[], from: string, abi: any
   ): Promise<HancockCallResponse> {
-
-    // Done in adaptInvoke
-    // const normalizedContractAddressOrAlias: string = normalizeAddressOrAlias(contractAddressOrAlias);
-
-    if (!options.signProvider && !options.privateKey) {
-      return Promise.reject(error(hancockNoKeyNorProviderError));
-    }
+    
     if (isEmptyAny(contractAddressOrAlias, from, method)) {
       return Promise.reject(error(hancockInvalidParameterError));
     }
