@@ -238,6 +238,7 @@ export class HancockEthereumSmartContractService {
   public subscribe(contracts: string[] = [], consumer: string = ''): HancockEthereumSocket {
 
     const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`
+      .replace(/__DLT__/, SupportedPlatforms.ethereum)
       .replace(/__ADDRESS__/, '')
       .replace(/__SENDER__/, '')
       .replace(/__CONSUMER__/, consumer);
