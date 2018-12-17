@@ -152,23 +152,12 @@ describe('HancockEthereumSmartContractService', async () => {
       .spyOn((HancockEthereumSmartContractService.prototype as any), 'adaptInvokeAbi')
       .mockImplementation(() => Promise.resolve({ data: 'whatever' }));
 
-    await client.callAbi('contractAddressOrAlias', 'method', ['params'], 'from', options, abi);
+    await client.callAbi('contractAddressOrAlias', 'method', ['params'], 'from', abi);
 
     expect(adaptSpy).toHaveBeenCalledWith('contractAddressOrAlias', 'method', ['params'], 'from', 'call', abi);
 
   });
-
-  it('should call callAbi and throw reject', async () => {
-
-    try {
-      await client.callAbi('contractAddressOrAlias', 'method', ['params'], 'from', {} , abi);
-      fail('it should fail');
-    } catch (error) {
-      expect(errorFnMock).toHaveBeenCalledWith(new HancockError(hancockErrorType.Internal, '002', 500, 'No key nor provider'));
-      expect(error).toEqual(new HancockError(hancockErrorType.Internal, '002', 500, 'No key nor provider'));
-    }
-
-  });
+  
   it('should call call correctly', async () => {
 
     (fetch as any).once(JSON.stringify(response.SC_INVOKE_ADAPT_RESPONSE));

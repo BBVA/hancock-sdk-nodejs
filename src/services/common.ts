@@ -1,7 +1,6 @@
 import { HancockError, hancockErrorType, hancockGenericApiError } from './error';
 
 export enum SupportedPlatforms {
-  'bitcoin' = 'bitcoin',
   'ethereum' = 'ethereum',
 }
 

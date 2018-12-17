@@ -1,4 +1,3 @@
-export * from './bitcoin/client';
 
 export * from './ethereum';
 
