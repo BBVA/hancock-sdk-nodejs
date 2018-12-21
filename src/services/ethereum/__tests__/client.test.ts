@@ -19,6 +19,7 @@ import {
   HancockSocketMessage,
   HancockTokenInstance,
   HancockTokenMetadataResponse,
+  HancockTokenAllowanceResponse,
 } from '../..';
 import { HancockEthereumClient } from '../../..';
 import * as common from '../../common';
@@ -890,55 +891,19 @@ describe('HancockEthereumClient integration tests', () => {
 
       const addressOrAlias: string = 'mockedAlias';
 
-      it('given a private key, should adapt a allowance, sign and send it to dlt', async () => {
-
-        const options: HancockInvokeOptions = {
-          privateKey: responses.PRIVATE_KEY,
-        };
+      it('should retrieve the number of tokens awolled to spend by the spender', async () => {
 
         (fetch as any)
-          .once(JSON.stringify(responses.SC_INVOKE_ADAPT_RESPONSE))
-          .once(JSON.stringify(responses.SEND_SIGNED_TX_RESPONSE));
+          .once(JSON.stringify(responses.GET_TOKEN_ALLOWANCE_RESPONSE));
 
-        const result: HancockSignResponse = await clientInstance.token.allowance(from, tokenOwner, spender, addressOrAlias, options);
+        const result: HancockTokenAllowanceResponse = await clientInstance.token.allowance(from, tokenOwner, spender, addressOrAlias);
 
         const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
         expect(firstApiCall[0]).toEqual('http://mockAdapter:6666/mockBase/mockToken/' + alias + '/mockAllowance');
         expect(firstApiCall[1].method).toEqual('POST');
         expect(firstApiCall[1].body).toEqual(JSON.stringify({ from, tokenOwner, spender }));
 
-        const secondApiCall: any = (fetch as jest.Mock).mock.calls[1];
-        expect(secondApiCall[0]).toEqual('http://mockWallet:6666/mockBase/mockSendSignedTx');
-        expect(secondApiCall[1].method).toEqual('POST');
-        expect(secondApiCall[1].body).toEqual(JSON.stringify({ tx: responses.SIGNED_TX }));
-
-        expect(result).toEqual(responses.SEND_SIGNED_TX_RESPONSE);
-
-      });
-
-      it('given a sign provider, should adapt a allowance and send it to sign', async () => {
-
-        const options: HancockInvokeOptions = {
-          signProvider: 'mockProvider',
-        };
-
-        (fetch as any)
-          .once(JSON.stringify(responses.SC_INVOKE_ADAPT_RESPONSE))
-          .once(JSON.stringify(responses.SEND_TO_SIGN_RESPONSE));
-
-        const result: HancockSignResponse = await clientInstance.token.allowance(from, tokenOwner, spender, addressOrAlias, options);
-
-        const firstApiCall: any = (fetch as jest.Mock).mock.calls[0];
-        expect(firstApiCall[0]).toEqual('http://mockAdapter:6666/mockBase/mockToken/' + alias + '/mockAllowance');
-        expect(firstApiCall[1].method).toEqual('POST');
-        expect(firstApiCall[1].body).toEqual(JSON.stringify({ from, tokenOwner, spender }));
-
-        const secondApiCall: any = (fetch as jest.Mock).mock.calls[1];
-        expect(secondApiCall[0]).toEqual('http://mockWallet:6666/mockBase/mockSignTx');
-        expect(secondApiCall[1].method).toEqual('POST');
-        expect(secondApiCall[1].body).toEqual(JSON.stringify({ rawTx: responses.SC_INVOKE_ADAPT_RESPONSE.data, provider: 'mockProvider' }));
-
-        expect(result).toEqual(responses.SEND_TO_SIGN_RESPONSE);
+        expect(result).toEqual(parseInt(responses.GET_TOKEN_ALLOWANCE_RESPONSE.data, 10));
 
       });
 

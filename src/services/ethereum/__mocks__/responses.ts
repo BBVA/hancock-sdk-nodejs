@@ -86,6 +86,14 @@ export const GET_TOKEN_BALANCE_ERROR_RESPONSE = {
   },
 };
 
+export const GET_TOKEN_ALLOWANCE_RESPONSE = {
+  result: {
+    code: 200,
+    description: 'Token Allowance - Success',
+  },
+  data: '0',
+};
+
 export const GET_TOKEN_METADATA_RESPONSE = {
   result: {
     code: 200,

@@ -14,7 +14,7 @@ import {
   hancockInvalidParameterError,
 } from '../../error';
 import {
-  HancockTokenTransferFromRequest,
+  HancockTokenAllowanceResponse, HancockTokenTransferFromRequest,
 } from '../../hancock.model';
 import {
   DltAddress,
@@ -151,26 +151,38 @@ export class HancockEthereumTokenService {
    * @param spender The token spender's address
    * @param value The amount of tokens to transfer (in weis)
    * @param addressOrAlias Address or alias of the token smart contract registered in Hancock
-   * @param options Configuration of how the transaction will be send to the network
    * @returns The result of the request
    */
-  public async allowance(
-    from: string, tokenOwner: string, spender: string, addressOrAlias: string, options: HancockInvokeOptions = {},
-  ): Promise<HancockSignResponse> {
+  public async allowance(from: string, tokenOwner: string, spender: string, addressOrAlias: string): Promise<HancockTokenAllowanceResponse> {
 
-    if (isEmptyAny(spender, from, addressOrAlias)) {
+    if (isEmptyAny(from, spender, addressOrAlias, tokenOwner)) {
       return Promise.reject(error(hancockInvalidParameterError));
     }
-    if (!isAddressAny(from, spender)) {
+    if (!isAddressAny(from, spender, tokenOwner)) {
       return Promise.reject(error(hancockFormatParameterError));
     }
 
-    return this
-      .adaptAllowance(from, tokenOwner, spender, addressOrAlias)
-      .then((resBody: HancockAdaptInvokeResponse) => {
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.allowance}`
+      .replace(/__DLT__/, SupportedPlatforms.ethereum)
+      .replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
 
-        return this.transactionService.signAndSend(resBody.data, options);
+    const body: HancockTokenAllowanceRequest = {
+      from,
+      tokenOwner,
+      spender,
+    };
 
+    return fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+      .then(
+        (res: any) => checkStatus(res),
+        (err: any) => errorHandler(err),
+      )
+      .then((resBody: any) => {
+        return parseInt(resBody.data, 10);
       });
 
   }
@@ -266,7 +278,7 @@ export class HancockEthereumTokenService {
   public async getAllTokens(): Promise<HancockTokenInstance[]> {
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.findAll}`
-    .replace(/__DLT__/, SupportedPlatforms.ethereum);
+      .replace(/__DLT__/, SupportedPlatforms.ethereum);
 
     return fetch(url)
       .then(
@@ -356,36 +368,6 @@ export class HancockEthereumTokenService {
       from,
       to,
       value,
-    };
-
-    return fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
-      .then(
-        (res: any) => checkStatus(res),
-        (err: any) => errorHandler(err),
-      );
-  }
-
-  private async adaptAllowance(from: string, tokenOwner: string, spender: string, addressOrAlias: string): Promise<HancockAdaptInvokeResponse> {
-
-    if (isEmptyAny(from, spender, addressOrAlias, tokenOwner)) {
-      return Promise.reject(error(hancockInvalidParameterError));
-    }
-    if (!isAddressAny(from, spender, tokenOwner)) {
-      return Promise.reject(error(hancockFormatParameterError));
-    }
-
-    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.token.allowance}`
-      .replace(/__DLT__/, SupportedPlatforms.ethereum)
-      .replace(/__ADDRESS_OR_ALIAS__/, addressOrAlias);
-
-    const body: HancockTokenAllowanceRequest = {
-      from,
-      tokenOwner,
-      spender,
     };
 
     return fetch(url, {

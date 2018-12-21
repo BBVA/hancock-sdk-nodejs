@@ -169,6 +169,10 @@ export interface HancockTokenAllowanceRequest {
   spender: string;
 }
 
+export interface HancockTokenAllowanceResponse {
+  data: number;
+}
+
 // Token Register
 
 /** @hidden */
@@ -342,7 +346,7 @@ export interface HancockClient {
     transferFrom(from: string, sender: string, to: string, value: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
     register(alias: string, address: DltAddress): Promise<HancockTokenRegisterResponse>;
     approve(from: string, spender: string, value: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
-    allowance(from: string, tokenOwner: string, spender: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
+    allowance(from: string, tokenOwner: string, spender: string, addressOrAlias: string): Promise<HancockTokenAllowanceResponse>;
   };
   wallet: {
     getBalance(address: string): Promise<BigNumber>;
