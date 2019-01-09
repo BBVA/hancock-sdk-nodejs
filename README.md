@@ -1,15 +1,5 @@
 # Hancock SDK client
 
-## Before use this package
-This package is distributed under our private [KST npm registry](http://dev.npm.kickstartteam.es/).
-You have to configure your own .npmrc file in order to have access to it. Ask somebody of our team the `SECRET_TOKEN`:
-
-```bash
-# .npmrc
-@kst-hancock:registry=http://dev.npm.kickstartteam.es/
-//dev.npm.kickstartteam.es/:_authToken="<SECRET_TOKEN>"
-```
-
 ## Using this package
 
 ### Dependencies
@@ -85,7 +75,7 @@ new HancockEthereumClient(config);
 ### Introduction and examples
 
 [[HancockEthereumClient]] provides interfaces to interact with the blockchain 
-allowing common operation like transfers, balance consulting or smart contract interactions. Take a look at the diferent sections of the [docs](https://docs.kickstartteam.es/blockchainhub/kst-hancock-sdk-client/docs/index.html) to see examples of use:
+allowing common operation like transfers, balance consulting or smart contract interactions. Take a look at the diferent sections of the [docs](https://BBVA.github.io/hancock-sdk-node/docs/index.html) to see examples of use:
 
 - [[HancockEthereumWalletService]]
 - [[HancockEthereumTransferService]]
