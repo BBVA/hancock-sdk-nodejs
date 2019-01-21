@@ -25,7 +25,7 @@ export class DeploySubprovider extends Subprovider {
               console.log(error);
               end(null, null);
             } else {
-              this.addNonceAndSend(data, payload.params[0], end);
+              this.addNonceAndSend(data, next, payload.params[0], end);
             }
           },
         );
@@ -36,8 +36,8 @@ export class DeploySubprovider extends Subprovider {
     }
   }
 
-  private addNonceAndSend(data: any, rawTx: any, end: any) {
-    const socket = this.subscribe([rawTx.from], end, rawTx.to == null);
+  private addNonceAndSend(data: any, next: any, rawTx: any, end: any) {
+    const socket = this.subscribe([rawTx.from], next, end, rawTx.to == null);
     rawTx.nonce = data.result;
     this.hancockClient.transaction
       .sendToSignProvider(rawTx, this.provider)
@@ -48,15 +48,31 @@ export class DeploySubprovider extends Subprovider {
       });
   }
 
-  private subscribe(from: any, end: any, deploy: boolean) {
+  private subscribe(from: any, next: any, end: any, deploy: boolean) {
+
     const socket = this.hancockClient.transaction.subscribe(from);
+
     socket.on('tx', (message: any) => {
-      console.log(message.body);
-      if (deploy && (message.body.to === null || message.body.to === '0x0000000000000000000000000000000000000000' ) || !deploy) {
-        socket.closeSocket();
+
+      const expectedTxKind = deploy ? 'deployment' : 'transaction';
+
+      console.log('received transaction', message.body);
+      console.log(`expecting: ${expectedTxKind} `);
+
+      socket.closeSocket();
+
+      if (!deploy || (message.body.to === null || message.body.to === '0x0000000000000000000000000000000000000000')) {
+
         end(null, message.body.hash);
+
+      } else {
+
+        end(new Error(`Wrong ${expectedTxKind} received`), null);
+
       }
+
     });
+
     return socket;
   }
 
