@@ -14,7 +14,9 @@ export class DeploySubprovider extends Subprovider {
     this.hancockClient = hancockClient;
   }
 
-  public async handleRequest(payload: any, next: any, end: any) {
+  public handleRequest(payload: any, next: any, end: any) {
+
+    console.log('Intercepted ---> ', payload.method);
 
     switch (payload.method) {
       case 'eth_sendTransaction':
