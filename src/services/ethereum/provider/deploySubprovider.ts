@@ -1,4 +1,5 @@
 import Subprovider from 'web3-provider-engine/subproviders/subprovider';
+import { HancockEthereumClient } from './../client';
 
 /**
  * @hidden
@@ -6,7 +7,7 @@ import Subprovider from 'web3-provider-engine/subproviders/subprovider';
 export class DeploySubprovider extends Subprovider {
 
   public provider: string;
-  public hancockClient: any;
+  public hancockClient: HancockEthereumClient;
 
   constructor(provider: string, hancockClient: any) {
     super();
@@ -27,7 +28,7 @@ export class DeploySubprovider extends Subprovider {
               console.log(error);
               end(null, null);
             } else {
-              this.addNonceAndSend(data, next, payload.params[0], end);
+              this.addNonceAndSend(data, payload.params[0], end);
             }
           },
         );
@@ -38,8 +39,8 @@ export class DeploySubprovider extends Subprovider {
     }
   }
 
-  private addNonceAndSend(data: any, next: any, rawTx: any, end: any) {
-    const socket = this.subscribe([rawTx.from], next, end, rawTx.to == null);
+  private addNonceAndSend(data: any, rawTx: any, end: any) {
+    const socket = this.subscribe([rawTx.from], end, rawTx.to == null);
     rawTx.nonce = data.result;
     this.hancockClient.transaction
       .sendToSignProvider(rawTx, this.provider)
@@ -50,9 +51,9 @@ export class DeploySubprovider extends Subprovider {
       });
   }
 
-  private subscribe(from: any, next: any, end: any, deploy: boolean) {
+  private subscribe(from: any, end: any, deploy: boolean) {
 
-    const socket = this.hancockClient.transaction.subscribe(from);
+    const socket = this.hancockClient.transaction.subscribe(from, undefined, 'pending');
 
     socket.on('tx', (message: any) => {
 

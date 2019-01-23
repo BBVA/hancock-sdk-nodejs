@@ -79,6 +79,7 @@ describe('HancockEthereumSocket integration tests', () => {
         kind: 'watch-transfers',
         body: addresses,
         consumer,
+        status: 'mined',
       };
 
       ethereumSocketInstance.addTransfer(addresses);
@@ -122,6 +123,7 @@ describe('HancockEthereumSocket integration tests', () => {
         kind: 'watch-transactions',
         body: addresses,
         consumer,
+        status: 'mined',
       };
 
       ethereumSocketInstance.addTransaction(addresses);
@@ -165,6 +167,7 @@ describe('HancockEthereumSocket integration tests', () => {
         kind: 'watch-contracts',
         body: addressesOrAliases,
         consumer,
+        status: 'mined',
       };
 
       ethereumSocketInstance.addContract(addressesOrAliases);

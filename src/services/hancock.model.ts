@@ -43,8 +43,8 @@ export interface HancockCallRequest extends HancockInvokeRequest {
 
 /** @hidden */
 export interface HancockAdaptInvokeAbiRequest extends HancockInvokeRequest {
-  abi : any;
-  to : string;
+  abi: any;
+  to: string;
 }
 
 export interface HancockAdaptInvokeResponse extends HancockGenericResponse {
@@ -371,9 +371,11 @@ export interface HancockCallBackOptions {
 }
 
 export type HancockSocketKind = 'watch-transfers' | 'watch-transactions' | 'watch-contracts';
+export type HancockSocketStatus = 'pending' | 'mined';
 export type HancockSocketBody = any;
 export interface HancockSocketMessage {
   kind: HancockSocketKind;
   body: HancockSocketBody;
+  status?: HancockSocketStatus;
   consumer?: string;
 }

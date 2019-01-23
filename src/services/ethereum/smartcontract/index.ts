@@ -5,10 +5,10 @@ import {
   hancockInvalidParameterError, hancockNoKeyNorProviderError,
 } from '../../error';
 import {
-  HancockSignResponse,
-  InitialHancockConfig,
   HancockAdaptInvokeAbiRequest,
   HancockContractInstance,
+  HancockSignResponse,
+  InitialHancockConfig,
 } from '../../hancock.model';
 import {
   DltAddress,
@@ -88,7 +88,7 @@ export class HancockEthereumSmartContractService {
    * @returns The returned value from the smart contract method
    */
   public async invokeAbi(
-    contractAddressOrAlias: string, method: string, params: string[], from: string, options: HancockInvokeOptions = {}, abi: any
+    contractAddressOrAlias: string, method: string, params: string[], from: string, options: HancockInvokeOptions = {}, abi: any,
   ): Promise<HancockSignResponse> {
 
     // Done in adaptInvoke
@@ -104,7 +104,7 @@ export class HancockEthereumSmartContractService {
       return Promise.reject(error(hancockFormatParameterError));
     }
 
-    let action: HancockInvokeAction = 'send';
+    const action: HancockInvokeAction = 'send';
 
     return this
       .adaptInvokeAbi(contractAddressOrAlias, method, params, from, action, abi)
@@ -168,7 +168,7 @@ export class HancockEthereumSmartContractService {
    * @returns The returned value from the smart contract method
    */
   public async callAbi(
-    contractAddressOrAlias: string, method: string, params: string[], from: string, abi: any
+    contractAddressOrAlias: string, method: string, params: string[], from: string, abi: any,
   ): Promise<HancockCallResponse> {
 
     if (isEmptyAny(contractAddressOrAlias, from, method)) {
@@ -178,7 +178,7 @@ export class HancockEthereumSmartContractService {
       return Promise.reject(error(hancockFormatParameterError));
     }
 
-    let action: HancockInvokeAction = 'call';
+    const action: HancockInvokeAction = 'call';
 
     return this
       .adaptInvokeAbi(contractAddressOrAlias, method, params, from, action, abi)

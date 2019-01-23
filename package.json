@@ -1,6 +1,6 @@
 {
   "name": "@kst-hancock/sdk-client",
-  "version": "1.0.0-alpha.41",
+  "version": "1.0.0-alpha.42",
   "description": "Client sdk for integration with hancock components",
   "main": "dist/index.node.js",
   "unpkg": "dist/index.node.js",

@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import WebSocket from 'isomorphic-ws';
-import { HancockSocketBody, HancockSocketKind, HancockSocketMessage } from '..';
+import { HancockSocketBody, HancockSocketKind, HancockSocketMessage, HancockSocketStatus } from '..';
 
 /**
  * Manages events emmited by the blockchain network
@@ -9,11 +9,13 @@ export class HancockSocket extends EventEmitter {
 
   private ws: WebSocket;
   private consumer: string | undefined;
+  private status: HancockSocketStatus | undefined;
 
-  constructor(url: string, consumer?: string) {
+  constructor(url: string, consumer?: string, status: HancockSocketStatus = 'mined') {
     super();
     this.ws = new WebSocket(url);
     this.consumer = consumer;
+    this.status = status;
 
     this.init();
   }
@@ -128,6 +130,10 @@ export class HancockSocket extends EventEmitter {
 
     if (this.consumer) {
       message.consumer = this.consumer;
+    }
+
+    if (this.status) {
+      message.status = this.status;
     }
 
     return message;

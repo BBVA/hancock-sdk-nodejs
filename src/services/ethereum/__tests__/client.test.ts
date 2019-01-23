@@ -224,6 +224,7 @@ describe('HancockEthereumClient integration tests', () => {
           kind: 'watch-transactions',
           body: addresses,
           consumer,
+          status: 'mined',
         };
 
         const hancockSocket: HancockEthereumSocket = clientInstance.transaction.subscribe(addresses, consumer);
@@ -341,6 +342,7 @@ describe('HancockEthereumClient integration tests', () => {
           kind: 'watch-transfers',
           body: addresses,
           consumer,
+          status: 'mined',
         };
 
         const hancockSocket: HancockEthereumSocket = clientInstance.transfer.subscribe(addresses, consumer);
@@ -697,6 +699,7 @@ describe('HancockEthereumClient integration tests', () => {
           kind: 'watch-contracts',
           body: contracts,
           consumer,
+          status: 'mined',
         };
 
         const hancockSocket: HancockEthereumSocket = clientInstance.smartContract.subscribe(contracts, consumer);

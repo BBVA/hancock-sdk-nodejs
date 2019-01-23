@@ -33,4 +33,4 @@ broker:
   port: 3001
   base: ''
   resources:
-    events: '/__DLT__/subscribe?address=__ADDRESS__&sender=__SENDER__&consumer=__CONSUMER__'
+    events: '/__DLT__/subscribe?address=__ADDRESS__&sender=__SENDER__&consumer=__CONSUMER__&status=__STATUS__'
