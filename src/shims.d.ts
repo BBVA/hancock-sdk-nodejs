@@ -1,5 +1,6 @@
 declare module 'web3-provider-engine';
 declare module 'web3-provider-engine/subproviders/rpc';
+declare module 'web3-provider-engine/subproviders/filters.js';
 
 declare module 'web3-provider-engine/subproviders/subprovider' {
   class Subprovider {

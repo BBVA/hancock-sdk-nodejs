@@ -7,17 +7,17 @@ import { HancockEthereumClient } from './../client';
 export class DeploySubprovider extends Subprovider {
 
   public provider: string;
+  public accounts: string[];
   public hancockClient: HancockEthereumClient;
 
-  constructor(provider: string, hancockClient: any) {
+  constructor(provider: string, accounts: string[], hancockClient: any) {
     super();
     this.provider = provider;
+    this.accounts = accounts;
     this.hancockClient = hancockClient;
   }
 
   public handleRequest(payload: any, next: any, end: any) {
-
-    console.log('Intercepted ---> ', payload.method);
 
     switch (payload.method) {
       case 'eth_sendTransaction':
@@ -26,13 +26,16 @@ export class DeploySubprovider extends Subprovider {
           (error: any, data: any) => {
             if (error) {
               console.log(error);
-              end(null, null);
+              end(error, null);
             } else {
               this.addNonceAndSend(data, payload.params[0], end);
             }
           },
         );
         return;
+      case 'eth_accounts':
+        end(null, this.accounts);
+        break;
       default:
         next();
         return;
@@ -53,14 +56,13 @@ export class DeploySubprovider extends Subprovider {
 
   private subscribe(from: any, end: any, deploy: boolean) {
 
-    const socket = this.hancockClient.transaction.subscribe(from, undefined, 'pending');
+    const socket = this.hancockClient.transaction.subscribe(from);
 
     socket.on('tx', (message: any) => {
 
-      const expectedTxKind = deploy ? 'deployment' : 'transaction';
+      const expectedTxKind = deploy ? 'contract deployment' : 'transaction';
 
-      console.log('received transaction', message.body);
-      console.log(`expecting: ${expectedTxKind} `);
+      console.log(`received ${expectedTxKind} with hash: ${message.body.hash}`);
 
       socket.closeSocket();
 
