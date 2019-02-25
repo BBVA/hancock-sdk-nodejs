@@ -1,6 +1,6 @@
 import { __socketInstance__ } from '../../common/__mocks__/socket';
 
-__socketInstance__.addContract = jest.fn().mockReturnThis();
+__socketInstance__.watchContract = jest.fn().mockReturnThis();
 
 export { __socketInstance__ };
 
