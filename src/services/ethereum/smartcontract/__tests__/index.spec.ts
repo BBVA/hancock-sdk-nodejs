@@ -339,7 +339,7 @@ describe('HancockEthereumSmartContractService', async () => {
 
     expect(socket.HancockEthereumSocket).toHaveBeenCalledTimes(1);
     expect(response.on).toHaveBeenCalledTimes(1);
-    expect(response.addContract).toHaveBeenCalledWith(['testContract']);
+    expect(response.watchContract).toHaveBeenCalledWith(['testContract']);
 
   });
 
@@ -349,7 +349,7 @@ describe('HancockEthereumSmartContractService', async () => {
 
     expect(socket.HancockEthereumSocket).toHaveBeenCalledTimes(1);
     expect(response.on).toHaveBeenCalledTimes(1);
-    expect(response.addContract).toHaveBeenCalledWith([]);
+    expect(response.watchContract).toHaveBeenCalledWith([]);
 
   });
 

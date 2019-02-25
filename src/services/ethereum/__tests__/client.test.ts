@@ -17,9 +17,9 @@ import {
   HancockSendTxResponse,
   HancockSignResponse,
   HancockSocketMessage,
+  HancockTokenAllowanceResponse,
   HancockTokenInstance,
   HancockTokenMetadataResponse,
-  HancockTokenAllowanceResponse,
 } from '../..';
 import { HancockEthereumClient } from '../../..';
 import * as common from '../../common';

@@ -370,7 +370,8 @@ export interface HancockCallBackOptions {
   requestId?: string;
 }
 
-export type HancockSocketKind = 'watch-transfers' | 'watch-transactions' | 'watch-contracts';
+export type HancockSocketKind = 'watch-transfers' | 'watch-transactions' | 'watch-contracts' |
+ 'unwatch-transfers' | 'unwatch-transactions' | 'unwatch-contracts';
 export type HancockSocketStatus = 'pending' | 'mined';
 export type HancockSocketBody = any;
 export interface HancockSocketMessage {
