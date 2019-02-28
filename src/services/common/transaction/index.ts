@@ -196,7 +196,7 @@ export class HancockTransactionService {
 
     const hancockSocket = new this.hancockSocket(url, consumer, status);
     hancockSocket.on('ready', () => {
-      hancockSocket.addTransaction(addresses);
+      hancockSocket.watchTransaction(addresses);
     });
 
     return hancockSocket;

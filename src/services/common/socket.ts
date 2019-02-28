@@ -32,7 +32,7 @@ export class HancockSocket extends EventEmitter {
    * An event will be received each time that some of the given addresses appears as 'from' or 'to' in some transfer transaction
    * @param addresses addresses to watch
    */
-  public addTransfer(addresses: string[]) {
+  public watchTransfer(addresses: string[]) {
     if (addresses.length > 0) {
       this.sendMessage('watch-transfers', addresses);
     }
@@ -43,7 +43,7 @@ export class HancockSocket extends EventEmitter {
    * An event will be received each time that some of the given addresses appears as 'from' or 'to' in some transaction of any kind
    * @param addresses addresses to watch
    */
-  public addTransaction(addresses: string[]) {
+  public watchTransaction(addresses: string[]) {
     if (addresses.length > 0) {
       this.sendMessage('watch-transactions', addresses);
     }
@@ -54,9 +54,39 @@ export class HancockSocket extends EventEmitter {
    * An event will be received each time that some smart contract identified by one of the given addresses emits an event
    * @param addresses addresses of smart contracts to watch
    */
-  public addContract(contracts: string[]) {
+  public watchContract(contracts: string[]) {
     if (contracts.length > 0) {
       this.sendMessage('watch-contracts', contracts);
+    }
+  }
+
+  /**
+   * Stop listening the addresses for event of type "transfers"
+   * @param addresses Addresses to stop listening
+   */
+  public unwatchTransfer(addresses: string[]) {
+    if (addresses.length > 0) {
+      this.sendMessage('unwatch-transfers', addresses);
+    }
+  }
+
+  /**
+   * Stop listening the addresses for event of type "transactions".
+   * @param addresses Addresses to stop listening
+   */
+  public unwatchTransaction(addresses: string[]) {
+    if (addresses.length > 0) {
+      this.sendMessage('unwatch-transactions', addresses);
+    }
+  }
+
+  /**
+   * Stop listening the contracts for event of type "contracts".
+   * @param contracts Contracts to stop listening
+   */
+  public unwatchContract(contracts: string[]) {
+    if (contracts.length > 0) {
+      this.sendMessage('unwatch-contracts', contracts);
     }
   }
 
