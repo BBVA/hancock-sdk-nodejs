@@ -8,7 +8,7 @@ import { SupportedPlatforms } from '../../../common';
 import { HancockError, hancockErrorType } from '../../../error';
 import * as response from '../../__mocks__/responses';
 import * as socket from '../../socket';
-import { HancockSignerFn } from './../../../hancock.model';
+import { HancockSignerFn } from '../../../hancock.model';
 
 jest.mock('isomorphic-fetch');
 jest.mock('../../../common');

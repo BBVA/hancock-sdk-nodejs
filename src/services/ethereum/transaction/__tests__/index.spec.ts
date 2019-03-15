@@ -4,7 +4,7 @@ import { HancockEthereumTransactionService } from '..';
 import { HancockTransactionService } from '../../../common/transaction';
 import { signTx } from '../../signer';
 import { HancockEthereumSocket } from '../../socket';
-import { SupportedPlatforms } from './../../../common';
+import { SupportedPlatforms } from '../../../common';
 
 jest.mock('../../signer');
 jest.mock('../../socket');

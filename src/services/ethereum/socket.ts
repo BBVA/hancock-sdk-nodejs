@@ -1,5 +1,5 @@
-import { HancockSocket } from './../common/socket';
-import { HancockSocketStatus } from './../hancock.model';
+import { HancockSocket } from '../common/socket';
+import { HancockSocketStatus } from '../hancock.model';
 
 /**
  * Manages events emmited by the ethereum blockchain network
