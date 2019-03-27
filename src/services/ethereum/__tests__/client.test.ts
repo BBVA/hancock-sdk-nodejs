@@ -703,7 +703,7 @@ describe('HancockEthereumClient integration tests', () => {
           status: 'mined',
         };
 
-        const hancockSocket: HancockEthereumSocket = clientInstance.smartContract.subscribe(contracts, consumer);
+        const hancockSocket: HancockEthereumSocket = clientInstance.smartContract.subscribeToEvents(contracts, consumer);
 
         socketInstance._trigger('message', JSON.stringify({ kind: 'ready' }));
 

@@ -230,7 +230,7 @@ export class HancockEthereumSmartContractService {
    * @param consumer A consumer plugin previously configured in hancock that will handle each received event
    * @returns An event emmiter that will fire the watched "smart contract events" events
    */
-  public subscribe(contracts: string[] = [], consumer: string = ''): HancockEthereumSocket {
+  public subscribeToEvents(contracts: string[] = [], consumer: string = ''): HancockEthereumSocket {
 
     const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`
       .replace(/__DLT__/, SupportedPlatforms.ethereum)
@@ -241,6 +241,29 @@ export class HancockEthereumSmartContractService {
     const hancockSocket = new HancockEthereumSocket(url, consumer);
     hancockSocket.on('ready', () => {
       hancockSocket.watchContractEvent(contracts);
+    });
+
+    return hancockSocket;
+
+  }
+
+  /**
+   * Create a websocket subscription to watch transactions of type "smart contract events" in the network
+   * @param addresses An array of address of smart contracts that will be added to the watch list
+   * @param consumer A consumer plugin previously configured in hancock that will handle each received event
+   * @returns An event emmiter that will fire the watched "smart contract events" events
+   */
+  public subscribeToTransactions(contracts: string[] = [], consumer: string = ''): HancockEthereumSocket {
+
+    const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`
+      .replace(/__DLT__/, SupportedPlatforms.ethereum)
+      .replace(/__ADDRESS__/, '')
+      .replace(/__SENDER__/, '')
+      .replace(/__CONSUMER__/, consumer);
+
+    const hancockSocket = new HancockEthereumSocket(url, consumer);
+    hancockSocket.on('ready', () => {
+      hancockSocket.watchContractTransaction(contracts);
     });
 
     return hancockSocket;
