@@ -248,10 +248,10 @@ export class HancockEthereumSmartContractService {
   }
 
   /**
-   * Create a websocket subscription to watch transactions of type "smart contract events" in the network
+   * Create a websocket subscription to watch transactions of type "smart contract transactions" in the network
    * @param addresses An array of address of smart contracts that will be added to the watch list
    * @param consumer A consumer plugin previously configured in hancock that will handle each received event
-   * @returns An event emmiter that will fire the watched "smart contract events" events
+   * @returns An event emmiter that will fire the watched "smart contract transactions" events
    */
   public subscribeToTransactions(contracts: string[] = [], consumer: string = ''): HancockEthereumSocket {
 

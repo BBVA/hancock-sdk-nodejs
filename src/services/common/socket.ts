@@ -50,7 +50,7 @@ export class HancockSocket extends EventEmitter {
   }
 
   /**
-   * Add a list of smart contract addresses to the watch lists of smart contract events
+   * Add a list of smart contract addresses to the watch lists of smart contract transactions
    * An event will be received each time that some smart contract identified by one of the given addresses emits an event
    * @param addresses addresses of smart contracts to watch
    */
@@ -92,7 +92,7 @@ export class HancockSocket extends EventEmitter {
   }
 
   /**
-   * Stop listening the contracts for event of type "contracts".
+   * Stop listening the contracts for event of type "contracts-events".
    * @param contracts Contracts to stop listening
    */
   public unwatchContractTransaction(contracts: string[]) {
@@ -102,7 +102,7 @@ export class HancockSocket extends EventEmitter {
   }
 
   /**
-   * Stop listening the contracts for event of type "contracts".
+   * Stop listening the contracts for event of type "contracts-transactions".
    * @param contracts Contracts to stop listening
    */
   public unwatchContractEvent(contracts: string[]) {
