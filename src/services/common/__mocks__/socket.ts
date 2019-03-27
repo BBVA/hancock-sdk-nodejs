@@ -3,7 +3,8 @@ export const __socketInstance__ = {
   on: jest.fn().mockImplementation((kind, callback) => {
     callback();
   }),
-  watchContract: jest.fn().mockReturnThis(),
+  watchContractEvent: jest.fn().mockReturnThis(),
+  watchContractTransaction: jest.fn().mockReturnThis(),
   watchTransfer: jest.fn().mockReturnThis(),
   watchTransaction: jest.fn().mockReturnThis(),
 };

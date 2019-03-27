@@ -157,7 +157,7 @@ describe('HancockEthereumSmartContractService', async () => {
     expect(adaptSpy).toHaveBeenCalledWith('contractAddressOrAlias', 'method', ['params'], 'from', 'call', abi);
 
   });
-  
+
   it('should call call correctly', async () => {
 
     (fetch as any).once(JSON.stringify(response.SC_INVOKE_ADAPT_RESPONSE));
@@ -339,7 +339,7 @@ describe('HancockEthereumSmartContractService', async () => {
 
     expect(socket.HancockEthereumSocket).toHaveBeenCalledTimes(1);
     expect(response.on).toHaveBeenCalledTimes(1);
-    expect(response.watchContract).toHaveBeenCalledWith(['testContract']);
+    expect(response.watchContractEvent).toHaveBeenCalledWith(['testContract']);
 
   });
 
@@ -349,7 +349,7 @@ describe('HancockEthereumSmartContractService', async () => {
 
     expect(socket.HancockEthereumSocket).toHaveBeenCalledTimes(1);
     expect(response.on).toHaveBeenCalledTimes(1);
-    expect(response.watchContract).toHaveBeenCalledWith([]);
+    expect(response.watchContractEvent).toHaveBeenCalledWith([]);
 
   });
 

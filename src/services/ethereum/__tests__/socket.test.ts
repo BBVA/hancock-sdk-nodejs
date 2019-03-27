@@ -1,7 +1,7 @@
 import 'jest';
 
 import * as ws from 'isomorphic-ws';
-import { HancockSocketMessage } from '../..';
+import { HancockSocketMessage, SOCKET_EVENT_KINDS } from '../..';
 import { HancockEthereumSocket } from '../socket';
 
 jest.mock('isomorphic-ws');
@@ -53,21 +53,6 @@ describe('HancockEthereumSocket integration tests', () => {
 
   });
 
-  // describe('::send', () => {
-
-  //   it('should send a message throught websocket connection', async () => {
-
-  //     const message: any = { whatever: 'whatever' };
-  //     const socketSend: jest.Mock = socketInstance.send;
-
-  //     ethereumSocketInstance.send(message);
-
-  //     expect(socketSend).toHaveBeenCalledWith(message);
-
-  //   });
-
-  // });
-
   describe('::watchTransfer', () => {
 
     const addresses: string[] = ['0xf01b3c2131fb5bd8d1d1e5d44f8ad14a2728ec91', '0x187ace2d9051d74296a8e4e154d652b8b6ec4738'];
@@ -76,7 +61,7 @@ describe('HancockEthereumSocket integration tests', () => {
     it('should sent the given list of addresses to the transfers watch list of broker service', async () => {
 
       const expectedMessage: HancockSocketMessage = {
-        kind: 'watch-transfers',
+        kind: SOCKET_EVENT_KINDS.WatchTransfer,
         body: addresses,
         consumer,
         status: 'mined',
@@ -120,7 +105,7 @@ describe('HancockEthereumSocket integration tests', () => {
     it('should sent the given list of addresses to the transfers watch list of broker service', async () => {
 
       const expectedMessage: HancockSocketMessage = {
-        kind: 'watch-transactions',
+        kind: SOCKET_EVENT_KINDS.WatchTransaction,
         body: addresses,
         consumer,
         status: 'mined',
@@ -156,7 +141,7 @@ describe('HancockEthereumSocket integration tests', () => {
 
   });
 
-  describe('::watchContract', () => {
+  describe('::watchContractEvent', () => {
 
     const addressesOrAliases: string[] = ['mockedAlias', '0x187ace2d9051d74296a8e4e154d652b8b6ec4738'];
     const socketSend: jest.Mock = socketInstance.send;
@@ -164,13 +149,13 @@ describe('HancockEthereumSocket integration tests', () => {
     it('should sent the given list of addresses or aliases to the contract events watch list of broker service', async () => {
 
       const expectedMessage: HancockSocketMessage = {
-        kind: 'watch-contracts',
+        kind: SOCKET_EVENT_KINDS.WatchSmartContractEvent,
         body: addressesOrAliases,
         consumer,
         status: 'mined',
       };
 
-      ethereumSocketInstance.watchContract(addressesOrAliases);
+      ethereumSocketInstance.watchContractEvent(addressesOrAliases);
 
       expect(socketSend).toHaveBeenCalledWith(JSON.stringify(expectedMessage));
 
@@ -180,7 +165,7 @@ describe('HancockEthereumSocket integration tests', () => {
 
       const addrsOrAliases: string[] = [];
 
-      ethereumSocketInstance.watchContract(addrsOrAliases);
+      ethereumSocketInstance.watchContractEvent(addrsOrAliases);
 
       expect(socketSend).not.toHaveBeenCalled();
 
@@ -190,7 +175,51 @@ describe('HancockEthereumSocket integration tests', () => {
 
       socketInstance.readyState = -1;
 
-      ethereumSocketInstance.watchContract(addressesOrAliases);
+      ethereumSocketInstance.watchContractEvent(addressesOrAliases);
+
+      expect(socketSend).not.toHaveBeenCalled();
+
+      socketInstance.readyState = (socket as any).OPEN;
+
+    });
+
+  });
+
+  describe('::watchContractTransaction', () => {
+
+    const addressesOrAliases: string[] = ['mockedAlias', '0x187ace2d9051d74296a8e4e154d652b8b6ec4738'];
+    const socketSend: jest.Mock = socketInstance.send;
+
+    it('should sent the given list of addresses or aliases to the contract transaction watch list of broker service', async () => {
+
+      const expectedMessage: HancockSocketMessage = {
+        kind: SOCKET_EVENT_KINDS.WatchSmartContractTransaction,
+        body: addressesOrAliases,
+        consumer,
+        status: 'mined',
+      };
+
+      ethereumSocketInstance.watchContractTransaction(addressesOrAliases);
+
+      expect(socketSend).toHaveBeenCalledWith(JSON.stringify(expectedMessage));
+
+    });
+
+    it('should do nothing if the given list of addresses is empty', async () => {
+
+      const addrsOrAliases: string[] = [];
+
+      ethereumSocketInstance.watchContractTransaction(addrsOrAliases);
+
+      expect(socketSend).not.toHaveBeenCalled();
+
+    });
+
+    it('should do nothing if the connection is not ready', async () => {
+
+      socketInstance.readyState = -1;
+
+      ethereumSocketInstance.watchContractTransaction(addressesOrAliases);
 
       expect(socketSend).not.toHaveBeenCalled();
 
@@ -208,7 +237,7 @@ describe('HancockEthereumSocket integration tests', () => {
     it('should sent the given list of addresses to the transfers watch list of broker service', async () => {
 
       const expectedMessage: HancockSocketMessage = {
-        kind: 'unwatch-transfers',
+        kind: SOCKET_EVENT_KINDS.UnwatchTransfer,
         body: addresses,
         consumer,
         status: 'mined',
@@ -252,7 +281,7 @@ describe('HancockEthereumSocket integration tests', () => {
     it('should sent the given list of addresses to the transfers watch list of broker service', async () => {
 
       const expectedMessage: HancockSocketMessage = {
-        kind: 'unwatch-transactions',
+        kind: SOCKET_EVENT_KINDS.UnwatchTransaction,
         body: addresses,
         consumer,
         status: 'mined',
@@ -288,7 +317,7 @@ describe('HancockEthereumSocket integration tests', () => {
 
   });
 
-  describe('::unwatchContract', () => {
+  describe('::unwatchContractEvent', () => {
 
     const addressesOrAliases: string[] = ['mockedAlias', '0x187ace2d9051d74296a8e4e154d652b8b6ec4738'];
     const socketSend: jest.Mock = socketInstance.send;
@@ -296,13 +325,13 @@ describe('HancockEthereumSocket integration tests', () => {
     it('should sent the given list of addresses or aliases to the contract events watch list of broker service', async () => {
 
       const expectedMessage: HancockSocketMessage = {
-        kind: 'unwatch-contracts',
+        kind: SOCKET_EVENT_KINDS.UnwatchSmartContractEvent,
         body: addressesOrAliases,
         consumer,
         status: 'mined',
       };
 
-      ethereumSocketInstance.unwatchContract(addressesOrAliases);
+      ethereumSocketInstance.unwatchContractEvent(addressesOrAliases);
 
       expect(socketSend).toHaveBeenCalledWith(JSON.stringify(expectedMessage));
 
@@ -312,7 +341,7 @@ describe('HancockEthereumSocket integration tests', () => {
 
       const addrsOrAliases: string[] = [];
 
-      ethereumSocketInstance.unwatchContract(addrsOrAliases);
+      ethereumSocketInstance.unwatchContractEvent(addrsOrAliases);
 
       expect(socketSend).not.toHaveBeenCalled();
 
@@ -322,7 +351,51 @@ describe('HancockEthereumSocket integration tests', () => {
 
       socketInstance.readyState = -1;
 
-      ethereumSocketInstance.unwatchContract(addressesOrAliases);
+      ethereumSocketInstance.unwatchContractEvent(addressesOrAliases);
+
+      expect(socketSend).not.toHaveBeenCalled();
+
+      socketInstance.readyState = (socket as any).OPEN;
+
+    });
+
+  });
+
+  describe('::unwatchContractTransaction', () => {
+
+    const addressesOrAliases: string[] = ['mockedAlias', '0x187ace2d9051d74296a8e4e154d652b8b6ec4738'];
+    const socketSend: jest.Mock = socketInstance.send;
+
+    it('should sent the given list of addresses or aliases to the contract events watch list of broker service', async () => {
+
+      const expectedMessage: HancockSocketMessage = {
+        kind: SOCKET_EVENT_KINDS.UnwatchSmartContractTransaction,
+        body: addressesOrAliases,
+        consumer,
+        status: 'mined',
+      };
+
+      ethereumSocketInstance.unwatchContractTransaction(addressesOrAliases);
+
+      expect(socketSend).toHaveBeenCalledWith(JSON.stringify(expectedMessage));
+
+    });
+
+    it('should do nothing if the given list of addresses is empty', async () => {
+
+      const addrsOrAliases: string[] = [];
+
+      ethereumSocketInstance.unwatchContractTransaction(addrsOrAliases);
+
+      expect(socketSend).not.toHaveBeenCalled();
+
+    });
+
+    it('should do nothing if the connection is not ready', async () => {
+
+      socketInstance.readyState = -1;
+
+      ethereumSocketInstance.unwatchContractTransaction(addressesOrAliases);
 
       expect(socketSend).not.toHaveBeenCalled();
 

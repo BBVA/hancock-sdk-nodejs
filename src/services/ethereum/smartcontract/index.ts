@@ -240,7 +240,7 @@ export class HancockEthereumSmartContractService {
 
     const hancockSocket = new HancockEthereumSocket(url, consumer);
     hancockSocket.on('ready', () => {
-      hancockSocket.watchContract(contracts);
+      hancockSocket.watchContractEvent(contracts);
     });
 
     return hancockSocket;
