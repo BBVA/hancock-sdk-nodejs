@@ -68,7 +68,7 @@ describe('HancockEthereumSocket integration tests', () => {
 
   // });
 
-  describe('::addTransfer', () => {
+  describe('::watchTransfer', () => {
 
     const addresses: string[] = ['0xf01b3c2131fb5bd8d1d1e5d44f8ad14a2728ec91', '0x187ace2d9051d74296a8e4e154d652b8b6ec4738'];
     const socketSend: jest.Mock = socketInstance.send;
@@ -79,9 +79,10 @@ describe('HancockEthereumSocket integration tests', () => {
         kind: 'watch-transfers',
         body: addresses,
         consumer,
+        status: 'mined',
       };
 
-      ethereumSocketInstance.addTransfer(addresses);
+      ethereumSocketInstance.watchTransfer(addresses);
 
       expect(socketSend).toHaveBeenCalledWith(JSON.stringify(expectedMessage));
 
@@ -91,7 +92,7 @@ describe('HancockEthereumSocket integration tests', () => {
 
       const addrs: string[] = [];
 
-      ethereumSocketInstance.addTransfer(addrs);
+      ethereumSocketInstance.watchTransfer(addrs);
 
       expect(socketSend).not.toHaveBeenCalled();
 
@@ -101,7 +102,7 @@ describe('HancockEthereumSocket integration tests', () => {
 
       socketInstance.readyState = -1;
 
-      ethereumSocketInstance.addTransfer(addresses);
+      ethereumSocketInstance.watchTransfer(addresses);
 
       expect(socketSend).not.toHaveBeenCalled();
 
@@ -111,7 +112,7 @@ describe('HancockEthereumSocket integration tests', () => {
 
   });
 
-  describe('::addTransaction', () => {
+  describe('::watchTransaction', () => {
 
     const addresses: string[] = ['0xf01b3c2131fb5bd8d1d1e5d44f8ad14a2728ec91', '0x187ace2d9051d74296a8e4e154d652b8b6ec4738'];
     const socketSend: jest.Mock = socketInstance.send;
@@ -122,9 +123,10 @@ describe('HancockEthereumSocket integration tests', () => {
         kind: 'watch-transactions',
         body: addresses,
         consumer,
+        status: 'mined',
       };
 
-      ethereumSocketInstance.addTransaction(addresses);
+      ethereumSocketInstance.watchTransaction(addresses);
 
       expect(socketSend).toHaveBeenCalledWith(JSON.stringify(expectedMessage));
 
@@ -134,7 +136,7 @@ describe('HancockEthereumSocket integration tests', () => {
 
       const addrs: string[] = [];
 
-      ethereumSocketInstance.addTransaction(addrs);
+      ethereumSocketInstance.watchTransaction(addrs);
 
       expect(socketSend).not.toHaveBeenCalled();
 
@@ -144,7 +146,7 @@ describe('HancockEthereumSocket integration tests', () => {
 
       socketInstance.readyState = -1;
 
-      ethereumSocketInstance.addTransaction(addresses);
+      ethereumSocketInstance.watchTransaction(addresses);
 
       expect(socketSend).not.toHaveBeenCalled();
 
@@ -154,7 +156,7 @@ describe('HancockEthereumSocket integration tests', () => {
 
   });
 
-  describe('::addContract', () => {
+  describe('::watchContract', () => {
 
     const addressesOrAliases: string[] = ['mockedAlias', '0x187ace2d9051d74296a8e4e154d652b8b6ec4738'];
     const socketSend: jest.Mock = socketInstance.send;
@@ -165,9 +167,10 @@ describe('HancockEthereumSocket integration tests', () => {
         kind: 'watch-contracts',
         body: addressesOrAliases,
         consumer,
+        status: 'mined',
       };
 
-      ethereumSocketInstance.addContract(addressesOrAliases);
+      ethereumSocketInstance.watchContract(addressesOrAliases);
 
       expect(socketSend).toHaveBeenCalledWith(JSON.stringify(expectedMessage));
 
@@ -177,7 +180,7 @@ describe('HancockEthereumSocket integration tests', () => {
 
       const addrsOrAliases: string[] = [];
 
-      ethereumSocketInstance.addContract(addrsOrAliases);
+      ethereumSocketInstance.watchContract(addrsOrAliases);
 
       expect(socketSend).not.toHaveBeenCalled();
 
@@ -187,7 +190,139 @@ describe('HancockEthereumSocket integration tests', () => {
 
       socketInstance.readyState = -1;
 
-      ethereumSocketInstance.addContract(addressesOrAliases);
+      ethereumSocketInstance.watchContract(addressesOrAliases);
+
+      expect(socketSend).not.toHaveBeenCalled();
+
+      socketInstance.readyState = (socket as any).OPEN;
+
+    });
+
+  });
+
+  describe('::unwatchTransfer', () => {
+
+    const addresses: string[] = ['0xf01b3c2131fb5bd8d1d1e5d44f8ad14a2728ec91', '0x187ace2d9051d74296a8e4e154d652b8b6ec4738'];
+    const socketSend: jest.Mock = socketInstance.send;
+
+    it('should sent the given list of addresses to the transfers watch list of broker service', async () => {
+
+      const expectedMessage: HancockSocketMessage = {
+        kind: 'unwatch-transfers',
+        body: addresses,
+        consumer,
+        status: 'mined',
+      };
+
+      ethereumSocketInstance.unwatchTransfer(addresses);
+
+      expect(socketSend).toHaveBeenCalledWith(JSON.stringify(expectedMessage));
+
+    });
+
+    it('should do nothing if the given list of addresses is empty', async () => {
+
+      const addrs: string[] = [];
+
+      ethereumSocketInstance.unwatchTransfer(addrs);
+
+      expect(socketSend).not.toHaveBeenCalled();
+
+    });
+
+    it('should do nothing if the connection is not ready', async () => {
+
+      socketInstance.readyState = -1;
+
+      ethereumSocketInstance.unwatchTransfer(addresses);
+
+      expect(socketSend).not.toHaveBeenCalled();
+
+      socketInstance.readyState = (socket as any).OPEN;
+
+    });
+
+  });
+
+  describe('::unwatchTransaction', () => {
+
+    const addresses: string[] = ['0xf01b3c2131fb5bd8d1d1e5d44f8ad14a2728ec91', '0x187ace2d9051d74296a8e4e154d652b8b6ec4738'];
+    const socketSend: jest.Mock = socketInstance.send;
+
+    it('should sent the given list of addresses to the transfers watch list of broker service', async () => {
+
+      const expectedMessage: HancockSocketMessage = {
+        kind: 'unwatch-transactions',
+        body: addresses,
+        consumer,
+        status: 'mined',
+      };
+
+      ethereumSocketInstance.unwatchTransaction(addresses);
+
+      expect(socketSend).toHaveBeenCalledWith(JSON.stringify(expectedMessage));
+
+    });
+
+    it('should do nothing if the given list of addresses is empty', async () => {
+
+      const addrs: string[] = [];
+
+      ethereumSocketInstance.unwatchTransaction(addrs);
+
+      expect(socketSend).not.toHaveBeenCalled();
+
+    });
+
+    it('should do nothing if the connection is not ready', async () => {
+
+      socketInstance.readyState = -1;
+
+      ethereumSocketInstance.unwatchTransaction(addresses);
+
+      expect(socketSend).not.toHaveBeenCalled();
+
+      socketInstance.readyState = (socket as any).OPEN;
+
+    });
+
+  });
+
+  describe('::unwatchContract', () => {
+
+    const addressesOrAliases: string[] = ['mockedAlias', '0x187ace2d9051d74296a8e4e154d652b8b6ec4738'];
+    const socketSend: jest.Mock = socketInstance.send;
+
+    it('should sent the given list of addresses or aliases to the contract events watch list of broker service', async () => {
+
+      const expectedMessage: HancockSocketMessage = {
+        kind: 'unwatch-contracts',
+        body: addressesOrAliases,
+        consumer,
+        status: 'mined',
+      };
+
+      ethereumSocketInstance.unwatchContract(addressesOrAliases);
+
+      expect(socketSend).toHaveBeenCalledWith(JSON.stringify(expectedMessage));
+
+    });
+
+    it('should do nothing if the given list of addresses is empty', async () => {
+
+      const addrsOrAliases: string[] = [];
+
+      ethereumSocketInstance.unwatchContract(addrsOrAliases);
+
+      expect(socketSend).not.toHaveBeenCalled();
+
+    });
+
+    it('should do nothing if the connection is not ready', async () => {
+
+      socketInstance.readyState = -1;
+
+      ethereumSocketInstance.unwatchContract(addressesOrAliases);
 
       expect(socketSend).not.toHaveBeenCalled();
 

@@ -1,4 +1,4 @@
-import { DltRawTransaction, DltSignedTransaction } from './../../hancock.model';
+import { DltRawTransaction, DltSignedTransaction } from '../../hancock.model';
 
 export const RAW_TX: DltRawTransaction = {};
 export const PRIVATE_KEY: string = 'whatever';

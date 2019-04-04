@@ -78,7 +78,7 @@ export class HancockEthereumTransferService {
 
     const hancockSocket = new HancockEthereumSocket(url, consumer);
     hancockSocket.on('ready', () => {
-      hancockSocket.addTransfer(addresses);
+      hancockSocket.watchTransfer(addresses);
     });
 
     return hancockSocket;

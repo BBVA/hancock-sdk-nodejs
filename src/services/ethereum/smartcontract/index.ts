@@ -5,9 +5,10 @@ import {
   hancockInvalidParameterError, hancockNoKeyNorProviderError,
 } from '../../error';
 import {
+  HancockAdaptInvokeAbiRequest,
+  HancockContractInstance,
   HancockSignResponse,
   InitialHancockConfig,
-  HancockAdaptInvokeAbiRequest,
 } from '../../hancock.model';
 import {
   DltAddress,
@@ -87,7 +88,7 @@ export class HancockEthereumSmartContractService {
    * @returns The returned value from the smart contract method
    */
   public async invokeAbi(
-    contractAddressOrAlias: string, method: string, params: string[], from: string, options: HancockInvokeOptions = {}, abi: any
+    contractAddressOrAlias: string, method: string, params: string[], from: string, options: HancockInvokeOptions = {}, abi: any,
   ): Promise<HancockSignResponse> {
 
     // Done in adaptInvoke
@@ -103,7 +104,7 @@ export class HancockEthereumSmartContractService {
       return Promise.reject(error(hancockFormatParameterError));
     }
 
-    let action: HancockInvokeAction = 'send';
+    const action: HancockInvokeAction = 'send';
 
     return this
       .adaptInvokeAbi(contractAddressOrAlias, method, params, from, action, abi)
@@ -167,9 +168,9 @@ export class HancockEthereumSmartContractService {
    * @returns The returned value from the smart contract method
    */
   public async callAbi(
-    contractAddressOrAlias: string, method: string, params: string[], from: string, abi: any
+    contractAddressOrAlias: string, method: string, params: string[], from: string, abi: any,
   ): Promise<HancockCallResponse> {
-    
+
     if (isEmptyAny(contractAddressOrAlias, from, method)) {
       return Promise.reject(error(hancockInvalidParameterError));
     }
@@ -177,7 +178,7 @@ export class HancockEthereumSmartContractService {
       return Promise.reject(error(hancockFormatParameterError));
     }
 
-    let action: HancockInvokeAction = 'call';
+    const action: HancockInvokeAction = 'call';
 
     return this
       .adaptInvokeAbi(contractAddressOrAlias, method, params, from, action, abi)
@@ -239,18 +240,37 @@ export class HancockEthereumSmartContractService {
 
     const hancockSocket = new HancockEthereumSocket(url, consumer);
     hancockSocket.on('ready', () => {
-      hancockSocket.addContract(contracts);
+      hancockSocket.watchContract(contracts);
     });
 
     return hancockSocket;
 
   }
 
+  /**
+   * Get the list of all contracts registered in Hancock
+   * @returns The list of all contracts registered in Hancock
+   */
+  public async getAllContracts(): Promise<HancockContractInstance[]> {
+
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.findAll}`
+      .replace(/__DLT__/, SupportedPlatforms.ethereum);
+
+    return fetch(url)
+      .then(
+        (res: any) => checkStatus(res),
+        (err: any) => errorHandler(err),
+      )
+      .then((resBody: any) => {
+        return resBody.data.list;
+      });
+  }
+
   private async adaptInvoke(contractAddressOrAlias: string, method: string, params: string[], from: string): Promise<HancockAdaptInvokeResponse> {
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invoke}`
-    .replace(/__DLT__/, SupportedPlatforms.ethereum)
-    .replace(/__ADDRESS_OR_ALIAS__/, contractAddressOrAlias);
+      .replace(/__DLT__/, SupportedPlatforms.ethereum)
+      .replace(/__ADDRESS_OR_ALIAS__/, contractAddressOrAlias);
 
     const body: HancockAdaptInvokeRequest = {
       method,
@@ -274,7 +294,7 @@ export class HancockEthereumSmartContractService {
   private async adaptInvokeAbi(to: string, method: string, params: string[], from: string, action: HancockInvokeAction, abi: any): Promise<any> {
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invokeAbi}`
-    .replace(/__DLT__/, SupportedPlatforms.ethereum);
+      .replace(/__DLT__/, SupportedPlatforms.ethereum);
 
     const body: HancockAdaptInvokeAbiRequest = {
       method,
