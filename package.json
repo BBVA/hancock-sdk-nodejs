@@ -1,6 +1,6 @@
 {
   "name": "@hancock/sdk-client-nodejs",
-  "version": "1.0.0-alpha.43",
+  "version": "1.0.0-alpha.44",
   "description": "Client sdk for integration with hancock components",
   "main": "dist/index.node.js",
   "unpkg": "dist/index.node.js",
@@ -35,7 +35,7 @@
     "nodejs"
   ],
   "author": "bbva-ndb-hancock.group@bbva.com",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "engines": {
     "node": ">=7.8.0"
   },
