@@ -34,7 +34,7 @@
     "nodejs"
   ],
   "author": "bbva-ndb-hancock.group@bbva.com",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "engines": {
     "node": ">=7.8.0"
   },
