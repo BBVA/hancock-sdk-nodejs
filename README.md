@@ -12,10 +12,10 @@ Once you have access to the kst registry:
 
 ```bash
   # with npm
-  npm install --save es6-promise @kst-hancock/sdk-client
+  npm install --save es6-promise @hancock/sdk-client-nodejs
 
   # or using yarn
-  yarn add es6-promise @kst-hancock/sdk-client
+  yarn add es6-promise @hancock/sdk-client-nodejs
 ```
 
 ### Using all together
@@ -49,7 +49,7 @@ const config = {
 
 ```javascript
 require('es6-promise').polyfill();
-const HancockEthereumClient = require('@kst-hancock/sdk-client').HancockEthereumClient
+const HancockEthereumClient = require('@hancock/sdk-client').HancockEthereumClient
 
 new HancockEthereumClient(config);
 ```
@@ -68,7 +68,7 @@ And then use the sdk as an ES6 module (or in module bundlers like webpack)
 import * as es6Promise from 'es6-promise';
 es6Promise.polyfill();
 
-import { HancockEthereumClient } from '@kst-hancock/sdk-client';
+import { HancockEthereumClient } from '@hancock/sdk-client';
 new HancockEthereumClient(config);
 ```
 
