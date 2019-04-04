@@ -2,7 +2,7 @@ import { SupportedPlatforms } from '../../common';
 import { HancockTransactionService } from '../../common/transaction';
 import { InitialHancockConfig } from '../../hancock.model';
 import { signTx } from '../signer';
-import { HancockEthereumSocket } from './../socket';
+import { HancockEthereumSocket } from '../socket';
 
 export class HancockEthereumTransactionService extends HancockTransactionService {
 

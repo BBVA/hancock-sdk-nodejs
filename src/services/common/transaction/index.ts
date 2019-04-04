@@ -11,6 +11,7 @@ import { DltRawTransaction,
   HancockSignerFn,
   HancockSignRequest,
   HancockSignResponse,
+  HancockSocketStatus,
   InitialHancockConfig,
 } from '../../hancock.model';
 import { HancockSocket } from '../socket';
@@ -181,19 +182,21 @@ export class HancockTransactionService {
    * Create a websocket subscription to watch transactions in the network
    * @param addresses An array of address that will be added to the watch list
    * @param consumer A consumer plugin previously configured in hancock that will handle each received event
+   * @param status The status of transactions which we want to subscribe, it can take two diferent values: 'mined' and 'pending'
    * @returns An event emmiter that will fire the watched transaction events
    */
-  public subscribe(addresses: string[] = [], consumer: string = ''): HancockSocket {
+  public subscribe(addresses: string[] = [], consumer: string = '', status: HancockSocketStatus = 'mined'): HancockSocket {
 
     const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`
       .replace(/__DLT__/, this.platform)
       .replace(/__ADDRESS__/, '')
       .replace(/__SENDER__/, '')
+      .replace(/__STATUS__/, status)
       .replace(/__CONSUMER__/, consumer);
 
-    const hancockSocket = new this.hancockSocket(url, consumer);
+    const hancockSocket = new this.hancockSocket(url, consumer, status);
     hancockSocket.on('ready', () => {
-      hancockSocket.addTransaction(addresses);
+      hancockSocket.watchTransaction(addresses);
     });
 
     return hancockSocket;

@@ -170,7 +170,7 @@ describe('ethereum client', async () => {
 
     expect(socket.HancockEthereumSocket).toHaveBeenCalledTimes(1);
     expect(response.on).toHaveBeenCalledTimes(1);
-    expect(response.addTransfer).toHaveBeenCalledWith(['0x1234']);
+    expect(response.watchTransfer).toHaveBeenCalledWith(['0x1234']);
 
   });
 
@@ -180,7 +180,7 @@ describe('ethereum client', async () => {
 
     expect(socket.HancockEthereumSocket).toHaveBeenCalledTimes(1);
     expect(response.on).toHaveBeenCalledTimes(1);
-    expect(response.addTransfer).toHaveBeenCalledWith([]);
+    expect(response.watchTransfer).toHaveBeenCalledWith([]);
 
   });
 
