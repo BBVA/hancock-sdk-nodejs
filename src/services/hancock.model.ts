@@ -370,12 +370,21 @@ export interface HancockCallBackOptions {
   requestId?: string;
 }
 
-export type HancockSocketKind = 'watch-transfers' | 'watch-transactions' | 'watch-contracts' |
- 'unwatch-transfers' | 'unwatch-transactions' | 'unwatch-contracts';
+export enum SOCKET_EVENT_KINDS {
+  WatchTransfer = 'watch-transfers',
+  WatchTransaction = 'watch-transactions',
+  WatchSmartContractTransaction = 'watch-contracts-transactions',
+  WatchSmartContractEvent = 'watch-contracts-events',
+  UnwatchTransfer = 'unwatch-transfers',
+  UnwatchTransaction = 'unwatch-transactions',
+  UnwatchSmartContractTransaction = 'unwatch-contracts-transactions',
+  UnwatchSmartContractEvent = 'unwatch-contracts-events',
+}
+
 export type HancockSocketStatus = 'pending' | 'mined';
 export type HancockSocketBody = any;
 export interface HancockSocketMessage {
-  kind: HancockSocketKind;
+  kind: SOCKET_EVENT_KINDS;
   body: HancockSocketBody;
   status?: HancockSocketStatus;
   consumer?: string;

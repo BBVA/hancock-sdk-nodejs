@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import WebSocket from 'isomorphic-ws';
-import { HancockSocketBody, HancockSocketKind, HancockSocketMessage, HancockSocketStatus } from '..';
+import { HancockSocketBody, HancockSocketMessage, HancockSocketStatus, SOCKET_EVENT_KINDS } from '..';
 
 /**
  * Manages events emmited by the blockchain network
@@ -34,7 +34,7 @@ export class HancockSocket extends EventEmitter {
    */
   public watchTransfer(addresses: string[]) {
     if (addresses.length > 0) {
-      this.sendMessage('watch-transfers', addresses);
+      this.sendMessage(SOCKET_EVENT_KINDS.WatchTransfer, addresses);
     }
   }
 
@@ -45,7 +45,18 @@ export class HancockSocket extends EventEmitter {
    */
   public watchTransaction(addresses: string[]) {
     if (addresses.length > 0) {
-      this.sendMessage('watch-transactions', addresses);
+      this.sendMessage(SOCKET_EVENT_KINDS.WatchTransaction, addresses);
+    }
+  }
+
+  /**
+   * Add a list of smart contract addresses to the watch lists of smart contract transactions
+   * An event will be received each time that some smart contract identified by one of the given addresses emits an event
+   * @param addresses addresses of smart contracts to watch
+   */
+  public watchContractTransaction(contracts: string[]) {
+    if (contracts.length > 0) {
+      this.sendMessage(SOCKET_EVENT_KINDS.WatchSmartContractTransaction, contracts);
     }
   }
 
@@ -54,9 +65,9 @@ export class HancockSocket extends EventEmitter {
    * An event will be received each time that some smart contract identified by one of the given addresses emits an event
    * @param addresses addresses of smart contracts to watch
    */
-  public watchContract(contracts: string[]) {
+  public watchContractEvent(contracts: string[]) {
     if (contracts.length > 0) {
-      this.sendMessage('watch-contracts', contracts);
+      this.sendMessage(SOCKET_EVENT_KINDS.WatchSmartContractEvent, contracts);
     }
   }
 
@@ -66,7 +77,7 @@ export class HancockSocket extends EventEmitter {
    */
   public unwatchTransfer(addresses: string[]) {
     if (addresses.length > 0) {
-      this.sendMessage('unwatch-transfers', addresses);
+      this.sendMessage(SOCKET_EVENT_KINDS.UnwatchTransfer, addresses);
     }
   }
 
@@ -76,21 +87,31 @@ export class HancockSocket extends EventEmitter {
    */
   public unwatchTransaction(addresses: string[]) {
     if (addresses.length > 0) {
-      this.sendMessage('unwatch-transactions', addresses);
+      this.sendMessage(SOCKET_EVENT_KINDS.UnwatchTransaction, addresses);
     }
   }
 
   /**
-   * Stop listening the contracts for event of type "contracts".
+   * Stop listening the contracts for event of type "contracts-events".
    * @param contracts Contracts to stop listening
    */
-  public unwatchContract(contracts: string[]) {
+  public unwatchContractTransaction(contracts: string[]) {
     if (contracts.length > 0) {
-      this.sendMessage('unwatch-contracts', contracts);
+      this.sendMessage(SOCKET_EVENT_KINDS.UnwatchSmartContractTransaction, contracts);
     }
   }
 
-  protected sendMessage(kind: HancockSocketKind, body: HancockSocketBody[]) {
+  /**
+   * Stop listening the contracts for event of type "contracts-transactions".
+   * @param contracts Contracts to stop listening
+   */
+  public unwatchContractEvent(contracts: string[]) {
+    if (contracts.length > 0) {
+      this.sendMessage(SOCKET_EVENT_KINDS.UnwatchSmartContractEvent, contracts);
+    }
+  }
+
+  protected sendMessage(kind: SOCKET_EVENT_KINDS, body: HancockSocketBody[]) {
     const dataFormated = this.getMessageFormat(kind, body);
     if (this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(dataFormated));
@@ -152,7 +173,7 @@ export class HancockSocket extends EventEmitter {
     }
   }
 
-  private getMessageFormat(kind: HancockSocketKind, body: HancockSocketBody): HancockSocketMessage {
+  private getMessageFormat(kind: SOCKET_EVENT_KINDS, body: HancockSocketBody): HancockSocketMessage {
     const message: HancockSocketMessage = {
       kind,
       body,

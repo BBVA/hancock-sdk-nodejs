@@ -157,7 +157,7 @@ describe('HancockEthereumSmartContractService', async () => {
     expect(adaptSpy).toHaveBeenCalledWith('contractAddressOrAlias', 'method', ['params'], 'from', 'call', abi);
 
   });
-  
+
   it('should call call correctly', async () => {
 
     (fetch as any).once(JSON.stringify(response.SC_INVOKE_ADAPT_RESPONSE));
@@ -332,24 +332,45 @@ describe('HancockEthereumSmartContractService', async () => {
 
   });
 
-  it('should call subscribe correctly', async () => {
+  it('should call subscribeToEvents correctly', async () => {
 
     // tslint:disable-next-line:no-shadowed-variable
-    const response = client.subscribe(['testContract']);
+    const response = client.subscribeToEvents(['testContract']);
 
     expect(socket.HancockEthereumSocket).toHaveBeenCalledTimes(1);
     expect(response.on).toHaveBeenCalledTimes(1);
-    expect(response.watchContract).toHaveBeenCalledWith(['testContract']);
+    expect(response.watchContractEvent).toHaveBeenCalledWith(['testContract']);
 
   });
 
-  it('should call subscribe empty correctly', async () => {
+  it('should call subscribeToEvents empty correctly', async () => {
     // tslint:disable-next-line:no-shadowed-variable
-    const response = client.subscribe();
+    const response = client.subscribeToEvents();
 
     expect(socket.HancockEthereumSocket).toHaveBeenCalledTimes(1);
     expect(response.on).toHaveBeenCalledTimes(1);
-    expect(response.watchContract).toHaveBeenCalledWith([]);
+    expect(response.watchContractEvent).toHaveBeenCalledWith([]);
+
+  });
+
+  it('should call subscribeToTransactions correctly', async () => {
+
+    // tslint:disable-next-line:no-shadowed-variable
+    const response = client.subscribeToTransactions(['testContract']);
+
+    expect(socket.HancockEthereumSocket).toHaveBeenCalledTimes(1);
+    expect(response.on).toHaveBeenCalledTimes(1);
+    expect(response.watchContractTransaction).toHaveBeenCalledWith(['testContract']);
+
+  });
+
+  it('should call subscribeToTransactions empty correctly', async () => {
+    // tslint:disable-next-line:no-shadowed-variable
+    const response = client.subscribeToTransactions();
+
+    expect(socket.HancockEthereumSocket).toHaveBeenCalledTimes(1);
+    expect(response.on).toHaveBeenCalledTimes(1);
+    expect(response.watchContractTransaction).toHaveBeenCalledWith([]);
 
   });
 

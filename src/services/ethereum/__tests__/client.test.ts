@@ -20,6 +20,7 @@ import {
   HancockTokenAllowanceResponse,
   HancockTokenInstance,
   HancockTokenMetadataResponse,
+  SOCKET_EVENT_KINDS,
 } from '../..';
 import { HancockEthereumClient } from '../../..';
 import * as common from '../../common';
@@ -221,7 +222,7 @@ describe('HancockEthereumClient integration tests', () => {
         const socketOn: jest.Mock = socketInstance.on;
         const socketSend: jest.Mock = socketInstance.send;
         const expectedMessage: HancockSocketMessage = {
-          kind: 'watch-transactions',
+          kind: SOCKET_EVENT_KINDS.WatchTransaction,
           body: addresses,
           consumer,
           status: 'mined',
@@ -339,7 +340,7 @@ describe('HancockEthereumClient integration tests', () => {
         const socketOn: jest.Mock = socketInstance.on;
         const socketSend: jest.Mock = socketInstance.send;
         const expectedMessage: HancockSocketMessage = {
-          kind: 'watch-transfers',
+          kind: SOCKET_EVENT_KINDS.WatchTransfer,
           body: addresses,
           consumer,
           status: 'mined',
@@ -696,13 +697,13 @@ describe('HancockEthereumClient integration tests', () => {
         const socketOn: jest.Mock = socketInstance.on;
         const socketSend: jest.Mock = socketInstance.send;
         const expectedMessage: HancockSocketMessage = {
-          kind: 'watch-contracts',
+          kind: SOCKET_EVENT_KINDS.WatchSmartContractEvent,
           body: contracts,
           consumer,
           status: 'mined',
         };
 
-        const hancockSocket: HancockEthereumSocket = clientInstance.smartContract.subscribe(contracts, consumer);
+        const hancockSocket: HancockEthereumSocket = clientInstance.smartContract.subscribeToEvents(contracts, consumer);
 
         socketInstance._trigger('message', JSON.stringify({ kind: 'ready' }));
 

@@ -32,7 +32,7 @@ Console output:
 ```javascript
   const hancockEthClient = new HancockEthereumClient(config);
 
-  const subscription = hancockEthClient.smartcontract.subscribe([
+  const subscription = hancockEthClient.smartcontract.subscribeToEvents([
     'contract-alias',
   ]);
   subscription.on('event', (data) => { console.log(data) });

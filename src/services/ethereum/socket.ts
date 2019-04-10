@@ -10,15 +10,4 @@ export class HancockEthereumSocket extends HancockSocket {
     super(url, consumer, status);
   }
 
-  /**
-   * Add a list of smart contract addresses to the watch lists of smart contract events
-   * An event will be received each time that some smart contract identified by one of the given addresses emits an event
-   * @param addresses addresses of smart contracts to watch
-   */
-  public watchContract(contracts: string[]) {
-    if (contracts.length > 0) {
-      this.sendMessage('watch-contracts', contracts);
-    }
-  }
-
 }
