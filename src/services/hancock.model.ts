@@ -336,7 +336,8 @@ export interface HancockClient {
     call(contractAddress: string, method: string, params: string[], from: string): Promise<HancockCallResponse>;
     callAbi(contractAddressOrAlias: string, method: string, params: string[], from: string, options: HancockInvokeOptions, abi: any)
     : Promise<HancockCallResponse>;
-    subscribe(contracts: string[]): HancockEthereumSocket;
+    subscribeToEvents(contracts: string[]): HancockEthereumSocket;
+    subscribeToTransactions(contracts: string[]): HancockEthereumSocket;
   };
   token?: {
     getBalance(addressOrAlias: string, address: string): Promise<HancockTokenBalanceResponse>;
