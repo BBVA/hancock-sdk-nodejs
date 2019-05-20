@@ -1,15 +1,5 @@
 # Hancock SDK client
 
-## Before use this package
-This package is distributed under our private [KST npm registry](http://dev.npm.kickstartteam.es/).
-You have to configure your own .npmrc file in order to have access to it. Ask somebody of our team the `SECRET_TOKEN`:
-
-```bash
-# .npmrc
-@kst-hancock:registry=http://dev.npm.kickstartteam.es/
-//dev.npm.kickstartteam.es/:_authToken="<SECRET_TOKEN>"
-```
-
 ## Using this package
 
 ### Dependencies
@@ -22,10 +12,10 @@ Once you have access to the kst registry:
 
 ```bash
   # with npm
-  npm install --save es6-promise @kst-hancock/sdk-client
+  npm install --save es6-promise @hancock/sdk-nodejs
 
   # or using yarn
-  yarn add es6-promise @kst-hancock/sdk-client
+  yarn add es6-promise @hancock/sdk-nodejs
 ```
 
 ### Using all together
@@ -59,7 +49,7 @@ const config = {
 
 ```javascript
 require('es6-promise').polyfill();
-const HancockEthereumClient = require('@kst-hancock/sdk-client').HancockEthereumClient
+const HancockEthereumClient = require('@hancock/sdk-nodejs').HancockEthereumClient
 
 new HancockEthereumClient(config);
 ```
@@ -78,14 +68,14 @@ And then use the sdk as an ES6 module (or in module bundlers like webpack)
 import * as es6Promise from 'es6-promise';
 es6Promise.polyfill();
 
-import { HancockEthereumClient } from '@kst-hancock/sdk-client';
+import { HancockEthereumClient } from '@hancock/sdk-nodejs';
 new HancockEthereumClient(config);
 ```
 
 ### Introduction and examples
 
 [[HancockEthereumClient]] provides interfaces to interact with the blockchain 
-allowing common operation like transfers, balance consulting or smart contract interactions. Take a look at the diferent sections of the [docs](https://docs.kickstartteam.es/blockchainhub/kst-hancock-sdk-client/docs/index.html) to see examples of use:
+allowing common operation like transfers, balance consulting or smart contract interactions. Take a look at the diferent sections of the [docs](https://BBVA.github.io/hancock-sdk-node/docs/index.html) to see examples of use:
 
 - [[HancockEthereumWalletService]]
 - [[HancockEthereumTransferService]]

@@ -18,3 +18,5 @@ yarn-error.log*
 config/config.json
 tests/reports
 /typedocs
+
+.npmrc

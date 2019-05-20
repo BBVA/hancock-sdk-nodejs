@@ -32,7 +32,7 @@ describe('ethereum client', async () => {
         allowance: '/mockToken/__ADDRESS_OR_ALIAS__/mockAllowance',
         findAll: '/mockToken',
       },
-     },
+    },
   };
   let config: any;
   const configAdapter: any = genericConfig;
@@ -249,7 +249,7 @@ describe('ethereum client', async () => {
     it('should call transfer correctly', async () => {
 
       const adaptTransferSpy = jest.spyOn((HancockEthereumTokenService.prototype as any), 'adaptSend')
-        .mockImplementation(() => Promise.resolve({data: { test: 'test' }}));
+        .mockImplementation(() => Promise.resolve({ data: { test: 'test' } }));
       const signTransactionAndSendSpy = jest.spyOn((transactionService as any), 'signAndSend')
         .mockImplementation(() => Promise.resolve('ok!'));
 
@@ -260,19 +260,6 @@ describe('ethereum client', async () => {
       expect(adaptTransferSpy).toHaveBeenCalledWith('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '100', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c');
       expect(signTransactionAndSendSpy).toHaveBeenCalledWith({ test: 'test' }, options);
       expect(result).toBe('ok!');
-
-    });
-
-    it('should call transfer and throw error', async () => {
-
-      try {
-        // tslint:disable-next-line:max-line-length
-        await client.transfer('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '100', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c');
-        fail('it should fail');
-      } catch (error) {
-        expect(errorFnMock).toHaveBeenCalledWith(new HancockError(hancockErrorType.Internal, '002', 500, 'No key nor provider'));
-        expect(error).toEqual(new HancockError(hancockErrorType.Internal, '002', 500, 'No key nor provider'));
-      }
 
     });
 
@@ -345,7 +332,7 @@ describe('ethereum client', async () => {
     it('should call transferFrom correctly', async () => {
 
       const adaptTransferFromSpy = jest.spyOn((HancockEthereumTokenService.prototype as any), 'adaptTransferFrom')
-        .mockImplementation(() => Promise.resolve({data: { test: 'test' }}));
+        .mockImplementation(() => Promise.resolve({ data: { test: 'test' } }));
 
       const signTransactionAndSendSpy = jest.spyOn((transactionService as any), 'signAndSend')
         .mockImplementation(() => Promise.resolve('ok!'));
@@ -368,24 +355,6 @@ describe('ethereum client', async () => {
       );
       expect(signTransactionAndSendSpy).toHaveBeenCalledWith({ test: 'test' }, options);
       expect(result).toBe('ok!');
-
-    });
-
-    it('should call transferFrom and throw error', async () => {
-
-      try {
-        await client.transferFrom(
-          '0xde8e772f0350e992ddef81bf8f51d94a8ea12345',
-          '0xde8e772f0350e992ddef81bf8f51d94a8ea12345',
-          '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
-          '100',
-          '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c',
-        );
-        fail('it should fail');
-      } catch (error) {
-        expect(errorFnMock).toHaveBeenCalledWith(new HancockError(hancockErrorType.Internal, '002', 500, 'No key nor provider'));
-        expect(error).toEqual(new HancockError(hancockErrorType.Internal, '002', 500, 'No key nor provider'));
-      }
 
     });
 
@@ -461,95 +430,29 @@ describe('ethereum client', async () => {
 
     it('should call allowance correctly', async () => {
 
-      const adaptAllowanceSpy = jest.spyOn((HancockEthereumTokenService.prototype as any), 'adaptAllowance')
-        .mockImplementation(() => Promise.resolve({data: { test: 'test' }}));
-      const signTransactionAndSendSpy = jest.spyOn((transactionService as any), 'signAndSend')
-        .mockImplementation(() => Promise.resolve('ok!'));
-
-      const result = await client.allowance('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
-        '0xde8e772f0350e992ddef81bf8f51d94a8ea9215e', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c', options);
-
-      // tslint:disable-next-line:max-line-length
-      expect(adaptAllowanceSpy).toHaveBeenCalledWith('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '0xde8e772f0350e992ddef81bf8f51d94a8ea9215e', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c');
-      expect(signTransactionAndSendSpy).toHaveBeenCalledWith({ test: 'test' }, options);
-      expect(result).toBe('ok!');
-
-    });
-
-    it('should call allowance and throw error', async () => {
-
-      try {
+      (fetch as any).once(JSON.stringify(response.GET_TOKEN_ALLOWANCE_RESPONSE));
+      const requestBody: any = {
         // tslint:disable-next-line:max-line-length
-        await client.allowance('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '0xde8e772f0350e992ddef81bf8f51d94a8ea9215e', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c');
-        fail('it should fail');
-      } catch (error) {
-        expect(errorFnMock).toHaveBeenCalledWith(new HancockError(hancockErrorType.Internal, '002', 500, 'No key nor provider'));
-        expect(error).toEqual(new HancockError(hancockErrorType.Internal, '002', 500, 'No key nor provider'));
-      }
-
-    });
-
-    it('should call adaptAllowance correctly', async () => {
-
-      (fetch as any).once(JSON.stringify(response.SC_INVOKE_ADAPT_RESPONSE));
-      const bodyFetch = {
-        from: '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
-        tokenOwner: '0xde8e772f0350e992ddef81bf8f51d94a8ea92123',
-        spender: '0xde8e772f0350e992ddef81bf8f51d94a8ea9215e',
+        body: '{\"from\":\"0xde8e772f0350e992ddef81bf8f51d94a8ea12345\",\"tokenOwner\":\"0xde8e772f0350e992ddef81bf8f51d94a8ea9216d\",\"spender\":\"0xde8e772f0350e992ddef81bf8f51d94a8ea9215e\"}',
+        headers: {'Content-Type': 'application/json'},
+        method: 'POST',
       };
-      callParamFetch.body = JSON.stringify(bodyFetch);
-      const smartContractAddress = '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c';
 
       const checkStatusSpy = checkStatusMock
         .mockImplementation((res) => Promise.resolve(res.json()));
 
-      const result = await (client as any).adaptAllowance(
-        bodyFetch.from,
-        bodyFetch.tokenOwner,
-        bodyFetch.spender,
-        smartContractAddress,
-      );
+      const result = await client.allowance('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
+        '0xde8e772f0350e992ddef81bf8f51d94a8ea9215e', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d');
 
       expect(fetch).toHaveBeenCalledWith(
-        'genericHost:1genericBase/mockToken/' + smartContractAddress + '/mockAllowance',
-        callParamFetch,
+        'genericHost:1genericBase/mockToken/0xde8e772f0350e992ddef81bf8f51d94a8ea9216d/mockAllowance',
+        requestBody,
       );
       expect(checkStatusSpy).toHaveBeenCalledTimes(1);
-      expect(result).toEqual(response.SC_INVOKE_ADAPT_RESPONSE);
+      expect(result).toEqual(parseInt(response.GET_TOKEN_ALLOWANCE_RESPONSE.data, 10));
 
     });
 
-    it('should call adaptAllowance and throw error', async () => {
-
-      (fetch as any).mockRejectOnce(JSON.stringify(response.ERROR));
-      const bodyFetch = {
-        from: '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d',
-        tokenOwner: '0xde8e772f0350e992ddef81bf8f51d94a8ea92123',
-        spender: '0xde8e772f0350e992ddef81bf8f51d94a8ea9215e',
-      };
-      const smartContractAddress = '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c';
-      callParamFetch.body = JSON.stringify(bodyFetch);
-
-      const checkStatusSpy = errorHandlerMock
-        .mockImplementation(() => { throw new HancockError(hancockErrorType.Api, '001', 500, 'testError'); });
-
-      try {
-        await (client as any).adaptAllowance(
-          bodyFetch.from,
-          bodyFetch.tokenOwner,
-          bodyFetch.spender,
-          smartContractAddress,
-        );
-        fail('it should fail');
-      } catch (error) {
-        expect(fetch).toHaveBeenCalledWith(
-          'genericHost:1genericBase/mockToken/' + smartContractAddress + '/mockAllowance',
-          callParamFetch,
-        );
-        expect(error).toEqual(new HancockError(hancockErrorType.Api, '001', 500, 'testError'));
-      }
-
-    });
   });
 
   describe('::approve', () => {
@@ -557,7 +460,7 @@ describe('ethereum client', async () => {
     it('should call approve correctly', async () => {
 
       const adaptApproveSpy = jest.spyOn((HancockEthereumTokenService.prototype as any), 'adaptApprove')
-        .mockImplementation(() => Promise.resolve({data: { test: 'test' }}));
+        .mockImplementation(() => Promise.resolve({ data: { test: 'test' } }));
       const signTransactionAndSendSpy = jest.spyOn((transactionService as any), 'signAndSend')
         .mockImplementation(() => Promise.resolve('ok!'));
 
@@ -568,19 +471,6 @@ describe('ethereum client', async () => {
       expect(adaptApproveSpy).toHaveBeenCalledWith('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '100', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c');
       expect(signTransactionAndSendSpy).toHaveBeenCalledWith({ test: 'test' }, options);
       expect(result).toBe('ok!');
-
-    });
-
-    it('should call approve and throw error', async () => {
-
-      try {
-        // tslint:disable-next-line:max-line-length
-        await client.approve('0xde8e772f0350e992ddef81bf8f51d94a8ea12345', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d', '100', '0xde8e772f0350e992ddef81bf8f51d94a8ea9216c');
-        fail('it should fail');
-      } catch (error) {
-        expect(errorFnMock).toHaveBeenCalledWith(new HancockError(hancockErrorType.Internal, '002', 500, 'No key nor provider'));
-        expect(error).toEqual(new HancockError(hancockErrorType.Internal, '002', 500, 'No key nor provider'));
-      }
 
     });
 

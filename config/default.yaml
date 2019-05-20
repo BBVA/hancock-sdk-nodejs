@@ -4,7 +4,9 @@ adapter:
   base: ''
   resources:
     invoke: '/__DLT__/smartcontracts/invoke/__ADDRESS_OR_ALIAS__'
+    invokeAbi: '/__DLT__/smartcontracts/invoke/abi'
     register: '/__DLT__/smartcontracts/register'
+    findAll: '/__DLT__/smartcontracts'
     balance: '/__DLT__/balance/__ADDRESS__'
     transfer: '/__DLT__/transfers'
     token:
@@ -31,4 +33,4 @@ broker:
   port: 3001
   base: ''
   resources:
-    events: '/__DLT__/subscribe?address=__ADDRESS__&sender=__SENDER__&consumer=__CONSUMER__'
+    events: '/__DLT__/subscribe?address=__ADDRESS__&sender=__SENDER__&consumer=__CONSUMER__&status=__STATUS__'

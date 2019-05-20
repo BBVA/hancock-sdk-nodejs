@@ -6,9 +6,9 @@ import { HancockAdaptInvokeResponse } from '../../..';
 import * as common from '../../../common';
 import { SupportedPlatforms } from '../../../common';
 import { HancockError, hancockErrorType } from '../../../error';
+import { HancockSignerFn } from '../../../hancock.model';
 import * as response from '../../__mocks__/responses';
 import * as socket from '../../socket';
-import { HancockSignerFn } from './../../../hancock.model';
 
 jest.mock('isomorphic-fetch');
 jest.mock('../../../common');
@@ -273,7 +273,7 @@ describe('ethereum client', async () => {
 
     expect(socket.HancockSocket).toHaveBeenCalledTimes(1);
     expect(response.on).toHaveBeenCalledTimes(1);
-    expect(response.addTransaction).toHaveBeenCalledWith(['0x1234']);
+    expect(response.watchTransaction).toHaveBeenCalledWith(['0x1234']);
 
   });
 
@@ -283,7 +283,7 @@ describe('ethereum client', async () => {
 
     expect(socket.HancockSocket).toHaveBeenCalledTimes(1);
     expect(response.on).toHaveBeenCalledTimes(1);
-    expect(response.addTransaction).toHaveBeenCalledWith([]);
+    expect(response.watchTransaction).toHaveBeenCalledWith([]);
 
   });
 });

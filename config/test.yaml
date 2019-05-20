@@ -4,6 +4,7 @@ adapter:
   base: '/mockBase'
   resources:
     invoke: '/mockInvoke/__ADDRESS_OR_ALIAS__'
+    invokeAbi: '/mockInvoke/abi' 
     register: '/mockRegister'
     balance: '/mockBalance/__ADDRESS__'
     transfer: '/mockTransfer'

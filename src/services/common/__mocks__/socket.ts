@@ -3,9 +3,10 @@ export const __socketInstance__ = {
   on: jest.fn().mockImplementation((kind, callback) => {
     callback();
   }),
-  addContract: jest.fn().mockReturnThis(),
-  addTransfer: jest.fn().mockReturnThis(),
-  addTransaction: jest.fn().mockReturnThis(),
+  watchContractEvent: jest.fn().mockReturnThis(),
+  watchContractTransaction: jest.fn().mockReturnThis(),
+  watchTransfer: jest.fn().mockReturnThis(),
+  watchTransaction: jest.fn().mockReturnThis(),
 };
 
 // tslint:disable-next-line:variable-name

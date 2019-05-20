@@ -1,7 +1,6 @@
 import { HancockError, hancockErrorType, hancockGenericApiError } from './error';
 
 export enum SupportedPlatforms {
-  'bitcoin' = 'bitcoin',
   'ethereum' = 'ethereum',
 }
 
@@ -25,7 +24,7 @@ export const errorHandler = (err: any) => {
 export const checkStatus = async (response: any): Promise<any> => {
   // HTTP status code between 200 and 299
   if (!response.ok) {
-    module.exports.errorHandler({body: response.json()});
+    errorHandler({body: await response.json()});
   }
 
   return response.json();

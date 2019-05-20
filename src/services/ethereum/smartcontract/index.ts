@@ -1,11 +1,12 @@
 import fetch from 'isomorphic-fetch';
 import { checkStatus, error, errorHandler, SupportedPlatforms } from '../../common';
-import { normalizeAlias } from '../../common/utils';
 import {
   hancockFormatParameterError,
   hancockInvalidParameterError, hancockNoKeyNorProviderError,
 } from '../../error';
 import {
+  HancockAdaptInvokeAbiRequest,
+  HancockContractInstance,
   HancockSignResponse,
   InitialHancockConfig,
 } from '../../hancock.model';
@@ -15,6 +16,7 @@ import {
   HancockAdaptInvokeResponse,
   HancockCallRequest,
   HancockCallResponse,
+  HancockInvokeAction,
   HancockInvokeOptions,
   HancockRegisterRequest,
   HancockRegisterResponse,
@@ -22,7 +24,7 @@ import {
 import { EthereumAbi } from '../model';
 import { HancockEthereumSocket } from '../socket';
 import { HancockEthereumTransactionService } from '../transaction';
-import { isAddress, isEmptyAny, normalizeAddress, normalizeAddressOrAlias } from '../utils';
+import { isAddress, isEmptyAny } from '../utils';
 
 /**
  * [[include:HancockEthereumSmartContractService.md]]
@@ -75,6 +77,46 @@ export class HancockEthereumSmartContractService {
   }
 
   /**
+   * Makes an invocation to an smart contract method with abi.
+   * Invocations are used to call smart contract methods that writes information in the blockchain consuming gas
+   * @param contractAddressOrAlias Address or alias of the smart contract registered in Hancock
+   * @param method The name of the method to call
+   * @param params An array of arguments passed to the method
+   * @param from The address of the account doing the call
+   * @param options Configuration of how the transaction will be send to the network
+   * @param abi raw in json format
+   * @returns The returned value from the smart contract method
+   */
+  public async invokeAbi(
+    contractAddressOrAlias: string, method: string, params: string[], from: string, options: HancockInvokeOptions = {}, abi: any,
+  ): Promise<HancockSignResponse> {
+
+    // Done in adaptInvoke
+    // const normalizedContractAddressOrAlias: string = normalizeAddressOrAlias(contractAddressOrAlias);
+
+    if (!options.signProvider && !options.privateKey) {
+      return Promise.reject(error(hancockNoKeyNorProviderError));
+    }
+    if (isEmptyAny(contractAddressOrAlias, from, method)) {
+      return Promise.reject(error(hancockInvalidParameterError));
+    }
+    if (!isAddress(from)) {
+      return Promise.reject(error(hancockFormatParameterError));
+    }
+
+    const action: HancockInvokeAction = 'send';
+
+    return this
+      .adaptInvokeAbi(contractAddressOrAlias, method, params, from, action, abi)
+      .then((resBody: HancockAdaptInvokeResponse) => {
+
+        return this.transactionService.signAndSend(resBody.data, options);
+
+      });
+
+  }
+
+  /**
    * Makes a call to an smart contract method. Calls only fetch information from blockchain so it doesn't consume gas
    * @param contractAddressOrAlias Address or alias of the smart contract registered in Hancock
    * @param method The name of the method to call
@@ -90,11 +132,10 @@ export class HancockEthereumSmartContractService {
     if (!isAddress(from)) {
       return Promise.reject(error(hancockFormatParameterError));
     }
-    const normalizedContractAddressOrAlias: string = normalizeAddressOrAlias(contractAddressOrAlias);
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invoke}`
       .replace(/__DLT__/, SupportedPlatforms.ethereum)
-      .replace(/__ADDRESS_OR_ALIAS__/, normalizedContractAddressOrAlias);
+      .replace(/__ADDRESS_OR_ALIAS__/, contractAddressOrAlias);
 
     const body: HancockCallRequest = {
       method,
@@ -116,6 +157,37 @@ export class HancockEthereumSmartContractService {
   }
 
   /**
+   * Makes an invocation to an smart contract method with abi.
+   * Invocations are used to call smart contract methods that writes information in the blockchain consuming gas
+   * @param contractAddressOrAlias Address or alias of the smart contract registered in Hancock
+   * @param method The name of the method to call
+   * @param params An array of arguments passed to the method
+   * @param from The address of the account doing the call
+   * @param options Configuration of how the transaction will be send to the network
+   * @param abi raw in json format
+   * @returns The returned value from the smart contract method
+   */
+  public async callAbi(
+    contractAddressOrAlias: string, method: string, params: string[], from: string, abi: any,
+  ): Promise<HancockCallResponse> {
+
+    if (isEmptyAny(contractAddressOrAlias, from, method)) {
+      return Promise.reject(error(hancockInvalidParameterError));
+    }
+    if (!isAddress(from)) {
+      return Promise.reject(error(hancockFormatParameterError));
+    }
+
+    const action: HancockInvokeAction = 'call';
+
+    return this
+      .adaptInvokeAbi(contractAddressOrAlias, method, params, from, action, abi)
+      .then((resBody: HancockCallResponse) => {
+        return resBody;
+      });
+  }
+
+  /**
    * Register a new smart contract instance in Hancock
    * @param alias An alias for the smart contract
    * @param address The address of the deployed smart contract instance
@@ -130,8 +202,6 @@ export class HancockEthereumSmartContractService {
     if (!isAddress(address)) {
       return Promise.reject(error(hancockFormatParameterError));
     }
-    alias = normalizeAlias(alias);
-    address = normalizeAddress(address);
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.register}`
       .replace(/__DLT__/, SupportedPlatforms.ethereum);
@@ -160,35 +230,102 @@ export class HancockEthereumSmartContractService {
    * @param consumer A consumer plugin previously configured in hancock that will handle each received event
    * @returns An event emmiter that will fire the watched "smart contract events" events
    */
-  public subscribe(contracts: string[] = [], consumer: string = ''): HancockEthereumSocket {
+  public subscribeToEvents(contracts: string[] = [], consumer: string = ''): HancockEthereumSocket {
 
     const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`
+      .replace(/__DLT__/, SupportedPlatforms.ethereum)
       .replace(/__ADDRESS__/, '')
       .replace(/__SENDER__/, '')
       .replace(/__CONSUMER__/, consumer);
 
     const hancockSocket = new HancockEthereumSocket(url, consumer);
     hancockSocket.on('ready', () => {
-      hancockSocket.addContract(contracts);
+      hancockSocket.watchContractEvent(contracts);
     });
 
     return hancockSocket;
 
   }
 
+  /**
+   * Create a websocket subscription to watch transactions of type "smart contract transactions" in the network
+   * @param addresses An array of address of smart contracts that will be added to the watch list
+   * @param consumer A consumer plugin previously configured in hancock that will handle each received event
+   * @returns An event emmiter that will fire the watched "smart contract transactions" events
+   */
+  public subscribeToTransactions(contracts: string[] = [], consumer: string = ''): HancockEthereumSocket {
+
+    const url: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`
+      .replace(/__DLT__/, SupportedPlatforms.ethereum)
+      .replace(/__ADDRESS__/, '')
+      .replace(/__SENDER__/, '')
+      .replace(/__CONSUMER__/, consumer);
+
+    const hancockSocket = new HancockEthereumSocket(url, consumer);
+    hancockSocket.on('ready', () => {
+      hancockSocket.watchContractTransaction(contracts);
+    });
+
+    return hancockSocket;
+
+  }
+
+  /**
+   * Get the list of all contracts registered in Hancock
+   * @returns The list of all contracts registered in Hancock
+   */
+  public async getAllContracts(): Promise<HancockContractInstance[]> {
+
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.findAll}`
+      .replace(/__DLT__/, SupportedPlatforms.ethereum);
+
+    return fetch(url)
+      .then(
+        (res: any) => checkStatus(res),
+        (err: any) => errorHandler(err),
+      )
+      .then((resBody: any) => {
+        return resBody.data.list;
+      });
+  }
+
   private async adaptInvoke(contractAddressOrAlias: string, method: string, params: string[], from: string): Promise<HancockAdaptInvokeResponse> {
 
-    const normalizedContractAddressOrAlias: string = normalizeAddressOrAlias(contractAddressOrAlias);
-
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invoke}`
-    .replace(/__DLT__/, SupportedPlatforms.ethereum)
-    .replace(/__ADDRESS_OR_ALIAS__/, normalizedContractAddressOrAlias);
+      .replace(/__DLT__/, SupportedPlatforms.ethereum)
+      .replace(/__ADDRESS_OR_ALIAS__/, contractAddressOrAlias);
 
     const body: HancockAdaptInvokeRequest = {
       method,
       from,
       params,
       action: 'send',
+    };
+
+    return fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+      .then(
+        (res: any) => checkStatus(res),
+        (err: any) => errorHandler(err),
+      );
+
+  }
+
+  private async adaptInvokeAbi(to: string, method: string, params: string[], from: string, action: HancockInvokeAction, abi: any): Promise<any> {
+
+    const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invokeAbi}`
+      .replace(/__DLT__/, SupportedPlatforms.ethereum);
+
+    const body: HancockAdaptInvokeAbiRequest = {
+      method,
+      from,
+      params,
+      action,
+      to,
+      abi,
     };
 
     return fetch(url, {

@@ -16,7 +16,7 @@ import {
 } from '../../hancock.model';
 import { HancockEthereumSocket } from '../socket';
 import { HancockEthereumTransactionService } from '../transaction';
-import { isAddressAny, isEmptyAny, normalizeAddress } from '../utils';
+import { isAddressAny, isEmptyAny } from '../utils';
 
 /**
  * [[include:HancockEthereumTransferService.md]]
@@ -78,7 +78,7 @@ export class HancockEthereumTransferService {
 
     const hancockSocket = new HancockEthereumSocket(url, consumer);
     hancockSocket.on('ready', () => {
-      hancockSocket.addTransfer(addresses);
+      hancockSocket.watchTransfer(addresses);
     });
 
     return hancockSocket;
@@ -93,8 +93,6 @@ export class HancockEthereumTransferService {
     if (!isAddressAny(from, to)) {
       return Promise.reject(error(hancockFormatParameterError));
     }
-    from = normalizeAddress(from);
-    to = normalizeAddress(to);
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.transfer}`
       .replace(/__DLT__/, SupportedPlatforms.ethereum);

@@ -41,6 +41,12 @@ export interface HancockCallRequest extends HancockInvokeRequest {
   action: 'call';
 }
 
+/** @hidden */
+export interface HancockAdaptInvokeAbiRequest extends HancockInvokeRequest {
+  abi: any;
+  to: string;
+}
+
 export interface HancockAdaptInvokeResponse extends HancockGenericResponse {
   data: DltRawTransaction;
 }
@@ -161,6 +167,10 @@ export interface HancockTokenAllowanceRequest {
   from: string;
   tokenOwner: string;
   spender: string;
+}
+
+export interface HancockTokenAllowanceResponse {
+  data: number;
 }
 
 // Token Register
@@ -321,8 +331,13 @@ export interface HancockClient {
   };
   smartContract?: {
     invoke(contractAddress: string, method: string, params: string[], from: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
+    invokeAbi(contractAddressOrAlias: string, method: string, params: string[], from: string, options: HancockInvokeOptions , abi: any)
+    : Promise<HancockSignResponse>;
     call(contractAddress: string, method: string, params: string[], from: string): Promise<HancockCallResponse>;
-    subscribe(contracts: string[]): HancockEthereumSocket;
+    callAbi(contractAddressOrAlias: string, method: string, params: string[], from: string, options: HancockInvokeOptions, abi: any)
+    : Promise<HancockCallResponse>;
+    subscribeToEvents(contracts: string[]): HancockEthereumSocket;
+    subscribeToTransactions(contracts: string[]): HancockEthereumSocket;
   };
   token?: {
     getBalance(addressOrAlias: string, address: string): Promise<HancockTokenBalanceResponse>;
@@ -332,7 +347,7 @@ export interface HancockClient {
     transferFrom(from: string, sender: string, to: string, value: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
     register(alias: string, address: DltAddress): Promise<HancockTokenRegisterResponse>;
     approve(from: string, spender: string, value: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
-    allowance(from: string, tokenOwner: string, spender: string, addressOrAlias: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
+    allowance(from: string, tokenOwner: string, spender: string, addressOrAlias: string): Promise<HancockTokenAllowanceResponse>;
   };
   wallet: {
     getBalance(address: string): Promise<BigNumber>;
@@ -356,10 +371,22 @@ export interface HancockCallBackOptions {
   requestId?: string;
 }
 
-export type HancockSocketKind = 'watch-transfers' | 'watch-transactions' | 'watch-contracts';
+export enum SOCKET_EVENT_KINDS {
+  WatchTransfer = 'watch-transfers',
+  WatchTransaction = 'watch-transactions',
+  WatchSmartContractTransaction = 'watch-contracts-transactions',
+  WatchSmartContractEvent = 'watch-contracts-events',
+  UnwatchTransfer = 'unwatch-transfers',
+  UnwatchTransaction = 'unwatch-transactions',
+  UnwatchSmartContractTransaction = 'unwatch-contracts-transactions',
+  UnwatchSmartContractEvent = 'unwatch-contracts-events',
+}
+
+export type HancockSocketStatus = 'pending' | 'mined';
 export type HancockSocketBody = any;
 export interface HancockSocketMessage {
-  kind: HancockSocketKind;
+  kind: SOCKET_EVENT_KINDS;
   body: HancockSocketBody;
+  status?: HancockSocketStatus;
   consumer?: string;
 }
