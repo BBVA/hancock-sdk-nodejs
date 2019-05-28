@@ -1,21 +1,22 @@
+declare module 'web3';
 declare module 'web3-provider-engine';
 declare module 'web3-provider-engine/subproviders/rpc';
 declare module 'web3-provider-engine/subproviders/filters.js';
 
 declare module 'web3-provider-engine/subproviders/subprovider' {
   class Subprovider {
-    engine: any;
+    public engine: any;
     constructor();
     public emitPayload(...args: any[]): any;
   }
   export = Subprovider;
 }
 
-declare module "config" {
+declare module 'config' {
 }
 
-declare module "isomorphic-ws" {
-  import ws from 'ws'
+declare module 'isomorphic-ws' {
+  import ws from 'ws';
   export = ws;
 }
 
@@ -25,18 +26,18 @@ declare module NodeJS  {
   }
 }
 
-declare module "ethereumjs-wallet" {
+declare module 'ethereumjs-wallet' {
   export class Wallet {
-    static generate(): any;
+    public static generate(): any;
   }
   export default Wallet;
 }
 
-declare module "ethereumjs-tx" {
+declare module 'ethereumjs-tx' {
   export class Tx {
     constructor(rawTx: any);
-    sign(privateKey: any): any;
-    serialize(): any;
+    public sign(privateKey: any): any;
+    public serialize(): any;
   }
   export default Tx;
 }

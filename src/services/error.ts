@@ -41,3 +41,5 @@ export const hancockWalletError = new HancockError(hancockErrorType.Internal, '5
 export const hancockInvalidParameterError = new HancockError(hancockErrorType.Internal, '50005', 500, 'Empty parameters');
 /** @hidden */
 export const hancockFormatParameterError = new HancockError(hancockErrorType.Internal, '50006', 500, 'Addres invalid format');
+/** @hidden */
+export const hancockDeployContractError = new HancockError(hancockErrorType.Api, '50007', 500, 'Smart contract address is undefined');

@@ -1,6 +1,7 @@
-import { BigNumber } from 'bignumber.js';
+import {BigNumber} from 'bignumber.js';
 import EventEmitter from 'eventemitter3';
-import { HancockEthereumSocket } from './ethereum/socket';
+import {EthereumAddress, IHancockSocketCurrency} from './ethereum/model';
+import {HancockEthereumSocket} from './ethereum/socket';
 
 export type DltAddress = string;
 export type DltRawTransaction = any;
@@ -21,6 +22,14 @@ export interface HancockGenericResponse {
     code: number;
     description: string;
   };
+}
+
+/** @hidden */
+export interface HancockDeployRequest {
+  urlBase: string;
+  method: string;
+  params: string[];
+  from: string;
 }
 
 /** @hidden */
@@ -51,8 +60,17 @@ export interface HancockAdaptInvokeResponse extends HancockGenericResponse {
   data: DltRawTransaction;
 }
 
+export interface HancockAdaptDeployResponse extends HancockGenericResponse {
+  data: DltRawTransaction;
+}
+
 export interface HancockCallResponse extends HancockGenericResponse {
   data: any;
+}
+
+export interface HancockTxResponse {
+  success: boolean;
+  transactionHash?: string;
 }
 
 // Send to sign
@@ -64,7 +82,7 @@ export interface HancockSignRequest {
   backUrl?: string;
 }
 
-export interface HancockSignResponse {
+export interface HancockSignResponse extends HancockTxResponse {
   success: boolean;
 }
 
@@ -75,8 +93,9 @@ export interface HancockSendTxRequest {
   tx: DltRawTransaction;
 }
 
-export interface HancockSendTxResponse {
+export interface HancockSendTxResponse extends HancockTxResponse {
   success: boolean;
+  transactionHash: string;
 }
 
 // Send signedTx
@@ -86,8 +105,9 @@ export interface HancockSendSignedTxRequest {
   tx: DltSignedTransaction;
 }
 
-export interface HancockSendSignedTxResponse {
+export interface HancockSendSignedTxResponse extends HancockTxResponse {
   success: boolean;
+  transactionHash: string;
 }
 
 // Register
@@ -302,10 +322,35 @@ export interface IHancockError extends Error {
 // INTERFACES
 
 export type HancockEventKind = 'error' | 'event' | 'logs' | 'tx';
-export type HancockEventBody = any;
+export type HancockEventBody = HancockContractEventBody | HancockTransactionEventBody;
+
+export interface HancockContractEventBody {
+  blockNumber: number;
+  blockHash: string;
+  transactionId: string;
+  eventName: string;
+  returnValues: string[];
+  fee: IHancockSocketCurrency;
+  timestamp: number;
+}
+
+export interface HancockTransactionEventBody {
+  blockHash: string;
+  blockNumber: number;
+  transactionId: string;
+  from: string;
+  to: string;
+  value: IHancockSocketCurrency;
+  data: string;
+  fee: IHancockSocketCurrency;
+  newContractAddress?: string;
+  timestamp: number;
+}
+
 export interface HancockEvent {
   kind: HancockEventKind;
   body: HancockEventBody;
+  raw: any;
 }
 
 export interface HancockEventEmitter extends EventEmitter {
@@ -330,12 +375,14 @@ export interface HancockClient {
     decode(code: string): Promise<HancockProtocolDecodeResponse>;
   };
   smartContract?: {
+    deploy(from: EthereumAddress, options: HancockInvokeOptions, urlBase: string, constructorName: string, constructorParams: string[], alias?: string)
+      : Promise<HancockTransactionEventBody | undefined>;
     invoke(contractAddress: string, method: string, params: string[], from: string, options?: HancockInvokeOptions): Promise<HancockSignResponse>;
-    invokeAbi(contractAddressOrAlias: string, method: string, params: string[], from: string, options: HancockInvokeOptions , abi: any)
-    : Promise<HancockSignResponse>;
+    invokeAbi(contractAddressOrAlias: string, method: string, params: string[], from: string, options: HancockInvokeOptions, abi: any)
+      : Promise<HancockSignResponse>;
     call(contractAddress: string, method: string, params: string[], from: string): Promise<HancockCallResponse>;
     callAbi(contractAddressOrAlias: string, method: string, params: string[], from: string, options: HancockInvokeOptions, abi: any)
-    : Promise<HancockCallResponse>;
+      : Promise<HancockCallResponse>;
     subscribeToEvents(contracts: string[]): HancockEthereumSocket;
     subscribeToTransactions(contracts: string[]): HancockEthereumSocket;
   };
@@ -364,6 +411,8 @@ export interface HancockInvokeOptions {
   signProvider?: string;
   /** Callback url to be notified once the transaction will be sent */
   callback?: HancockCallBackOptions;
+  /** Determine if the request is synchronous or asynchronous */
+  async?: boolean;
 }
 
 export interface HancockCallBackOptions {
@@ -375,15 +424,27 @@ export enum SOCKET_EVENT_KINDS {
   WatchTransfer = 'watch-transfers',
   WatchTransaction = 'watch-transactions',
   WatchSmartContractTransaction = 'watch-contracts-transactions',
+  WatchSmartContractDeployment = 'watch-contracts-deployments',
   WatchSmartContractEvent = 'watch-contracts-events',
   UnwatchTransfer = 'unwatch-transfers',
   UnwatchTransaction = 'unwatch-transactions',
   UnwatchSmartContractTransaction = 'unwatch-contracts-transactions',
+  UnwatchSmartContractDeployment = 'unwatch-contracts-deployments',
   UnwatchSmartContractEvent = 'unwatch-contracts-events',
+}
+
+export enum CONSUMER_EVENT_KINDS {
+  Transfer = 'transfer',
+  Transaction = 'transaction',
+  SmartContractTransaction = 'contract-transaction',
+  SmartContractDeployment = 'contract-deployment',
+  SmartContractEvent = 'contract-event',
+  Error = 'error',
 }
 
 export type HancockSocketStatus = 'pending' | 'mined';
 export type HancockSocketBody = any;
+
 export interface HancockSocketMessage {
   kind: SOCKET_EVENT_KINDS;
   body: HancockSocketBody;

@@ -52,7 +52,7 @@ export class HancockSocket extends EventEmitter {
   /**
    * Add a list of smart contract addresses to the watch lists of smart contract transactions
    * An event will be received each time that some smart contract identified by one of the given addresses emits an event
-   * @param addresses addresses of smart contracts to watch
+   * @param contracts addresses of smart contracts to watch
    */
   public watchContractTransaction(contracts: string[]) {
     if (contracts.length > 0) {
@@ -61,9 +61,20 @@ export class HancockSocket extends EventEmitter {
   }
 
   /**
+   * Add a list of addresses to the watch lists of smart contract deployments
+   * An event will be received each time that some smart contract identified by one of the given addresses emits an event
+   * @param addresses addresses to watch
+   */
+  public watchContractDeployment(addresses: string[]) {
+    if (addresses.length > 0) {
+      this.sendMessage(SOCKET_EVENT_KINDS.WatchSmartContractDeployment, addresses);
+    }
+  }
+
+  /**
    * Add a list of smart contract addresses to the watch lists of smart contract events
    * An event will be received each time that some smart contract identified by one of the given addresses emits an event
-   * @param addresses addresses of smart contracts to watch
+   * @param contracts addresses of smart contracts to watch
    */
   public watchContractEvent(contracts: string[]) {
     if (contracts.length > 0) {

@@ -1,30 +1,33 @@
 import fetch from 'isomorphic-fetch';
-import { checkStatus, error, errorHandler, SupportedPlatforms } from '../../common';
+import {checkStatus, error, errorHandler, SupportedPlatforms} from '../../common';
 import {
+  hancockDeployContractError,
   hancockFormatParameterError,
   hancockInvalidParameterError, hancockNoKeyNorProviderError,
 } from '../../error';
 import {
-  HancockAdaptInvokeAbiRequest,
-  HancockContractInstance,
+  CONSUMER_EVENT_KINDS, DltAddress, HancockAdaptDeployResponse, HancockAdaptInvokeAbiRequest, HancockAdaptInvokeRequest,
+  HancockCallResponse, HancockContractInstance, HancockDeployRequest,
+  HancockEvent,
+  HancockInvokeOptions, HancockRegisterResponse,
   HancockSignResponse,
+  HancockTransactionEventBody,
+  HancockTxResponse,
   InitialHancockConfig,
 } from '../../hancock.model';
 import {
-  DltAddress,
-  HancockAdaptInvokeRequest,
   HancockAdaptInvokeResponse,
   HancockCallRequest,
-  HancockCallResponse,
   HancockInvokeAction,
-  HancockInvokeOptions,
   HancockRegisterRequest,
-  HancockRegisterResponse,
 } from '../../hancock.model';
-import { EthereumAbi } from '../model';
-import { HancockEthereumSocket } from '../socket';
-import { HancockEthereumTransactionService } from '../transaction';
-import { isAddress, isEmptyAny } from '../utils';
+import {
+  EthereumAbi,
+  EthereumAddress,
+} from '../model';
+import {HancockEthereumSocket} from '../socket';
+import {HancockEthereumTransactionService} from '../transaction';
+import {isAddress, isEmptyAny} from '../utils';
 
 /**
  * [[include:HancockEthereumSmartContractService.md]]
@@ -37,6 +40,61 @@ export class HancockEthereumSmartContractService {
   constructor(private config: InitialHancockConfig, private transactionService: HancockEthereumTransactionService) {
     this.adapterApiBaseUrl = `${config.adapter.host}:${config.adapter.port}${config.adapter.base}`;
     this.brokerBaseUrl = `${config.broker.host}:${config.broker.port}${config.broker.base}`;
+  }
+
+  public async deploy(
+    from: EthereumAddress, options: HancockInvokeOptions = {},
+    urlBase: string, constructorName: string, constructorParams: string[] = [],
+  ): Promise<HancockTransactionEventBody> {
+
+    return new Promise<HancockTransactionEventBody>(async (resolve, reject) => {
+
+      if (!options.signProvider && !options.privateKey) {
+        reject(error(hancockNoKeyNorProviderError));
+      }
+      if (!isAddress(from)) {
+        reject(error(hancockFormatParameterError));
+      }
+
+      let transactionId: string = '';
+
+      const brokerUrl: string = `${this.brokerBaseUrl + this.config.broker.resources.events}`
+        .replace(/__DLT__/, SupportedPlatforms.ethereum)
+        .replace(/__ADDRESS__/, '')
+        .replace(/__SENDER__/, '')
+        .replace(/__CONSUMER__/, '');
+
+      const hancockSocket = new HancockEthereumSocket(brokerUrl);
+      hancockSocket.on('ready', () => {
+        hancockSocket.watchContractDeployment([from]);
+        hancockSocket.on(CONSUMER_EVENT_KINDS.SmartContractDeployment, async (data: HancockEvent) => {
+          if (data.body.transactionId === transactionId) {
+            hancockSocket.closeSocket();
+            const bodyEvent: HancockTransactionEventBody = (data.body as HancockTransactionEventBody);
+            if (bodyEvent.newContractAddress) {
+              resolve(bodyEvent);
+            } else {
+              reject(error(hancockDeployContractError));
+            }
+          }
+        });
+      });
+      hancockSocket.on(CONSUMER_EVENT_KINDS.Error, (err) => {
+        hancockSocket.closeSocket();
+        reject(error(err));
+      });
+
+      try {
+
+        const hancockAdaptResponse: HancockAdaptDeployResponse = await this._adaptDeploy(from, urlBase, constructorName, constructorParams);
+
+        const hancockSignResponse: HancockTxResponse = await this.transactionService.signAndSend(hancockAdaptResponse.data, options);
+        transactionId = (hancockSignResponse.transactionHash) ? hancockSignResponse.transactionHash : '';
+
+      } catch (err) {
+        reject(error(err));
+      }
+    });
   }
 
   /**
@@ -146,7 +204,7 @@ export class HancockEthereumSmartContractService {
 
     return fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(body),
     })
       .then(
@@ -163,7 +221,6 @@ export class HancockEthereumSmartContractService {
    * @param method The name of the method to call
    * @param params An array of arguments passed to the method
    * @param from The address of the account doing the call
-   * @param options Configuration of how the transaction will be send to the network
    * @param abi raw in json format
    * @returns The returned value from the smart contract method
    */
@@ -214,7 +271,7 @@ export class HancockEthereumSmartContractService {
 
     return fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(body),
     })
       .then(
@@ -226,7 +283,7 @@ export class HancockEthereumSmartContractService {
 
   /**
    * Create a websocket subscription to watch transactions of type "smart contract events" in the network
-   * @param addresses An array of address of smart contracts that will be added to the watch list
+   * @param contracts An array of address of smart contracts that will be added to the watch list
    * @param consumer A consumer plugin previously configured in hancock that will handle each received event
    * @returns An event emmiter that will fire the watched "smart contract events" events
    */
@@ -249,7 +306,7 @@ export class HancockEthereumSmartContractService {
 
   /**
    * Create a websocket subscription to watch transactions of type "smart contract transactions" in the network
-   * @param addresses An array of address of smart contracts that will be added to the watch list
+   * @param contracts An array of address of smart contracts that will be added to the watch list
    * @param consumer A consumer plugin previously configured in hancock that will handle each received event
    * @returns An event emmiter that will fire the watched "smart contract transactions" events
    */
@@ -289,6 +346,31 @@ export class HancockEthereumSmartContractService {
       });
   }
 
+  private async _adaptDeploy(
+    from: EthereumAddress, urlBase: string, constructorName: string, constructorParams: string[] = [],
+  ): Promise<HancockAdaptDeployResponse> {
+
+    const adapterUrl: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.deploy}`
+      .replace(/__DLT__/, SupportedPlatforms.ethereum);
+
+    const hancockAdapterRequest: HancockDeployRequest = {
+      urlBase,
+      from,
+      method: constructorName,
+      params: constructorParams,
+    };
+
+    return fetch(adapterUrl, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(hancockAdapterRequest),
+    })
+      .then(
+        (res: any) => checkStatus(res),
+        (err: any) => errorHandler(err),
+      );
+  }
+
   private async adaptInvoke(contractAddressOrAlias: string, method: string, params: string[], from: string): Promise<HancockAdaptInvokeResponse> {
 
     const url: string = `${this.adapterApiBaseUrl + this.config.adapter.resources.invoke}`
@@ -304,7 +386,7 @@ export class HancockEthereumSmartContractService {
 
     return fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(body),
     })
       .then(
@@ -330,7 +412,7 @@ export class HancockEthereumSmartContractService {
 
     return fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(body),
     })
       .then(
