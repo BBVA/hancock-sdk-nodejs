@@ -1,6 +1,6 @@
 {
   "name": "@hancock/sdk-nodejs",
-  "version": "1.0.0-alpha.48",
+  "version": "1.0.0-alpha.49",
   "description": "Client sdk for integration with hancock components",
   "main": "dist/index.node.js",
   "unpkg": "dist/index.node.js",
