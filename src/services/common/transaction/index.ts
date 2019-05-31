@@ -1,6 +1,7 @@
 import fetch from 'isomorphic-fetch';
 import { checkStatus, errorHandler, SupportedPlatforms } from '../../common';
-import { DltRawTransaction,
+import {
+  DltRawTransaction,
   DltSignedTransaction,
   HancockCallBackOptions,
   HancockInvokeOptions,
@@ -11,7 +12,7 @@ import { DltRawTransaction,
   HancockSignerFn,
   HancockSignRequest,
   HancockSignResponse,
-  HancockSocketStatus,
+  HancockSocketStatus, HancockTxResponse,
   InitialHancockConfig,
 } from '../../hancock.model';
 import { HancockSocket } from '../socket';
@@ -157,7 +158,7 @@ export class HancockTransactionService {
    * @param options Configuration of how the transaction will be send to the network
    * @returns The result of the transaction
    */
-  public async signAndSend(rawTx: DltRawTransaction, options: HancockInvokeOptions): Promise<HancockSignResponse> {
+  public async signAndSend(rawTx: DltRawTransaction, options: HancockInvokeOptions): Promise<HancockTxResponse> {
 
     if (options.signProvider) {
 

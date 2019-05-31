@@ -3,6 +3,7 @@ adapter:
   port: 3004
   base: ''
   resources:
+    deploy: '/__DLT__/smartcontracts/deploy'
     invoke: '/__DLT__/smartcontracts/invoke/__ADDRESS_OR_ALIAS__'
     invokeAbi: '/__DLT__/smartcontracts/invoke/abi'
     register: '/__DLT__/smartcontracts/register'
