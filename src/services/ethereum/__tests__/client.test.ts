@@ -35,7 +35,7 @@ jest.unmock('ethereumjs-wallet');
 
 describe('HancockEthereumClient integration tests', () => {
 
-  const errorFnMock = common.error as jest.Mock;
+  // const errorFnMock = common.error as jest.Mock;
   let clientInstance: HancockEthereumClient;
   const alias: string = 'mockedAlias';
   const address: string = '0xde8e772f0350e992ddef81bf8f51d94a8ea9216d';
